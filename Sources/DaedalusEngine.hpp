@@ -132,5 +132,7 @@ private:
     // Vulkan Textures
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
 };
 }

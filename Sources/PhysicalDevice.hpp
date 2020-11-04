@@ -15,9 +15,9 @@ const std::vector<const char*> deviceExtensions = {
 
 void pickPhysicalDevice(VkInstance instance,
                         VkPhysicalDevice& device,
-                        const VkSurfaceKHR& surface);
+                        VkSurfaceKHR& surface);
 
-bool isDeviceSuitable(const VkPhysicalDevice& device, const VkSurfaceKHR& surface);
+bool isDeviceSuitable(const VkPhysicalDevice& device, VkSurfaceKHR& surface);
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 }

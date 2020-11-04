@@ -22,7 +22,7 @@ void createDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout& descripto
 
 void createDescriptorPool(VkDevice device, VkDescriptorPool& descriptorPool, std::vector<VkImage> swapChainImages);
 
-void createDescriptorSets(VkDevice device, std::vector<VkBuffer> uniformBuffers, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkImage> swapChainImages);
+void createDescriptorSets(VkDevice device, std::vector<VkBuffer> uniformBuffers, VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool, std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkImage> swapChainImages, VkImageView textureImageView, VkSampler textureSampler);
 
 void createUniformBuffers(VkPhysicalDevice physicalDevice, VkDevice device, std::vector<VkBuffer>& uniformBuffers, std::vector<VkDeviceMemory>& uniformBuffersMemory, std::vector<VkImage>& swapChainImages);
 

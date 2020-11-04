@@ -37,7 +37,7 @@
 		0516839E253CED07008D02F5 /* QueueFamily.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QueueFamily.hpp; sourceTree = "<group>"; };
 		051683A0253CF510008D02F5 /* Instance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Instance.cpp; sourceTree = "<group>"; };
 		051683A1253CF510008D02F5 /* Instance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Instance.hpp; sourceTree = "<group>"; };
-		051C59FB254ED1AC008F4F52 /* texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texture.png; sourceTree = "<group>"; };
+		051C5A09254ED6B9008F4F52 /* texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texture.png; sourceTree = "<group>"; };
 		051F341F2539DAB30030F6CF /* DaedalusVK */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DaedalusVK; sourceTree = BUILT_PRODUCTS_DIR; };
 		051F34222539DAB30030F6CF /* TheOriginalWork.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TheOriginalWork.cpp; sourceTree = "<group>"; };
 		051F342C2539DC7E0030F6CF /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../usr/local/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
@@ -175,7 +175,7 @@
 		05474139254DFC5A00552D93 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				051C59FB254ED1AC008F4F52 /* texture.png */,
+				051C5A09254ED6B9008F4F52 /* texture.png */,
 			);
 			path = Textures;
 			sourceTree = "<group>";
@@ -197,8 +197,8 @@
 			buildConfigurationList = 051F34262539DAB30030F6CF /* Build configuration list for PBXNativeTarget "DaedalusVK" */;
 			buildPhases = (
 				051F341B2539DAB30030F6CF /* Sources */,
-				057A5D6025402796004B7FEA /* ShellScript */,
-				051C59FA254ED14D008F4F52 /* ShellScript */,
+				057A5D6025402796004B7FEA /* Compile & Copy Shaders */,
+				051C5A0F254ED831008F4F52 /* Copy Textures */,
 				051F341C2539DAB30030F6CF /* Frameworks */,
 			);
 			buildRules = (
@@ -217,7 +217,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1210;
 				TargetAttributes = {
 					051F341E2539DAB30030F6CF = {
 						CreatedOnToolsVersion = 12.0.1;
@@ -243,7 +243,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		051C59FA254ED14D008F4F52 /* ShellScript */ = {
+		051C5A0F254ED831008F4F52 /* Copy Textures */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -252,15 +252,16 @@
 			);
 			inputPaths = (
 			);
+			name = "Copy Textures";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SRCROOT/Textures\n\nmkdir $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Textures\nmv texture.png $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Textures/texture.png\n";
+			shellScript = "cd $SRCROOT/Textures\n\nmkdir $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Textures\ncp *.png $TARGET_BUILD_DIR/$CONTENTS_FOLDER_PATH/Textures\n";
 		};
-		057A5D6025402796004B7FEA /* ShellScript */ = {
+		057A5D6025402796004B7FEA /* Compile & Copy Shaders */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -269,6 +270,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Compile & Copy Shaders";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -429,6 +431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -437,7 +440,7 @@
 					/usr/local/lib,
 					"/usr/local/Caskroom/vulkan-sdk/1.2.154.0/macOS/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = NotNeo.Daedalus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.NotNeo.Daedalus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -446,6 +449,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -454,7 +458,7 @@
 					/usr/local/lib,
 					"/usr/local/Caskroom/vulkan-sdk/1.2.154.0/macOS/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = NotNeo.Daedalus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.NotNeo.Daedalus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -5,7 +5,7 @@
 
 int main()
 {
-    ddls::DaedalusEngine mainApplication(800, 600, "Daedalus' Original Work");
+    ddls::DaedalusEngine mainApplication(800, 600, "Daedalus Engine");
     try {
         mainApplication.run();
     } catch (const std::exception& e) {

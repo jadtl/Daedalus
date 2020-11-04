@@ -85,7 +85,8 @@ void DaedalusEngine::initVulkan()
     createRenderPass
     (device, renderPass, swapChainImageFormat);
     
-    createDescriptorSetLayout(device, descriptorSetLayout);
+    createDescriptorSetLayout
+    (device, descriptorSetLayout);
     
     createGraphicsPipeline
     (device, pipelineLayout, graphicsPipeline, renderPass, swapChainExtent, descriptorSetLayout);
@@ -98,6 +99,12 @@ void DaedalusEngine::initVulkan()
     
     createTextureImage
     (physicalDevice, device, textureImage, textureImageMemory, commandPool, graphicsQueue);
+    
+    createTextureImageView
+    (device, textureImage, textureImageView);
+    
+    createTextureSampler
+    (device, textureSampler);
     
     createVertexBuffers
     (physicalDevice, device, vertexBuffer, vertexBufferMemory, commandPool, graphicsQueue);
@@ -112,7 +119,7 @@ void DaedalusEngine::initVulkan()
     (device, descriptorPool, swapChainImages);
     
     createDescriptorSets
-    (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages);
+    (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages, textureImageView, textureSampler);
 
     createCommandBuffers
     (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets);
@@ -159,6 +166,9 @@ void DaedalusEngine::cleanupSwapChain() {
 void DaedalusEngine::cleanup()
 {
     cleanupSwapChain();
+    
+    vkDestroySampler(device, textureSampler, nullptr);
+    vkDestroyImageView(device, textureImageView, nullptr);
     
     vkDestroyImage(device, textureImage, nullptr);
     vkFreeMemory(device, textureImageMemory, nullptr);
@@ -225,7 +235,7 @@ void DaedalusEngine::recreateSwapChain() {
     (device, descriptorPool, swapChainImages);
     
     createDescriptorSets
-    (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages);
+    (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages, textureImageView, textureSampler);
     
     createCommandBuffers
     (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets);

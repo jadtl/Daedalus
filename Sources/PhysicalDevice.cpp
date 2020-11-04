@@ -1,9 +1,12 @@
 #include "PhysicalDevice.hpp"
 
+#include "SwapChain.hpp"
+#include "QueueFamily.hpp"
+
 namespace ddls
 {
 void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice,
-                        const VkSurfaceKHR& surface)
+                        VkSurfaceKHR& surface)
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -29,13 +32,22 @@ void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice,
     }
 }
 
-bool isDeviceSuitable(const VkPhysicalDevice& device, const VkSurfaceKHR& surface)
+bool isDeviceSuitable(const VkPhysicalDevice& device, VkSurfaceKHR& surface)
 {
     QueueFamilyIndices indices = findQueueFamilies(device, surface);
-    
+
     bool extensionsSupported = checkDeviceExtensionSupport(device);
 
-    return indices.isComplete() && extensionsSupported;
+    bool swapChainAdequate = false;
+    if (extensionsSupported) {
+        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device, surface);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+    return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device)
