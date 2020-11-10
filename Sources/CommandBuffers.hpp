@@ -5,6 +5,7 @@
 #include "VertexBuffers.hpp"
 #include "IndexBuffers.hpp"
 #include "UniformBuffers.hpp"
+#include "DepthBuffers.hpp"
 
 namespace ddls
 {

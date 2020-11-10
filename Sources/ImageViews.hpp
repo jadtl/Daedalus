@@ -4,7 +4,7 @@
 
 namespace ddls
 {
-VkImageView createImageView(VkDevice device, VkImage image, VkFormat format);
+VkImageView createImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
 void createImageViews(VkDevice device, std::vector<VkImageView>& swapChainImageViews,
                       std::vector<VkImage> swapChainImages, VkFormat swapChainImageFormat);

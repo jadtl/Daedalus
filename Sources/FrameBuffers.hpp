@@ -5,5 +5,5 @@
 namespace ddls
 {
 void createFrameBuffers(VkDevice device, std::vector<VkFramebuffer>& swapChainFramebuffers, VkRenderPass renderPass,
-                        std::vector<VkImageView> swapChainImageViews, VkExtent2D swapChainExtent);
+                        std::vector<VkImageView> swapChainImageViews, VkExtent2D swapChainExtent, VkImageView depthImageView);
 }

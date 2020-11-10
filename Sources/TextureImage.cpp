@@ -74,7 +74,7 @@ void createTextureImage(VkPhysicalDevice physicalDevice, VkDevice device, VkImag
 
 void createTextureImageView(VkDevice device, VkImage& textureImage, VkImageView& textureImageView)
 {
-    textureImageView = createImageView(device, textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+    textureImageView = createImageView(device, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 void createTextureSampler(VkDevice device, VkSampler& textureSampler)

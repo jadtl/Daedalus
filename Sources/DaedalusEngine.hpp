@@ -27,6 +27,8 @@
 
 #include "TextureImage.hpp"
 
+#include "DepthBuffers.hpp"
+
 namespace ddls
 {
 class DaedalusEngine
@@ -134,5 +136,10 @@ private:
     VkDeviceMemory textureImageMemory;
     VkImageView textureImageView;
     VkSampler textureSampler;
+    
+    // Vulkan Depth
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
 };
 }

@@ -83,7 +83,7 @@ void DaedalusEngine::initVulkan()
     (device, swapChainImageViews, swapChainImages, swapChainImageFormat);
     
     createRenderPass
-    (device, renderPass, swapChainImageFormat);
+    (device, physicalDevice, renderPass, swapChainImageFormat);
     
     createDescriptorSetLayout
     (device, descriptorSetLayout);
@@ -91,11 +91,14 @@ void DaedalusEngine::initVulkan()
     createGraphicsPipeline
     (device, pipelineLayout, graphicsPipeline, renderPass, swapChainExtent, descriptorSetLayout);
     
-    createFrameBuffers
-    (device, swapChainFramebuffers, renderPass, swapChainImageViews, swapChainExtent);
-    
     createCommandPool
     (device, physicalDevice, surface, commandPool);
+    
+    createDepthResources
+    (device, physicalDevice, depthImage, depthImageMemory, depthImageView, swapChainExtent);
+    
+    createFrameBuffers
+    (device, swapChainFramebuffers, renderPass, swapChainImageViews, swapChainExtent, depthImageView);
     
     createTextureImage
     (physicalDevice, device, textureImage, textureImageMemory, commandPool, graphicsQueue);
@@ -138,7 +141,13 @@ void DaedalusEngine::mainLoop()
     vkDeviceWaitIdle(device);
 }
 
-void DaedalusEngine::cleanupSwapChain() {
+void DaedalusEngine::cleanupSwapChain()
+{
+    vkDestroyImageView(device, depthImageView, nullptr);
+    vkDestroyImage(device, depthImage, nullptr);
+    vkFreeMemory(device, depthImageMemory, nullptr);
+
+    
     for (auto framebuffer : swapChainFramebuffers) {
         vkDestroyFramebuffer(device, framebuffer, nullptr);
     }
@@ -220,13 +229,16 @@ void DaedalusEngine::recreateSwapChain() {
     (device, swapChainImageViews, swapChainImages, swapChainImageFormat);
     
     createRenderPass
-    (device, renderPass, swapChainImageFormat);
+    (device, physicalDevice, renderPass, swapChainImageFormat);
     
     createGraphicsPipeline
     (device, pipelineLayout, graphicsPipeline, renderPass, swapChainExtent, descriptorSetLayout);
     
+    createDepthResources
+    (device, physicalDevice, depthImage, depthImageMemory, depthImageView, swapChainExtent);
+    
     createFrameBuffers
-    (device, swapChainFramebuffers, renderPass, swapChainImageViews, swapChainExtent);
+    (device, swapChainFramebuffers, renderPass, swapChainImageViews, swapChainExtent, depthImageView);
     
     createUniformBuffers
     (physicalDevice, device, uniformBuffers, uniformBuffersMemory, swapChainImages);

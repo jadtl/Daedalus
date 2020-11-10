@@ -4,5 +4,5 @@
 
 namespace ddls
 {
-void createRenderPass(VkDevice device, VkRenderPass& renderPass, VkFormat swapChainImageFormat);
+void createRenderPass(VkDevice device, VkPhysicalDevice physicalDevice, VkRenderPass& renderPass, VkFormat swapChainImageFormat);
 }
