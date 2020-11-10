@@ -12,7 +12,8 @@ namespace ddls
 void createCommandBuffers(VkDevice device, std::vector<VkCommandBuffer>& commandBuffers, VkCommandPool commandPool,
                           VkPipeline graphicsPipeline, std::vector<VkFramebuffer> swapChainFramebuffers,
                           VkRenderPass renderPass, VkExtent2D swapChainExtent, VkBuffer vertexBuffer, VkBuffer indexBuffer,
-                          VkPipelineLayout& pipelineLayout, std::vector<VkDescriptorSet>& descriptorSets);
+                          VkPipelineLayout& pipelineLayout, std::vector<VkDescriptorSet>& descriptorSets,
+                          std::vector<uint32_t> indices);
 
 void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 

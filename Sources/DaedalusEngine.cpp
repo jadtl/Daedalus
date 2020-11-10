@@ -109,11 +109,14 @@ void DaedalusEngine::initVulkan()
     createTextureSampler
     (device, textureSampler);
     
+    loadModel
+    (vertices, indices);
+    
     createVertexBuffers
-    (physicalDevice, device, vertexBuffer, vertexBufferMemory, commandPool, graphicsQueue);
+    (physicalDevice, device, vertexBuffer, vertexBufferMemory, commandPool, graphicsQueue, vertices);
     
     createIndexBuffers
-    (physicalDevice, device, indexBuffer, indexBufferMemory, commandPool, graphicsQueue);
+    (physicalDevice, device, indexBuffer, indexBufferMemory, commandPool, graphicsQueue, indices);
     
     createUniformBuffers
     (physicalDevice, device, uniformBuffers, uniformBuffersMemory, swapChainImages);
@@ -125,7 +128,7 @@ void DaedalusEngine::initVulkan()
     (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages, textureImageView, textureSampler);
 
     createCommandBuffers
-    (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets);
+    (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets, indices);
     
     createSyncObjects
     (device, imageAvailableSemaphores, renderFinishedSemaphores, inFlightFences, imagesInFlight, swapChainImages);
@@ -250,7 +253,7 @@ void DaedalusEngine::recreateSwapChain() {
     (device, uniformBuffers, descriptorSetLayout, descriptorPool, descriptorSets, swapChainImages, textureImageView, textureSampler);
     
     createCommandBuffers
-    (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets);
+    (device, commandBuffers, commandPool, graphicsPipeline, swapChainFramebuffers, renderPass, swapChainExtent, vertexBuffer, indexBuffer, pipelineLayout, descriptorSets, indices);
 }
 
 void DaedalusEngine::drawFrame()

@@ -2,7 +2,7 @@
 
 namespace ddls
 {
-void createVertexBuffers(VkPhysicalDevice physicalDevice, VkDevice device, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory, VkCommandPool& commandPool, VkQueue graphicsQueue)
+void createVertexBuffers(VkPhysicalDevice physicalDevice, VkDevice device, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory, VkCommandPool& commandPool, VkQueue graphicsQueue, std::vector<Vertex> vertices)
 {
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 

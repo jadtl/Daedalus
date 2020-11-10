@@ -26,8 +26,8 @@
 #include "SyncObjects.hpp"
 
 #include "TextureImage.hpp"
-
 #include "DepthBuffers.hpp"
+#include "ModelLoader.hpp"
 
 namespace ddls
 {
@@ -122,8 +122,10 @@ private:
     size_t currentFrame;
     
     // Vulkan Buffers
+    std::vector<Vertex> vertices;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+    std::vector<uint32_t> indices;
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
     std::vector<VkBuffer> uniformBuffers;

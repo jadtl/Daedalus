@@ -5,7 +5,8 @@ namespace ddls
 void createCommandBuffers(VkDevice device, std::vector<VkCommandBuffer>& commandBuffers, VkCommandPool commandPool,
                           VkPipeline graphicsPipeline, std::vector<VkFramebuffer> swapChainFramebuffers,
                           VkRenderPass renderPass, VkExtent2D swapChainExtent, VkBuffer vertexBuffer, VkBuffer indexBuffer,
-                          VkPipelineLayout& pipelineLayout, std::vector<VkDescriptorSet>& descriptorSets)
+                          VkPipelineLayout& pipelineLayout, std::vector<VkDescriptorSet>& descriptorSets,
+                          std::vector<uint32_t> indices)
 {
     commandBuffers.resize(swapChainFramebuffers.size());
 
@@ -49,7 +50,7 @@ void createCommandBuffers(VkDevice device, std::vector<VkCommandBuffer>& command
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-            vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+            vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
             vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
