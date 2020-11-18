@@ -1,4 +1,11 @@
 # Daedalus
-### A Vulkan Graphics Engine (Work in Progress)
+### A Vulkan Game Engine (In Progress)
 
-Dependencies: Vulkan, GLFW.
+#### Dependencies: 
+vulkan 
+
+glfw: https://github.com/glfw/glfw
+
+stb_image: https://github.com/nothings/stb
+
+tinyobjloader: https://github.com/tinyobjloader/tinyobjloader
