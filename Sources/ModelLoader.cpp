@@ -14,7 +14,7 @@ void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "models/viking_room.obj")) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "models/tux.obj")) {
         throw std::runtime_error(warn + err);
     }
 
@@ -29,12 +29,13 @@ void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
                 attrib.vertices[3 * index.vertex_index + 1],
                 attrib.vertices[3 * index.vertex_index + 2]
             };
-
+            
+            // Reverting Coordinates System
             vertex.texCoord = {
                 attrib.texcoords[2 * index.texcoord_index + 0],
                 1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
             };
-
+            
             vertex.color = {1.0f, 1.0f, 1.0f};
 
             if (uniqueVertices.count(vertex) == 0) {
