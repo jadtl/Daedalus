@@ -1,4 +1,4 @@
-#include "DaedalusEngine.hpp"
+#include "../Headers/DaedalusEngine.hpp"
 
 #include <stdexcept>
 #include <cstdlib>
@@ -11,7 +11,7 @@
 
 int main()
 {
-    ddls::DaedalusEngine mainApplication(800, 600, "Daedalus Engine");
+    ddls::DaedalusEngine mainApplication(800, 600, "Daedalus");
     try {
         mainApplication.run();
     } catch (const std::exception& e) {

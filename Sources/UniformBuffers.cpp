@@ -1,4 +1,4 @@
-#include "UniformBuffers.hpp"
+#include "../Headers/UniformBuffers.hpp"
 
 namespace ddls
 {
@@ -120,7 +120,7 @@ void updateUniformBuffer(VkDevice device, VkExtent2D swapChainExtent, std::vecto
 
     void* data;
     vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
-        memcpy(data, &ubo, sizeof(ubo));
+    memcpy(data, &ubo, sizeof(ubo));
     vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
 }
 }

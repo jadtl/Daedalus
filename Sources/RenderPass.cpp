@@ -1,5 +1,5 @@
-#include "RenderPass.hpp"
-#include "DepthBuffers.hpp"
+#include "../Headers/RenderPass.hpp"
+#include "../Headers/DepthBuffers.hpp"
 
 namespace ddls
 {

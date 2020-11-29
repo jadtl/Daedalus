@@ -1,7 +1,7 @@
-#include "PhysicalDevice.hpp"
+#include "../Headers/PhysicalDevice.hpp"
 
-#include "SwapChain.hpp"
-#include "QueueFamily.hpp"
+#include "../Headers/SwapChain.hpp"
+#include "../Headers/QueueFamily.hpp"
 
 namespace ddls
 {

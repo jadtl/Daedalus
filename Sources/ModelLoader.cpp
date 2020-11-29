@@ -1,7 +1,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
-#include "ModelLoader.hpp"
+#include "../Headers/ModelLoader.hpp"
 
 #include <unordered_map>
 
@@ -14,7 +14,7 @@ void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "models/viking_room.obj")) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, "models/rose.obj")) {
         throw std::runtime_error(warn + err);
     }
 

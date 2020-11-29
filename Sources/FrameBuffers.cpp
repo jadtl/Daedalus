@@ -1,5 +1,5 @@
-#include "FrameBuffers.hpp"
-#include "DepthBuffers.hpp"
+#include "../Headers/FrameBuffers.hpp"
+#include "../Headers/DepthBuffers.hpp"
 
 namespace ddls
 {
