@@ -1,4 +1,4 @@
-#include "../Headers/ImageViews.h"
+#include <ImageViews.h>
 
 namespace ddls
 {

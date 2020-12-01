@@ -1,12 +1,11 @@
-#include "../Headers/PhysicalDevice.h"
+#include <PhysicalDevice.h>
 
-#include "../Headers/SwapChain.h"
-#include "../Headers/QueueFamily.h"
+#include <SwapChain.h>
+#include <QueueFamily.h>
 
 namespace ddls
 {
-void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice,
-                        VkSurfaceKHR& surface)
+void selectPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice, VkSurfaceKHR& surface)
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);

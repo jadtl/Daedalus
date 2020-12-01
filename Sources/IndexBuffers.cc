@@ -1,4 +1,4 @@
-#include "../Headers/IndexBuffers.h"
+#include <IndexBuffers.h>
 
 namespace ddls
 {

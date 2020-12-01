@@ -1,4 +1,4 @@
-#include "../Headers/Instance.h"
+#include <Instance.h>
 
 namespace ddls
 {
@@ -16,7 +16,7 @@ void createInstance(VkInstance& instance,
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = applicationName.c_str();
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "Daedalus";
+    appInfo.pEngineName = engineName.c_str();
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
     

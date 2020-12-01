@@ -1,4 +1,4 @@
-#include "../Headers/LogicalDevice.h"
+#include <LogicalDevice.h>
 
 namespace ddls
 {

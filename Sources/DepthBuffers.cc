@@ -1,4 +1,4 @@
-#include "../Headers/DepthBuffers.h"
+#include <DepthBuffers.h>
 
 namespace ddls
 {

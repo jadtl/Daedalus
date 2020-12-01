@@ -3,6 +3,10 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <soloud.h>
+#include <soloud_wav.h>
+#include <soloud_wavstream.h>
+
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -52,7 +56,11 @@ private:
     GLFWwindow* window;
     uint32_t windowWidth;
     uint32_t windowHeight;
-    void initWindow();
+    void initSystem();
+
+    // SoLoud Sound Engine
+    SoLoud::Soloud soundEngine;
+    SoLoud::WavStream backgroundMusic;
     
     // Resize Handling
     bool framebufferResized;

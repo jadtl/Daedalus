@@ -1,4 +1,7 @@
-#include "../Headers/DaedalusEngine.h"
+#include <DaedalusEngine.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -10,9 +13,6 @@ DaedalusEngine::DaedalusEngine()
     
     windowWidth = 800;
     windowHeight = 600;
-    
-    physicalDevice = VK_NULL_HANDLE;
-    device = VK_NULL_HANDLE;
     
     currentFrame = 0;
     
@@ -27,24 +27,21 @@ DaedalusEngine::DaedalusEngine(uint32_t windowWidth_p,
     
     windowWidth = windowWidth_p;
     windowHeight= windowHeight_p;
-    
-    physicalDevice = VK_NULL_HANDLE;
-    device = VK_NULL_HANDLE;
-    
+
     currentFrame = 0;
-    
+
     framebufferResized = false;
 }
 
 void DaedalusEngine::run()
 {
-    initWindow();
+    initSystem();
     initVulkan();
     mainLoop();
     cleanup();
 }
 
-void DaedalusEngine::initWindow()
+void DaedalusEngine::initSystem()
 {
     glfwInit();
     
@@ -57,6 +54,16 @@ void DaedalusEngine::initWindow()
     
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+    GLFWimage images[1];
+    images[0].pixels = stbi_load("Resources/Daedalus.png", &images[0].width, &images[0].height, 0, 4);
+    glfwSetWindowIcon(window, 1, images);
+    stbi_image_free(images[0].pixels);
+
+    soundEngine.init();
+    backgroundMusic.load("Sounds/GetYourWish.mp3");
+    int backgroundMusicHandle = soundEngine.play(backgroundMusic);
+    soundEngine.setVolume(backgroundMusicHandle, 0.25f);
 }
 
 void DaedalusEngine::initVulkan()
@@ -70,7 +77,7 @@ void DaedalusEngine::initVulkan()
     createSurface
     (instance, window, &surface);
     
-    pickPhysicalDevice
+    selectPhysicalDevice
     (instance, physicalDevice, surface);
     
     createLogicalDevice
@@ -208,7 +215,9 @@ void DaedalusEngine::cleanup()
     
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
-    
+
+    soundEngine.deinit();
+
     glfwDestroyWindow(window);
 
     glfwTerminate();

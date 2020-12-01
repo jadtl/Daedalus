@@ -1,4 +1,4 @@
-#include "../Headers/SwapChain.h"
+#include <SwapChain.h>
 
 #include <iostream>
 
@@ -68,23 +68,37 @@ void createSwapChain(VkDevice& device, VkPhysicalDevice& physicalDevice,
 VkSurfaceFormatKHR chooseSwapSurfaceFormat
  (const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
+   VkSurfaceFormatKHR result;
+
+   // If Vulkan returned an unknown format, then just force what we want.
+   if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
+       result.format = VK_FORMAT_B8G8R8A8_UNORM;
+       result.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+       return result;
+   }
+
+   // Favor 32 bit rgba and srgb nonlinear colorspace
    for (const auto& availableFormat : availableFormats) {
        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
            return availableFormat;
        }
    }
 
+   // If all else fails, just return what's available
    return availableFormats[0];
 }
 
 VkPresentModeKHR chooseSwapPresentMode
- (const std::vector<VkPresentModeKHR>& availablePresentModes) {
+ (const std::vector<VkPresentModeKHR>& availablePresentModes)
+{
+  // Favor looking for mailbox mode.
   for (const auto& availablePresentMode : availablePresentModes) {
       if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
           return availablePresentMode;
       }
   }
 
+  // If we couldn't find mailbox, then default to FIFO which is always available.
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -92,7 +106,6 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
                             GLFWwindow *window,
                             const uint32_t screenWidth, const uint32_t screenHeight)
 {
-    
   if (capabilities.currentExtent.width != UINT32_MAX)
   {
       return capabilities.currentExtent;

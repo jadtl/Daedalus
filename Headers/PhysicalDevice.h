@@ -13,7 +13,7 @@ const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-void pickPhysicalDevice(VkInstance instance,
+void selectPhysicalDevice(VkInstance instance,
                         VkPhysicalDevice& device,
                         VkSurfaceKHR& surface);
 

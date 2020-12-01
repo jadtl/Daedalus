@@ -1,4 +1,4 @@
-#include "../Headers/GraphicsPipeline.h"
+#include <GraphicsPipeline.h>
 
 namespace ddls
 {

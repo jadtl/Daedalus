@@ -1,7 +1,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
+#include <tiny_obj_loader.h>
 
-#include "../Headers/ModelLoader.h"
+#include <ModelLoader.h>
 
 #include <unordered_map>
 

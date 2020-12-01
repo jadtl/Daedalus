@@ -1,4 +1,4 @@
-#include "../Headers/SyncObjects.h"
+#include <SyncObjects.h>
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
