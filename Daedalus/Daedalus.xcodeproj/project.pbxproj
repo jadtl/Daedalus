@@ -1,0 +1,522 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
+		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
+		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
+		05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2A25C8381F00529B60 /* Main.storyboard */; };
+		05C68D2F25C8381F00529B60 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2E25C8381F00529B60 /* main.m */; };
+		05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D3F25C8384D00529B60 /* AppDelegate.m */; };
+		05C68D4325C8384D00529B60 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4225C8384D00529B60 /* SceneDelegate.m */; };
+		05C68D4625C8384D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4525C8384D00529B60 /* ViewController.mm */; };
+		05C68D4925C8384D00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4725C8384D00529B60 /* Main.storyboard */; };
+		05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4A25C8384E00529B60 /* Assets.xcassets */; };
+		05C68D4E25C8384E00529B60 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4C25C8384E00529B60 /* LaunchScreen.storyboard */; };
+		05C68D5125C8384E00529B60 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* main.m */; };
+		05C68D5E25C8389400529B60 /* daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* daedalus.cpp */; };
+		05C68D5F25C8389400529B60 /* daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* daedalus.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C68D2225C8381D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		05C68D2325C8381D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		05C68D2525C8381D00529B60 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		05C68D2625C8381D00529B60 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		05C68D2825C8381F00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05C68D2B25C8381F00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		05C68D2D25C8381F00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05C68D2E25C8381F00529B60 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		05C68D3025C8381F00529B60 /* Daedalus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Daedalus.entitlements; sourceTree = "<group>"; };
+		05C68D3C25C8384D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C68D3E25C8384D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		05C68D3F25C8384D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		05C68D4125C8384D00529B60 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		05C68D4225C8384D00529B60 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		05C68D4425C8384D00529B60 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		05C68D4525C8384D00529B60 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		05C68D4825C8384D00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		05C68D4A25C8384E00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05C68D4D25C8384E00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		05C68D4F25C8384E00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05C68D5025C8384E00529B60 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		05C68D5D25C8389400529B60 /* daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = daedalus.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05C68D1C25C8381D00529B60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3925C8384D00529B60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05C68D1625C8381C00529B60 = {
+			isa = PBXGroup;
+			children = (
+				05C68D3025C8381F00529B60 /* Daedalus.entitlements */,
+				05C68D2125C8381D00529B60 /* Daedalus */,
+				05C68D3725C8382F00529B60 /* macOS */,
+				05C68D3D25C8384D00529B60 /* iOS */,
+				05C68D2025C8381D00529B60 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		05C68D2025C8381D00529B60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D1F25C8381D00529B60 /* Daedalus.app */,
+				05C68D3C25C8384D00529B60 /* Daedalus.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05C68D2125C8381D00529B60 /* Daedalus */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D5D25C8389400529B60 /* daedalus.cpp */,
+			);
+			path = Daedalus;
+			sourceTree = "<group>";
+		};
+		05C68D3725C8382F00529B60 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D2225C8381D00529B60 /* AppDelegate.h */,
+				05C68D2325C8381D00529B60 /* AppDelegate.m */,
+				05C68D2525C8381D00529B60 /* ViewController.h */,
+				05C68D2625C8381D00529B60 /* ViewController.mm */,
+				05C68D2D25C8381F00529B60 /* Info.plist */,
+				05C68D2E25C8381F00529B60 /* main.m */,
+				05C68D5A25C8386000529B60 /* Resources */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		05C68D3D25C8384D00529B60 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D3E25C8384D00529B60 /* AppDelegate.h */,
+				05C68D3F25C8384D00529B60 /* AppDelegate.m */,
+				05C68D4125C8384D00529B60 /* SceneDelegate.h */,
+				05C68D4225C8384D00529B60 /* SceneDelegate.m */,
+				05C68D4425C8384D00529B60 /* ViewController.h */,
+				05C68D4525C8384D00529B60 /* ViewController.mm */,
+				05C68D4F25C8384E00529B60 /* Info.plist */,
+				05C68D5025C8384E00529B60 /* main.m */,
+				05C68D5925C8385A00529B60 /* Resources */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		05C68D5925C8385A00529B60 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D4725C8384D00529B60 /* Main.storyboard */,
+				05C68D4C25C8384E00529B60 /* LaunchScreen.storyboard */,
+				05C68D4A25C8384E00529B60 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		05C68D5A25C8386000529B60 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D2A25C8381F00529B60 /* Main.storyboard */,
+				05C68D2825C8381F00529B60 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		05C68D1E25C8381D00529B60 /* Daedalus (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */;
+			buildPhases = (
+				05C68D1B25C8381D00529B60 /* Sources */,
+				05C68D1C25C8381D00529B60 /* Frameworks */,
+				05C68D1D25C8381D00529B60 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Daedalus (macOS)";
+			productName = Daedalus;
+			productReference = 05C68D1F25C8381D00529B60 /* Daedalus.app */;
+			productType = "com.apple.product-type.application";
+		};
+		05C68D3B25C8384D00529B60 /* Daedalus (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05C68D5225C8384E00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (iOS)" */;
+			buildPhases = (
+				05C68D3825C8384D00529B60 /* Sources */,
+				05C68D3925C8384D00529B60 /* Frameworks */,
+				05C68D3A25C8384D00529B60 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Daedalus (iOS)";
+			productName = "Daedalus-iOS";
+			productReference = 05C68D3C25C8384D00529B60 /* Daedalus.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		05C68D1725C8381C00529B60 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1240;
+				TargetAttributes = {
+					05C68D1E25C8381D00529B60 = {
+						CreatedOnToolsVersion = 12.4;
+					};
+					05C68D3B25C8384D00529B60 = {
+						CreatedOnToolsVersion = 12.4;
+					};
+				};
+			};
+			buildConfigurationList = 05C68D1A25C8381C00529B60 /* Build configuration list for PBXProject "Daedalus" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 05C68D1625C8381C00529B60;
+			productRefGroup = 05C68D2025C8381D00529B60 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				05C68D1E25C8381D00529B60 /* Daedalus (macOS) */,
+				05C68D3B25C8384D00529B60 /* Daedalus (iOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05C68D1D25C8381D00529B60 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
+				05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3A25C8384D00529B60 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D4E25C8384E00529B60 /* LaunchScreen.storyboard in Resources */,
+				05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */,
+				05C68D4925C8384D00529B60 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05C68D1B25C8381D00529B60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D5E25C8389400529B60 /* daedalus.cpp in Sources */,
+				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
+				05C68D2F25C8381F00529B60 /* main.m in Sources */,
+				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3825C8384D00529B60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
+				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
+				05C68D5125C8384E00529B60 /* main.m in Sources */,
+				05C68D5F25C8389400529B60 /* daedalus.cpp in Sources */,
+				05C68D4325C8384D00529B60 /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		05C68D2A25C8381F00529B60 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C68D2B25C8381F00529B60 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		05C68D4725C8384D00529B60 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C68D4825C8384D00529B60 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		05C68D4C25C8384E00529B60 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C68D4D25C8384E00529B60 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		05C68D3125C8381F00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		05C68D3225C8381F00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		05C68D3425C8381F00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
+				PRODUCT_NAME = Daedalus;
+			};
+			name = Debug;
+		};
+		05C68D3525C8381F00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
+				PRODUCT_NAME = Daedalus;
+			};
+			name = Release;
+		};
+		05C68D5325C8384E00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.DiligentNetrunner.Daedalus-iOS";
+				PRODUCT_NAME = Daedalus;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		05C68D5425C8384E00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.DiligentNetrunner.Daedalus-iOS";
+				PRODUCT_NAME = Daedalus;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05C68D1A25C8381C00529B60 /* Build configuration list for PBXProject "Daedalus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D3125C8381F00529B60 /* Debug */,
+				05C68D3225C8381F00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D3425C8381F00529B60 /* Debug */,
+				05C68D3525C8381F00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05C68D5225C8384E00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D5325C8384E00529B60 /* Debug */,
+				05C68D5425C8384E00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 05C68D1725C8381C00529B60 /* Project object */;
+}
