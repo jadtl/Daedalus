@@ -3,27 +3,51 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05B8257A25C9646200B4AEA3 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B8257825C9646200B4AEA3 /* Scene.cpp */; };
+		05B8257B25C9646200B4AEA3 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B8257825C9646200B4AEA3 /* Scene.cpp */; };
+		05B8258025C964C800B4AEA3 /* Meshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B8257E25C964C800B4AEA3 /* Meshes.cpp */; };
+		05B8258125C964C800B4AEA3 /* Meshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B8257E25C964C800B4AEA3 /* Meshes.cpp */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
 		05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2A25C8381F00529B60 /* Main.storyboard */; };
-		05C68D2F25C8381F00529B60 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2E25C8381F00529B60 /* main.m */; };
+		05C68D2F25C8381F00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2E25C8381F00529B60 /* Main.m */; };
 		05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D3F25C8384D00529B60 /* AppDelegate.m */; };
 		05C68D4325C8384D00529B60 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4225C8384D00529B60 /* SceneDelegate.m */; };
 		05C68D4625C8384D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4525C8384D00529B60 /* ViewController.mm */; };
 		05C68D4925C8384D00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4725C8384D00529B60 /* Main.storyboard */; };
 		05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4A25C8384E00529B60 /* Assets.xcassets */; };
 		05C68D4E25C8384E00529B60 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4C25C8384E00529B60 /* LaunchScreen.storyboard */; };
-		05C68D5125C8384E00529B60 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* main.m */; };
-		05C68D5E25C8389400529B60 /* daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* daedalus.cpp */; };
-		05C68D5F25C8389400529B60 /* daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* daedalus.cpp */; };
+		05C68D5125C8384E00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* Main.m */; };
+		05C68D5E25C8389400529B60 /* Daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* Daedalus.cpp */; };
+		05C68D5F25C8389400529B60 /* Daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5D25C8389400529B60 /* Daedalus.cpp */; };
+		05C68D8225C84BAD00529B60 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D8125C84BAD00529B60 /* Main.cpp */; };
+		05C68D8325C84BAD00529B60 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D8125C84BAD00529B60 /* Main.cpp */; };
+		05C68D8825C852FF00529B60 /* Shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D8625C852FF00529B60 /* Shell.cpp */; };
+		05C68D8925C852FF00529B60 /* Shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D8625C852FF00529B60 /* Shell.cpp */; };
+		05C68D8F25C853D700529B60 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05C68D8E25C853D700529B60 /* MoltenVK.xcframework */; };
+		05C68D9225C853E300529B60 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05C68D8E25C853D700529B60 /* MoltenVK.xcframework */; };
+		05C9D0C925C8765A0039E8ED /* ShellDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0C725C8765A0039E8ED /* ShellDarwin.cpp */; };
+		05C9D0CA25C8765A0039E8ED /* ShellDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0C725C8765A0039E8ED /* ShellDarwin.cpp */; };
+		05C9D0D325C876730039E8ED /* ShellWin32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0D125C876730039E8ED /* ShellWin32.cpp */; };
+		05C9D0D425C876730039E8ED /* ShellWin32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0D125C876730039E8ED /* ShellWin32.cpp */; };
+		05C9D0D925C8770F0039E8ED /* ShellXCB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0D725C8770F0039E8ED /* ShellXCB.cpp */; };
+		05C9D0DA25C8770F0039E8ED /* ShellXCB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0D725C8770F0039E8ED /* ShellXCB.cpp */; };
+		05C9D0DF25C8771E0039E8ED /* ShellWayland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0DD25C8771E0039E8ED /* ShellWayland.cpp */; };
+		05C9D0E025C8771E0039E8ED /* ShellWayland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0DD25C8771E0039E8ED /* ShellWayland.cpp */; };
+		05C9D0E525C877290039E8ED /* ShellAndroid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0E325C877290039E8ED /* ShellAndroid.cpp */; };
+		05C9D0E625C877290039E8ED /* ShellAndroid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05C9D0E325C877290039E8ED /* ShellAndroid.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		05B8257825C9646200B4AEA3 /* Scene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
+		05B8257925C9646200B4AEA3 /* Scene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		05B8257E25C964C800B4AEA3 /* Meshes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Meshes.cpp; sourceTree = "<group>"; };
+		05B8257F25C964C800B4AEA3 /* Meshes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Meshes.h; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05C68D2225C8381D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		05C68D2325C8381D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -32,8 +56,7 @@
 		05C68D2825C8381F00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		05C68D2B25C8381F00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		05C68D2D25C8381F00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		05C68D2E25C8381F00529B60 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		05C68D3025C8381F00529B60 /* Daedalus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Daedalus.entitlements; sourceTree = "<group>"; };
+		05C68D2E25C8381F00529B60 /* Main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
 		05C68D3C25C8384D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05C68D3E25C8384D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		05C68D3F25C8384D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -45,8 +68,24 @@
 		05C68D4A25C8384E00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		05C68D4D25C8384E00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		05C68D4F25C8384E00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		05C68D5025C8384E00529B60 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		05C68D5D25C8389400529B60 /* daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = daedalus.cpp; sourceTree = "<group>"; };
+		05C68D5025C8384E00529B60 /* Main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		05C68D5D25C8389400529B60 /* Daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Daedalus.cpp; sourceTree = "<group>"; };
+		05C68D7425C8426100529B60 /* Engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
+		05C68D8125C84BAD00529B60 /* Main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		05C68D8625C852FF00529B60 /* Shell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shell.cpp; sourceTree = "<group>"; };
+		05C68D8725C852FF00529B60 /* Shell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shell.h; sourceTree = "<group>"; };
+		05C68D8C25C8537C00529B60 /* Daedalus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Daedalus.h; sourceTree = "<group>"; };
+		05C68D8E25C853D700529B60 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/MoltenVK.xcframework; sourceTree = "<group>"; };
+		05C9D0C725C8765A0039E8ED /* ShellDarwin.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShellDarwin.cpp; sourceTree = "<group>"; };
+		05C9D0C825C8765A0039E8ED /* ShellDarwin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShellDarwin.h; sourceTree = "<group>"; };
+		05C9D0D125C876730039E8ED /* ShellWin32.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShellWin32.cpp; sourceTree = "<group>"; };
+		05C9D0D225C876730039E8ED /* ShellWin32.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShellWin32.h; sourceTree = "<group>"; };
+		05C9D0D725C8770F0039E8ED /* ShellXCB.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShellXCB.cpp; sourceTree = "<group>"; };
+		05C9D0D825C8770F0039E8ED /* ShellXCB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShellXCB.h; sourceTree = "<group>"; };
+		05C9D0DD25C8771E0039E8ED /* ShellWayland.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShellWayland.cpp; sourceTree = "<group>"; };
+		05C9D0DE25C8771E0039E8ED /* ShellWayland.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShellWayland.h; sourceTree = "<group>"; };
+		05C9D0E325C877290039E8ED /* ShellAndroid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShellAndroid.cpp; sourceTree = "<group>"; };
+		05C9D0E425C877290039E8ED /* ShellAndroid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShellAndroid.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05C68D8F25C853D700529B60 /* MoltenVK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +101,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05C68D9225C853E300529B60 /* MoltenVK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,11 +111,13 @@
 		05C68D1625C8381C00529B60 = {
 			isa = PBXGroup;
 			children = (
-				05C68D3025C8381F00529B60 /* Daedalus.entitlements */,
 				05C68D2125C8381D00529B60 /* Daedalus */,
-				05C68D3725C8382F00529B60 /* macOS */,
-				05C68D3D25C8384D00529B60 /* iOS */,
+				05C9D0EB25C879530039E8ED /* Darwin */,
+				05C9D0EC25C879A20039E8ED /* Windows */,
+				05C9D0ED25C879BE0039E8ED /* Linux */,
+				05C9D0EE25C879DA0039E8ED /* Android */,
 				05C68D2025C8381D00529B60 /* Products */,
+				05C68D8D25C853D700529B60 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,7 +133,16 @@
 		05C68D2125C8381D00529B60 /* Daedalus */ = {
 			isa = PBXGroup;
 			children = (
-				05C68D5D25C8389400529B60 /* daedalus.cpp */,
+				05C68D5D25C8389400529B60 /* Daedalus.cpp */,
+				05C68D8C25C8537C00529B60 /* Daedalus.h */,
+				05C68D7425C8426100529B60 /* Engine.h */,
+				05C68D8625C852FF00529B60 /* Shell.cpp */,
+				05C68D8725C852FF00529B60 /* Shell.h */,
+				05C68D8125C84BAD00529B60 /* Main.cpp */,
+				05B8257825C9646200B4AEA3 /* Scene.cpp */,
+				05B8257925C9646200B4AEA3 /* Scene.h */,
+				05B8257E25C964C800B4AEA3 /* Meshes.cpp */,
+				05B8257F25C964C800B4AEA3 /* Meshes.h */,
 			);
 			path = Daedalus;
 			sourceTree = "<group>";
@@ -103,7 +155,7 @@
 				05C68D2525C8381D00529B60 /* ViewController.h */,
 				05C68D2625C8381D00529B60 /* ViewController.mm */,
 				05C68D2D25C8381F00529B60 /* Info.plist */,
-				05C68D2E25C8381F00529B60 /* main.m */,
+				05C68D2E25C8381F00529B60 /* Main.m */,
 				05C68D5A25C8386000529B60 /* Resources */,
 			);
 			path = macOS;
@@ -119,7 +171,7 @@
 				05C68D4425C8384D00529B60 /* ViewController.h */,
 				05C68D4525C8384D00529B60 /* ViewController.mm */,
 				05C68D4F25C8384E00529B60 /* Info.plist */,
-				05C68D5025C8384E00529B60 /* main.m */,
+				05C68D5025C8384E00529B60 /* Main.m */,
 				05C68D5925C8385A00529B60 /* Resources */,
 			);
 			path = iOS;
@@ -142,6 +194,54 @@
 				05C68D2825C8381F00529B60 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		05C68D8D25C853D700529B60 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D8E25C853D700529B60 /* MoltenVK.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05C9D0EB25C879530039E8ED /* Darwin */ = {
+			isa = PBXGroup;
+			children = (
+				05C9D0C725C8765A0039E8ED /* ShellDarwin.cpp */,
+				05C9D0C825C8765A0039E8ED /* ShellDarwin.h */,
+				05C68D3725C8382F00529B60 /* macOS */,
+				05C68D3D25C8384D00529B60 /* iOS */,
+			);
+			path = Darwin;
+			sourceTree = "<group>";
+		};
+		05C9D0EC25C879A20039E8ED /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				05C9D0D125C876730039E8ED /* ShellWin32.cpp */,
+				05C9D0D225C876730039E8ED /* ShellWin32.h */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		05C9D0ED25C879BE0039E8ED /* Linux */ = {
+			isa = PBXGroup;
+			children = (
+				05C9D0D725C8770F0039E8ED /* ShellXCB.cpp */,
+				05C9D0D825C8770F0039E8ED /* ShellXCB.h */,
+				05C9D0DD25C8771E0039E8ED /* ShellWayland.cpp */,
+				05C9D0DE25C8771E0039E8ED /* ShellWayland.h */,
+			);
+			path = Linux;
+			sourceTree = "<group>";
+		};
+		05C9D0EE25C879DA0039E8ED /* Android */ = {
+			isa = PBXGroup;
+			children = (
+				05C9D0E325C877290039E8ED /* ShellAndroid.cpp */,
+				05C9D0E425C877290039E8ED /* ShellAndroid.h */,
+			);
+			path = Android;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,10 +343,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05C68D5E25C8389400529B60 /* daedalus.cpp in Sources */,
+				05B8257A25C9646200B4AEA3 /* Scene.cpp in Sources */,
+				05C9D0D925C8770F0039E8ED /* ShellXCB.cpp in Sources */,
+				05C9D0E525C877290039E8ED /* ShellAndroid.cpp in Sources */,
+				05C68D5E25C8389400529B60 /* Daedalus.cpp in Sources */,
+				05C9D0C925C8765A0039E8ED /* ShellDarwin.cpp in Sources */,
+				05C9D0D325C876730039E8ED /* ShellWin32.cpp in Sources */,
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
-				05C68D2F25C8381F00529B60 /* main.m in Sources */,
+				05B8258025C964C800B4AEA3 /* Meshes.cpp in Sources */,
+				05C68D8825C852FF00529B60 /* Shell.cpp in Sources */,
+				05C68D2F25C8381F00529B60 /* Main.m in Sources */,
 				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
+				05C68D8225C84BAD00529B60 /* Main.cpp in Sources */,
+				05C9D0DF25C8771E0039E8ED /* ShellWayland.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,10 +363,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05C9D0DA25C8770F0039E8ED /* ShellXCB.cpp in Sources */,
+				05B8257B25C9646200B4AEA3 /* Scene.cpp in Sources */,
+				05C68D8325C84BAD00529B60 /* Main.cpp in Sources */,
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
+				05B8258125C964C800B4AEA3 /* Meshes.cpp in Sources */,
+				05C9D0D425C876730039E8ED /* ShellWin32.cpp in Sources */,
 				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
-				05C68D5125C8384E00529B60 /* main.m in Sources */,
-				05C68D5F25C8389400529B60 /* daedalus.cpp in Sources */,
+				05C68D8925C852FF00529B60 /* Shell.cpp in Sources */,
+				05C9D0E025C8771E0039E8ED /* ShellWayland.cpp in Sources */,
+				05C68D5125C8384E00529B60 /* Main.m in Sources */,
+				05C9D0CA25C8765A0039E8ED /* ShellDarwin.cpp in Sources */,
+				05C68D5F25C8389400529B60 /* Daedalus.cpp in Sources */,
+				05C9D0E625C877290039E8ED /* ShellAndroid.cpp in Sources */,
 				05C68D4325C8384D00529B60 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -409,18 +527,21 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = macOS/Info.plist;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = Darwin/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
 				PRODUCT_NAME = Daedalus;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 			};
 			name = Debug;
 		};
@@ -430,18 +551,21 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = macOS/Info.plist;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = Darwin/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
 				PRODUCT_NAME = Daedalus;
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 			};
 			name = Release;
 		};
@@ -450,18 +574,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
-				INFOPLIST_FILE = iOS/Info.plist;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = Darwin/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.DiligentNetrunner.Daedalus-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
 				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 			};
 			name = Debug;
 		};
@@ -470,18 +598,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
-				INFOPLIST_FILE = iOS/Info.plist;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = Darwin/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.DiligentNetrunner.Daedalus-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.DiligentNetrunner.Daedalus;
 				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
