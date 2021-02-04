@@ -13,7 +13,7 @@
 #include "Scene.h"
 #include "Engine.h"
 
-class Daedalus : Engine {
+class Daedalus : public Engine {
     
 public:
     
@@ -41,7 +41,7 @@ private:
 
         void start();
         void stop();
-        void update_simulation();
+        void update_scene();
         void draw_objects(VkFramebuffer fb);
         void wait_idle();
 
@@ -152,7 +152,7 @@ private:
     VkRenderPassBeginInfo render_pass_begin_info_;
 
     VkCommandBufferBeginInfo primary_command_begin_info_;
-    VkPipelineStageFlags primary_cmd_submit_wait_stages_;
+    VkPipelineStageFlags primary_command_submit_wait_stages_;
     VkSubmitInfo primary_command_submit_info_;
 
     // called by attach_swapchain
@@ -168,7 +168,7 @@ private:
     std::vector<VkFramebuffer> framebuffers_;
 
     // called by workers
-    void update_simulation(const Worker &worker);
+    void update_scene(const Worker &worker);
     void draw_object(const Scene::Object &object, FrameData &data, VkCommandBuffer command) const;
     void draw_objects(Worker &worker);
     

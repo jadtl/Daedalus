@@ -3,6 +3,7 @@
 #include <queue>
 #include <vector>
 #include <stdexcept>
+
 #include <vulkan/vulkan.hpp>
 
 #include "Engine.h"
@@ -17,7 +18,7 @@ public:
     Shell &operator = (const Shell &shell) = delete;
     virtual ~Shell() {}
     
-    struct BackBuffer {
+    struct SyncObjects {
         
         uint32_t image_index;
         
@@ -41,7 +42,7 @@ public:
         VkQueue engine_queue;
         VkQueue present_queue;
         
-        std::queue<BackBuffer> back_buffers;
+        std::queue<SyncObjects> back_buffers;
         
         VkSurfaceKHR surface;
         VkSurfaceFormatKHR format;
@@ -49,7 +50,7 @@ public:
         VkSwapchainKHR swapchain;
         VkExtent2D extent;
         
-        BackBuffer acquired_back_buffer;
+        SyncObjects acquired_sync_objects;
         
     };
     
@@ -83,8 +84,8 @@ protected:
     
     void add_engine_time(float time);
     
-    void acquire_back_buffer();
-    void present_back_buffer();
+    void acquire_sync_objects();
+    void present_sync_objects();
     
     Engine &engine_;
     const Engine::Settings &settings_;
