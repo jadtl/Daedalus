@@ -18,11 +18,11 @@ Daedalus::Daedalus(const std::vector<std::string> &args)
         render_pass_begin_info_(), primary_command_begin_info_(),
         primary_command_submit_info_() {
     
-    for (auto it = args.begin(); it != args.end(); ++it) {
+    for (std::string arg : args) {
         
-        if (*it == "-s")
+        if (arg == "-s")
             multithread_ = false;
-        else if (*it == "-p")
+        else if (arg == "-p")
             use_push_constants_ = true;
         
     }

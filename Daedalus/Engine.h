@@ -5,6 +5,8 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include <iostream>
+
 class Shell;
 
 class Engine {
@@ -75,6 +77,7 @@ protected:
         settings_.no_render = false;
         settings_.no_present = false;
         
+        parse_args(args);
     }
     
     Settings settings_;
@@ -84,17 +87,40 @@ private:
     
     void parse_args(const std::vector<std::string> &args) {
         
-        for (auto iterator = args.begin(); iterator != args.end(); ++iterator) {
+        for (std::string arg : args) {
             
-            if (*iterator == "-w") {
-                ++iterator;
-                settings_.initial_extent.width = std::stoi(*iterator);
-            } else if (*iterator == "-h") {
-                ++iterator;
-                settings_.initial_extent.height = std::stoi(*iterator);
-            } else if (*iterator == "-v") {
-                ++iterator;
-                settings_.validate = true;
+            if (arg == "-w") {
+                
+                settings_.initial_extent.width = std::stoi(arg);
+                
+            } else if (arg == "-h") {
+                
+                settings_.initial_extent.height = std::stoi(arg);
+                
+            } else if (arg == "-v") {
+                
+                #if __APPLE__
+                    #include <TargetConditionals.h>
+                    #if !(TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
+                        settings_.validate = true;
+                    #endif
+                #else
+                    settings_.validate = true;
+                #endif
+                
+            } else if (arg == "-vv") {
+                
+                #if __APPLE__
+                    #include <TargetConditionals.h>
+                    #if !(TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
+                        settings_.validate = true;
+                        settings_.validate_verbose = true;
+                    #endif
+                #else
+                    settings_.validate = true;
+                    settings_.validate_verbose = true;
+                #endif
+                
             }
             
         }
