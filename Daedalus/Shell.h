@@ -32,7 +32,7 @@ public:
     struct Context {
         
         VkInstance instance;
-        VkDebugReportCallbackEXT debug_report;
+        VkDebugUtilsMessengerEXT debug_messenger;
         
         VkPhysicalDevice physical_device;
         uint32_t engine_queue_family;
@@ -56,16 +56,7 @@ public:
     
     const Context &context() const { return context_; }
     
-    enum LogPriority {
-        
-        LOG_DEBUG,
-        LOG_INFO,
-        LOG_WARNING,
-        LOG_ERROR
-        
-    };
-    
-    virtual void log(LogPriority priority, const char *message) const;
+    virtual void log(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, const char *message) const;
     
     virtual void run() = 0;
     virtual void quit() = 0;
@@ -97,32 +88,39 @@ protected:
     
 private:
     
-    bool debug_report_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT object_type, uint64_t object, size_t location, int32_t message_code, const char *layer_prefix, const char *message);
-    
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT object_type, uint64_t object, size_t location, int32_t message_code, const char *layer_prefix, const char *message, void *user_data) {
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                                                         VkDebugUtilsMessageTypeFlagsEXT message_type,
+                                                         const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+                                                         void* user_data) {
         
-        Shell *shell = reinterpret_cast<Shell *>(user_data);
-        return shell->debug_report_callback(flags, object_type, object, location, message_code, layer_prefix, message);
+        message_severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ?
+        std::cerr : std::cout << callback_data->pMessage << "\n";
         
+        return VK_FALSE;
     }
+    
+    VkResult create_debug_utils_messenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,                                   const VkAllocationCallbacks* pAllocator,
+                                          VkDebugUtilsMessengerEXT* pDebugMessenger);
+    void destroy_debug_utils_messenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+                                       const VkAllocationCallbacks* pAllocator);
     
     void assert_all_instance_layers() const;
     void assert_all_instance_extensions() const;
-
-    bool has_all_device_layers(VkPhysicalDevice physical_device) const;
-    bool has_all_device_extensions(VkPhysicalDevice physical_device) const;
-
-    // called by init_vk
+    
+    // called by initialize_vulkan
     virtual PFN_vkGetInstanceProcAddr load_vulkan() = 0;
     virtual bool can_present(VkPhysicalDevice physical_device, uint32_t queue_family) = 0;
-    void init_instance();
-    void init_debug_report();
-    void init_physical_device();
+    void populate_debug_messenger_info(VkDebugUtilsMessengerCreateInfoEXT& debug_messengerx_info);
+    void initialize_instance();
+    void initialize_debug_messenger();
+    void initialize_physical_device();
+    bool is_physical_device_suitable(VkPhysicalDevice physical_device);
+    uint32_t findQueueFamilies(VkPhysicalDevice physical_device);
 
     // called by create_context
     void create_device();
-    void create_back_buffers();
-    void destroy_back_buffers();
+    void create_sync_objects();
+    void destroy_sync_objects();
     virtual VkSurfaceKHR create_surface(VkInstance instance) = 0;
     void create_swapchain();
     void destroy_swapchain();
