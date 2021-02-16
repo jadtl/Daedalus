@@ -20,29 +20,29 @@ public:
     struct Settings {
         
         std::string name;
-        VkExtent2D initial_extent;
-        int queue_count;
-        int back_buffer_count;
-        int ticks_per_second;
+        VkExtent2D initialExtent;
+        int queueCount;
+        int backBufferCount;
+        int ticksPerSecond;
         bool vsync;
         bool animate;
 
         bool validate;
-        bool validate_verbose;
+        bool validateVerbose;
 
-        bool no_tick;
-        bool no_render;
-        bool no_present;
+        bool noTick;
+        bool noRender;
+        bool noPresent;
         
     };
     
     const Settings &settings() const { return settings_; }
 
-    virtual void attach_shell(Shell &shell) { shell_ = &shell; }
-    virtual void detach_shell() { shell_ = nullptr; }
+    virtual void attachShell(Shell &shell) { shell_ = &shell; }
+    virtual void detachShell() { shell_ = nullptr; }
 
-    virtual void attach_swapchain() {}
-    virtual void detach_swapchain() {}
+    virtual void attachSwapchain() {}
+    virtual void detachSwapchain() {}
     
     enum Key {
         KEY_UNKNOWN,
@@ -53,29 +53,29 @@ public:
         KEY_F
     };
     
-    virtual void on_key(Key key) {}
-    virtual void on_tick() {}
-    virtual void on_frame() {}
+    virtual void onKey(Key key) {}
+    virtual void onTick() {}
+    virtual void onFrame() {}
     
 protected:
     
     Engine(const std::string &name, const std::vector<std::string> &args) : settings_(), shell_(nullptr) {
         
         settings_.name = name;
-        settings_.initial_extent.width = 1280;
-        settings_.initial_extent.height = 1024;
-        settings_.queue_count = 1;
-        settings_.back_buffer_count = 1;
-        settings_.ticks_per_second = 30;
+        settings_.initialExtent.width = 1280;
+        settings_.initialExtent.height = 1024;
+        settings_.queueCount = 1;
+        settings_.backBufferCount = 1;
+        settings_.ticksPerSecond = 30;
         settings_.vsync = true;
         settings_.animate = true;
 
         settings_.validate = false;
-        settings_.validate_verbose = false;
+        settings_.validateVerbose = false;
 
-        settings_.no_tick = false;
-        settings_.no_render = false;
-        settings_.no_present = false;
+        settings_.noTick = false;
+        settings_.noRender = false;
+        settings_.noPresent = false;
         
         parse_args(args);
     }
@@ -91,11 +91,11 @@ private:
             
             if (arg == "-w") {
                 
-                settings_.initial_extent.width = std::stoi(arg);
+                settings_.initialExtent.width = std::stoi(arg);
                 
             } else if (arg == "-h") {
                 
-                settings_.initial_extent.height = std::stoi(arg);
+                settings_.initialExtent.height = std::stoi(arg);
                 
             } else if (arg == "-v") {
                 
@@ -114,7 +114,7 @@ private:
                     #include <TargetConditionals.h>
                     #if !(TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
                         settings_.validate = true;
-                        settings_.validate_verbose = true;
+                        settings_.validateVerbose = true;
                     #endif
                 #else
                     settings_.validate = true;

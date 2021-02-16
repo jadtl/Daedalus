@@ -15,18 +15,18 @@ class Scene {
     
 public:
     
-    Scene(int object_count);
+    Scene(int objectCount);
     
     struct Object {
         
         Meshes::Type mesh;
-        glm::vec3 light_position;
-        glm::vec3 light_color;
+        glm::vec3 lightPosition;
+        glm::vec3 lightColor;
         
         //Animation animation;
         //Path path;
         
-        uint32_t frame_data_offset;
+        uint32_t frameDataOffset;
         
         glm::mat4 model;
         float alpha;
@@ -38,12 +38,12 @@ public:
     // for simulations
     //unsigned int random_seed() { return random_device_(); }
     
-    void set_frame_date_size(uint32_t size);
+    void setFrameDataSize(uint32_t size);
     void update(float time, int begin, int end);
     
 private:
     
-    std::random_device random_device_;
+    std::random_device randomDevice_;
     std::vector<Object> objects_;
     
 };

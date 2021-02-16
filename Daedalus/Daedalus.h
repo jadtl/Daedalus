@@ -20,16 +20,16 @@ public:
     Daedalus(const std::vector<std::string> &args);
     ~Daedalus();
     
-    void attach_shell(Shell &shell);
-    void detach_shell();
+    void attachShell(Shell &shell);
+    void detachShell();
     
-    void attach_swapchain();
-    void detach_swapchain();
+    void attachSwapchain();
+    void detachSwapchain();
     
-    void on_key(Key key);
-    void on_tick();
+    void onKey(Key key);
+    void onTick();
     
-    void on_frame();
+    void onFrame();
     
 private:
     
@@ -37,23 +37,23 @@ private:
         
     public:
         
-        Worker(Daedalus &daedalus, int index, int object_begin, int object_end);
+        Worker(Daedalus &daedalus, int index, int objectBegin, int objectEnd);
 
         void start();
         void stop();
-        void update_scene();
-        void draw_objects(VkFramebuffer fb);
-        void wait_idle();
+        void updateScene();
+        void drawObjects(VkFramebuffer frameBuffer);
+        void waitIdle();
 
         Daedalus &daedalus_;
 
         const int index_;
-        const int object_begin_;
-        const int object_end_;
+        const int objectBegin_;
+        const int objectEnd_;
 
-        const float tick_interval_;
+        const float tickInterval_;
 
-        VkFramebuffer frame_buffer_;
+        VkFramebuffer frameBuffer_;
 
     private:
         
@@ -64,112 +64,112 @@ private:
             DRAW,
         };
 
-        void update_loop();
+        void updateLoop();
 
-        static void thread_loop(Worker *worker) { worker->update_loop(); }
+        static void threadLoop(Worker *worker) { worker -> updateLoop(); }
 
         std::thread thread_;
         std::mutex mutex_;
-        std::condition_variable state_condition_variable_;
+        std::condition_variable stateConditionVariable_;
         State state_;
         
     };
     
     struct Camera {
-        glm::vec3 eye_position;
-        glm::mat4 view_projection;
+        glm::vec3 eyePosition;
+        glm::mat4 viewProjection;
         
-        Camera(float eye) : eye_position(eye) {}
+        Camera(float eye) : eyePosition(eye) {}
     };
     
     struct FrameData {
         VkFence fence;
         
-        VkCommandBuffer primary_command;
-        std::vector<VkCommandBuffer> worker_commands;
+        VkCommandBuffer primaryCommand;
+        std::vector<VkCommandBuffer> workerCommands;
         
         VkBuffer buffer;
         uint8_t *base;
-        VkDescriptorSet descriptor_set;
+        VkDescriptorSet descriptorSet;
     };
     
-    void init_workers();
+    void initWorkers();
     
     bool multithread_;
-    bool use_push_constants_;
+    bool usePushConstants_;
     
     // called mostly by on_key
-    void update_camera();
+    void updateCamera();
     
-    bool scene_paused_;
+    bool scenePaused_;
     Scene scene_;
     Camera camera_;
     
     std::vector<std::unique_ptr<Worker>> workers_;
     
     // called by attach_shell
-    void create_render_pass();
-    void create_shader_modules();
-    void create_descriptor_set_layout();
-    void create_pipeline_layout();
-    void create_pipeline();
+    void createRenderPass();
+    void createShaderModules();
+    void createDescriptorSetLayout();
+    void createPipelineLayout();
+    void createPipeline();
     
-    void create_frame_data(int count);
-    void destroy_frame_data();
-    void create_fences();
-    void create_command_buffers();
-    void create_buffers();
-    void create_buffer_memory();
-    void create_descriptor_sets();
+    void createFrameData(int count);
+    void destroyFrameData();
+    void createFences();
+    void createCommandBuffers();
+    void createBuffers();
+    void createBufferMemory();
+    void createDescriptorSets();
     
-    VkPhysicalDevice physical_device_;
+    VkPhysicalDevice physicalDevice_;
     VkDevice device_;
     VkQueue queue_;
-    uint32_t queue_family_;
+    uint32_t queueFamily_;
     VkFormat format_;
-    VkDeviceSize aligned_object_data_size_;
+    VkDeviceSize alignedObjectDataSize_;
     
-    VkPhysicalDeviceProperties physical_device_properties_;
-    std::vector<VkMemoryPropertyFlags> memory_flags_;
+    VkPhysicalDeviceProperties physicalDeviceProperties_;
+    std::vector<VkMemoryPropertyFlags> memoryFlags_;
     
     const Meshes *meshes_;
     
-    VkRenderPass render_pass_;
-    VkShaderModule vertex_shader_;
-    VkShaderModule fragment_shader_;
-    VkDescriptorSetLayout descriptor_set_layout_;
-    VkPipelineLayout pipeline_layout_;
+    VkRenderPass renderPass_;
+    VkShaderModule vertexShader_;
+    VkShaderModule fragmentShader_;
+    VkDescriptorSetLayout descriptorSetLayout_;
+    VkPipelineLayout pipelineLayout_;
     VkPipeline pipeline_;
 
-    VkCommandPool primary_command_pool_;
-    std::vector<VkCommandPool> worker_command_pools_;
-    VkDescriptorPool descriptor_pool_;
-    VkDeviceMemory frame_data_memory_;
-    std::vector<FrameData> frame_data_;
-    int frame_data_index_;
+    VkCommandPool primaryCommandPool_;
+    std::vector<VkCommandPool> workerCommandPools_;
+    VkDescriptorPool descriptorPool_;
+    VkDeviceMemory frameDataMemory_;
+    std::vector<FrameData> frameData_;
+    int frameDataIndex_;
 
-    VkClearValue render_pass_clear_value_;
-    VkRenderPassBeginInfo render_pass_begin_info_;
+    VkClearValue renderPassClearValue_;
+    VkRenderPassBeginInfo renderPassBeginInfo_;
 
-    VkCommandBufferBeginInfo primary_command_begin_info_;
-    VkPipelineStageFlags primary_command_submit_wait_stages_;
-    VkSubmitInfo primary_command_submit_info_;
+    VkCommandBufferBeginInfo primaryCommandBeginInfo_;
+    VkPipelineStageFlags primaryCommandSubmitWaitStages_;
+    VkSubmitInfo primaryCommandSubmitInfo_;
 
     // called by attach_swapchain
-    void prepare_viewport(const VkExtent2D &extent);
-    void prepare_framebuffers(VkSwapchainKHR swapchain);
+    void prepareViewport(const VkExtent2D &extent);
+    void prepareFramebuffers(VkSwapchainKHR swapchain);
 
     VkExtent2D extent_;
     VkViewport viewport_;
     VkRect2D scissor_;
 
     std::vector<VkImage> images_;
-    std::vector<VkImageView> image_views_;
+    std::vector<VkImageView> imageViews_;
     std::vector<VkFramebuffer> framebuffers_;
 
     // called by workers
-    void update_scene(const Worker &worker);
-    void draw_object(const Scene::Object &object, FrameData &data, VkCommandBuffer command) const;
-    void draw_objects(Worker &worker);
+    void updateScene(const Worker &worker);
+    void drawObject(const Scene::Object &object, FrameData &data, VkCommandBuffer command) const;
+    void drawObjects(Worker &worker);
     
 };

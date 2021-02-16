@@ -28,7 +28,7 @@ public:
     ~ShellDarwin();
     
     void run(void* view);
-    void update_and_draw();
+    void updateAndDraw();
     
     void run() { run(nullptr); }
     void quit() { }
@@ -37,13 +37,13 @@ protected:
     
     void* _caMetalLayer;
     PosixTimer _timer;
-    double _current_time;
-    double _profile_start_time;
-    int _profile_present_count;
+    double _currentTime;
+    double _profileStartTime;
+    int _profilePresentCount;
     
-    PFN_vkGetInstanceProcAddr load_vulkan();
-    bool can_present(VkPhysicalDevice physical_device, uint32_t queue_family);
+    PFN_vkGetInstanceProcAddr loadVulkan();
+    bool canPresent(VkPhysicalDevice physicalDevice, uint32_t queueFamily);
 
-    VkSurfaceKHR create_surface(VkInstance instance);
+    VkSurfaceKHR createSurface(VkInstance instance);
     
 };

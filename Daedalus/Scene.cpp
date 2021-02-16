@@ -6,7 +6,7 @@ Scene::Scene(int object_count) {
     
 }
 
-void Scene::set_frame_date_size(uint32_t size) {
+void Scene::setFrameDataSize(uint32_t size) {
     
     
     

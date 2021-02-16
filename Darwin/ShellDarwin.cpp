@@ -25,38 +25,38 @@ double PosixTimer::get() {
 ShellDarwin::ShellDarwin(Engine& engine) : Shell(engine) {
     
     _timer = PosixTimer();
-    _current_time = _timer.get();
-    _profile_start_time = _current_time;
-    _profile_present_count = 0;
+    _currentTime = _timer.get();
+    _profileStartTime = _currentTime;
+    _profilePresentCount = 0;
 
-    instance_extensions_.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+    instanceExtensions_.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
     
-    initialize_vulkan();
+    initializeVulkan();
     
 }
 
 ShellDarwin::~ShellDarwin() {
     
-    destroy_context();
-    cleanup_vulkan();
+    destroyContext();
+    cleanupVulkan();
     
 }
 
-PFN_vkGetInstanceProcAddr ShellDarwin::load_vulkan()
+PFN_vkGetInstanceProcAddr ShellDarwin::loadVulkan()
 {
     
     return vkGetInstanceProcAddr;
     
 }
 
-bool ShellDarwin::can_present(VkPhysicalDevice physical_device, uint32_t queue_family)
+bool ShellDarwin::canPresent(VkPhysicalDevice physical_device, uint32_t queue_family)
 {
     
     return true;
     
 }
 
-VkSurfaceKHR ShellDarwin::create_surface(VkInstance instance) {
+VkSurfaceKHR ShellDarwin::createSurface(VkInstance instance) {
     
     VkSurfaceKHR surface;
 
@@ -74,30 +74,30 @@ VkSurfaceKHR ShellDarwin::create_surface(VkInstance instance) {
     
 }
 
-void ShellDarwin::update_and_draw() {
+void ShellDarwin::updateAndDraw() {
 
-    acquire_sync_objects();
+    acquireSyncObjects();
 
     double t = _timer.get();
-    add_engine_time(static_cast<float>(t - _current_time));
+    addEngineTime(static_cast<float>(t - _currentTime));
 
-    present_sync_objects();
+    presentSyncObjects();
 
-    _current_time = t;
+    _currentTime = t;
 
-    _profile_present_count++;
+    _profilePresentCount++;
     
-    if (_current_time - _profile_start_time >= 5.0) {
+    if (_currentTime - _profileStartTime >= 5.0) {
         
-        const double fps = _profile_present_count / (_current_time - _profile_start_time);
+        const double fps = _profilePresentCount / (_currentTime - _profileStartTime);
         std::stringstream ss;
-        ss << _profile_present_count << " presents in " <<
-        _current_time - _profile_start_time << " seconds " <<
+        ss << _profilePresentCount << " presents in " <<
+        _currentTime - _profileStartTime << " seconds " <<
         "(FPS: " << fps << ")";
         log(VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT, ss.str().c_str());
 
-        _profile_start_time = _current_time;
-        _profile_present_count = 0;
+        _profileStartTime = _currentTime;
+        _profilePresentCount = 0;
         
     }
     
@@ -106,8 +106,8 @@ void ShellDarwin::update_and_draw() {
 void ShellDarwin::run(void* caMetalLayer) {
     
     _caMetalLayer = caMetalLayer;
-    create_context();
-    resize_swapchain(settings_.initial_extent.width, settings_.initial_extent.height);
+    createContext();
+    resizeSwapchain(settings_.initialExtent.width, settings_.initialExtent.height);
     
 }
 

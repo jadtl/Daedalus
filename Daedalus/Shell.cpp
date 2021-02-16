@@ -9,17 +9,17 @@
 
 #include "Engine.h"
 
-Shell::Shell(Engine &engine) : engine_(engine), settings_(engine.settings()), context_(), engine_tick_(1.0f / settings_.ticks_per_second), engine_time_(engine_tick_) {
+Shell::Shell(Engine &engine) : engine_(engine), settings_(engine.settings()), context_(), engineTick_(1.0f / settings_.ticksPerSecond), engineTime_(engineTick_) {
 
     // require generic WSI extensions
-    instance_extensions_.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    device_extensions_.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    instanceExtensions_.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    deviceExtensions_.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
     // require "standard" validation layers
     if (settings_.validate) {
         
-        instance_layers_.push_back("VK_LAYER_KHRONOS_validation");
-        instance_extensions_.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        instanceLayers_.push_back("VK_LAYER_KHRONOS_validation");
+        instanceExtensions_.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         
     }
     
@@ -32,23 +32,23 @@ void Shell::log(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, const c
     
 }
 
-void Shell::initialize_vulkan() {
+void Shell::initializeVulkan() {
     
-    initialize_instance();
-    initialize_debug_messenger();
-    initialize_physical_device();
+    initializeInstance();
+    initializeDebugMessenger();
+    initializePhysicalDevice();
     
 }
 
-void Shell::cleanup_vulkan() {
+void Shell::cleanupVulkan() {
     
-    if (settings_.validate) destroy_debug_utils_messenger(context_.instance, context_.debug_messenger, nullptr);
+    if (settings_.validate) destroyDebugUtilsMessenger(context_.instance, context_.debugMessenger, nullptr);
     
     vkDestroyInstance(context_.instance, nullptr);
     
 }
 
-VkResult Shell::create_debug_utils_messenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+VkResult Shell::createDebugUtilsMessenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
                                       const VkAllocationCallbacks* pAllocator,
                                       VkDebugUtilsMessengerEXT* pDebugMessenger) {
     
@@ -66,7 +66,7 @@ VkResult Shell::create_debug_utils_messenger(VkInstance instance, const VkDebugU
     
 }
 
-void Shell::destroy_debug_utils_messenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+void Shell::destroyDebugUtilsMessenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
                                    const VkAllocationCallbacks* pAllocator) {
     
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -79,7 +79,7 @@ void Shell::destroy_debug_utils_messenger(VkInstance instance, VkDebugUtilsMesse
     
 }
 
-void Shell::assert_all_instance_layers() const {
+void Shell::assertAllInstanceLayers() const {
     
     uint32_t count = 0;
     vkEnumerateInstanceLayerProperties(&count, nullptr);
@@ -89,7 +89,7 @@ void Shell::assert_all_instance_layers() const {
     std::set<std::string> layer_names;
     for (const auto &layer : layers) layer_names.insert(layer.layerName);
     
-    for (const auto &name : instance_layers_) {
+    for (const auto &name : instanceLayers_) {
         
         if (layer_names.find(name) == layer_names.end()) {
             
@@ -103,7 +103,7 @@ void Shell::assert_all_instance_layers() const {
     
 }
 
-void Shell::assert_all_instance_extensions() const {
+void Shell::assertAllInstanceExtensions() const {
     
     std::vector<VkExtensionProperties> extensions;
     uint32_t count = 0;
@@ -114,7 +114,7 @@ void Shell::assert_all_instance_extensions() const {
     std::set<std::string> extensions_names;
     for (const auto &extension : extensions) extensions_names.insert(extension.extensionName);
     
-    for (auto &layer : instance_layers_) {
+    for (auto &layer : instanceLayers_) {
         
         uint32_t count = 0;
         vkEnumerateInstanceExtensionProperties(layer, &count, nullptr);
@@ -125,7 +125,7 @@ void Shell::assert_all_instance_extensions() const {
         
     }
     
-    for (const auto &name : instance_extensions_) {
+    for (const auto &name : instanceExtensions_) {
         
         if (extensions_names.find(name) == extensions_names.end()) {
             
@@ -139,24 +139,24 @@ void Shell::assert_all_instance_extensions() const {
     
 }
 
-void Shell::populate_debug_messenger_info(VkDebugUtilsMessengerCreateInfoEXT &debug_messenger_info) {
+void Shell::populateDebugMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT &debug_messenger_info) {
     
     debug_messenger_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    if (settings_.validate_verbose) {
+    if (settings_.validateVerbose) {
         debug_messenger_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
     } else {
         debug_messenger_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
     }
     debug_messenger_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debug_messenger_info.pfnUserCallback = debug_callback;
+    debug_messenger_info.pfnUserCallback = debugCallback;
     debug_messenger_info.pUserData = nullptr;
     
 }
 
-void Shell::initialize_instance() {
+void Shell::initializeInstance() {
     
-    assert_all_instance_layers();
-    assert_all_instance_extensions();
+    assertAllInstanceLayers();
+    assertAllInstanceExtensions();
     
     VkApplicationInfo application_info{};
     application_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -169,17 +169,17 @@ void Shell::initialize_instance() {
     VkInstanceCreateInfo instance_info{};
     instance_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instance_info.pApplicationInfo = &application_info;
-    instance_info.enabledLayerCount = static_cast<uint32_t>(instance_layers_.size());
-    instance_info.ppEnabledLayerNames = instance_layers_.data();
+    instance_info.enabledLayerCount = static_cast<uint32_t>(instanceLayers_.size());
+    instance_info.ppEnabledLayerNames = instanceLayers_.data();
     
     VkDebugUtilsMessengerCreateInfoEXT debug_messenger_info{};
     if (settings_.validate) {
-        populate_debug_messenger_info(debug_messenger_info);
+        populateDebugMessengerInfo(debug_messenger_info);
         instance_info.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debug_messenger_info;
     }
     
-    instance_info.enabledExtensionCount = static_cast<uint32_t>(instance_extensions_.size());
-    instance_info.ppEnabledExtensionNames = instance_extensions_.data();
+    instance_info.enabledExtensionCount = static_cast<uint32_t>(instanceExtensions_.size());
+    instance_info.ppEnabledExtensionNames = instanceExtensions_.data();
     
     if (vkCreateInstance(&instance_info, nullptr, &context_.instance) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create instance!");
@@ -187,20 +187,20 @@ void Shell::initialize_instance() {
     
 }
 
-void Shell::initialize_debug_messenger() {
+void Shell::initializeDebugMessenger() {
     
     if (!settings_.validate) return;
     
     VkDebugUtilsMessengerCreateInfoEXT debug_messenger_info{};
-    populate_debug_messenger_info(debug_messenger_info);
+    populateDebugMessengerInfo(debug_messenger_info);
     
-    if (create_debug_utils_messenger(context_.instance, &debug_messenger_info, nullptr, &context_.debug_messenger) != VK_SUCCESS) {
+    if (createDebugUtilsMessenger(context_.instance, &debug_messenger_info, nullptr, &context_.debugMessenger) != VK_SUCCESS) {
         throw std::runtime_error("Failed to set up debug messenger!");
     }
     
 }
 
-void Shell::initialize_physical_device() {
+void Shell::initializePhysicalDevice() {
     
     uint32_t physical_device_count = 0;
     vkEnumeratePhysicalDevices(context_.instance, &physical_device_count, nullptr);
@@ -214,16 +214,16 @@ void Shell::initialize_physical_device() {
     
     for (const VkPhysicalDevice& physical_device : physical_devices) {
         
-        if (is_physical_device_suitable(physical_device)) {
+        if (isPhysicalDeviceSuitable(physical_device)) {
             
-            context_.physical_device = physical_device;
+            context_.physicalDevice = physical_device;
             break;
             
         }
         
     }
     
-    if (context_.physical_device == VK_NULL_HANDLE) {
+    if (context_.physicalDevice == VK_NULL_HANDLE) {
         
         throw std::runtime_error("Failed to find a suitable GPU");
         
@@ -231,7 +231,7 @@ void Shell::initialize_physical_device() {
     
 }
 
-bool Shell::is_physical_device_suitable(VkPhysicalDevice physical_device) {
+bool Shell::isPhysicalDeviceSuitable(VkPhysicalDevice physical_device) {
     
     VkPhysicalDeviceProperties physical_device_properties;
     vkGetPhysicalDeviceProperties(physical_device, &physical_device_properties);
@@ -243,19 +243,19 @@ bool Shell::is_physical_device_suitable(VkPhysicalDevice physical_device) {
     
 }
 
-void Shell::create_context() {
+void Shell::createContext() {
     
     
     
 }
 
-void Shell::destroy_context() {
+void Shell::destroyContext() {
     
     
     
 }
 
-void Shell::create_device() {
+void Shell::createDevice() {
     
     VkDeviceCreateInfo device_info{};
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -264,55 +264,55 @@ void Shell::create_device() {
     
 }
 
-void Shell::create_sync_objects() {
+void Shell::createSyncObjects() {
     
     
     
 }
 
-void Shell::destroy_sync_objects() {
+void Shell::destroySyncObjects() {
     
     
     
 }
 
-void Shell::create_swapchain() {
+void Shell::createSwapchain() {
     
     
     
 }
 
-void Shell::destroy_swapchain() {
+void Shell::destroySwapchain() {
     
     
     
 }
 
-void Shell::resize_swapchain(uint32_t width_hint, uint32_t height_hint) {
+void Shell::resizeSwapchain(uint32_t width_hint, uint32_t height_hint) {
     
     
     
 }
 
-void Shell::add_engine_time(float time) {
+void Shell::addEngineTime(float time) {
     
     
     
 }
 
-void Shell::acquire_sync_objects() {
+void Shell::acquireSyncObjects() {
     
     
     
 }
 
-void Shell::present_sync_objects() {
+void Shell::presentSyncObjects() {
     
     
     
 }
 
-void Shell::fake_present() {
+void Shell::fakePresent() {
     
     
     

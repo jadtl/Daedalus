@@ -20,29 +20,29 @@ public:
     
     struct SyncObjects {
         
-        uint32_t image_index;
+        uint32_t imageIndex;
         
-        VkSemaphore acquire_semaphore;
-        VkSemaphore render_semaphore;
+        VkSemaphore acquireSemaphore;
+        VkSemaphore renderSemaphore;
         
-        VkFence present_fence;
+        VkFence presentFence;
         
     };
     
     struct Context {
         
         VkInstance instance;
-        VkDebugUtilsMessengerEXT debug_messenger;
+        VkDebugUtilsMessengerEXT debugMessenger;
         
-        VkPhysicalDevice physical_device;
-        uint32_t engine_queue_family;
-        uint32_t present_queue_family;
+        VkPhysicalDevice physicalDevice;
+        uint32_t engineQueueFamily;
+        uint32_t presentQueueFamily;
         
         VkDevice device;
-        VkQueue engine_queue;
-        VkQueue present_queue;
+        VkQueue engineQueue;
+        VkQueue presentQueue;
         
-        std::queue<SyncObjects> back_buffers;
+        std::queue<SyncObjects> syncObjects;
         
         VkSurfaceKHR surface;
         VkSurfaceFormatKHR format;
@@ -50,7 +50,7 @@ public:
         VkSwapchainKHR swapchain;
         VkExtent2D extent;
         
-        SyncObjects acquired_sync_objects;
+        SyncObjects acquiredSyncObjects;
         
     };
     
@@ -65,71 +65,71 @@ protected:
     
     Shell(Engine &engine);
     
-    void initialize_vulkan();
-    void cleanup_vulkan();
+    void initializeVulkan();
+    void cleanupVulkan();
     
-    void create_context();
-    void destroy_context();
+    void createContext();
+    void destroyContext();
     
-    void resize_swapchain(uint32_t width_hint, uint32_t height_hint);
+    void resizeSwapchain(uint32_t width_hint, uint32_t height_hint);
     
-    void add_engine_time(float time);
+    void addEngineTime(float time);
     
-    void acquire_sync_objects();
-    void present_sync_objects();
+    void acquireSyncObjects();
+    void presentSyncObjects();
     
     Engine &engine_;
     const Engine::Settings &settings_;
     
-    std::vector<const char *> instance_layers_;
-    std::vector<const char *> instance_extensions_;
+    std::vector<const char *> instanceLayers_;
+    std::vector<const char *> instanceExtensions_;
 
-    std::vector<const char *> device_extensions_;
+    std::vector<const char *> deviceExtensions_;
     
 private:
     
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-                                                         VkDebugUtilsMessageTypeFlagsEXT message_type,
-                                                         const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-                                                         void* user_data) {
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                                         VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                                         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                                         void* pUserData) {
         
-        message_severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ?
-        std::cerr : std::cout << callback_data->pMessage << "\n";
+        messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ?
+        std::cerr : std::cout << pCallbackData -> pMessage << "\n";
         
         return VK_FALSE;
     }
     
-    VkResult create_debug_utils_messenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,                                   const VkAllocationCallbacks* pAllocator,
+    VkResult createDebugUtilsMessenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,                                   const VkAllocationCallbacks* pAllocator,
                                           VkDebugUtilsMessengerEXT* pDebugMessenger);
-    void destroy_debug_utils_messenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+    void destroyDebugUtilsMessenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
                                        const VkAllocationCallbacks* pAllocator);
     
-    void assert_all_instance_layers() const;
-    void assert_all_instance_extensions() const;
+    void assertAllInstanceLayers() const;
+    void assertAllInstanceExtensions() const;
     
-    // called by initialize_vulkan
-    virtual PFN_vkGetInstanceProcAddr load_vulkan() = 0;
-    virtual bool can_present(VkPhysicalDevice physical_device, uint32_t queue_family) = 0;
-    void populate_debug_messenger_info(VkDebugUtilsMessengerCreateInfoEXT& debug_messengerx_info);
-    void initialize_instance();
-    void initialize_debug_messenger();
-    void initialize_physical_device();
-    bool is_physical_device_suitable(VkPhysicalDevice physical_device);
+    // called by initializeVulkan
+    virtual PFN_vkGetInstanceProcAddr loadVulkan() = 0;
+    virtual bool canPresent(VkPhysicalDevice physical_device, uint32_t queue_family) = 0;
+    void populateDebugMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& debug_messengerx_info);
+    void initializeInstance();
+    void initializeDebugMessenger();
+    void initializePhysicalDevice();
+    bool isPhysicalDeviceSuitable(VkPhysicalDevice physical_device);
     uint32_t findQueueFamilies(VkPhysicalDevice physical_device);
 
     // called by create_context
-    void create_device();
-    void create_sync_objects();
-    void destroy_sync_objects();
-    virtual VkSurfaceKHR create_surface(VkInstance instance) = 0;
-    void create_swapchain();
-    void destroy_swapchain();
+    void createDevice();
+    void createSyncObjects();
+    void destroySyncObjects();
+    virtual VkSurfaceKHR createSurface(VkInstance instance) = 0;
+    void createSwapchain();
+    void destroySwapchain();
 
-    void fake_present();
+    void fakePresent();
 
     Context context_;
 
-    const float engine_tick_;
-    float engine_time_;
+    const float engineTick_;
+    float engineTime_;
     
 };

@@ -11,179 +11,179 @@
 Daedalus::Daedalus(const std::vector<std::string> &args)
         : Engine("Daedalus", args),
         multithread_(true),
-        use_push_constants_(false),
+        usePushConstants_(false),
         scene_(0),
-        camera_(2.5f), frame_data_(),
-        render_pass_clear_value_({{0.0f, 0.1f, 0.2f, 1.0f}}),
-        render_pass_begin_info_(), primary_command_begin_info_(),
-        primary_command_submit_info_() {
+        camera_(2.5f), frameData_(),
+        renderPassClearValue_({{0.0f, 0.1f, 0.2f, 1.0f}}),
+        renderPassBeginInfo_(), primaryCommandBeginInfo_(),
+        primaryCommandSubmitInfo_() {
     
     for (std::string arg : args) {
         
         if (arg == "-s")
             multithread_ = false;
         else if (arg == "-p")
-            use_push_constants_ = true;
+            usePushConstants_ = true;
         
     }
 
-    init_workers();
+            initWorkers();
             
 }
 
 Daedalus::~Daedalus() {}
 
-void Daedalus::init_workers() {
+void Daedalus::initWorkers() {
     
     
     
 }
 
-void Daedalus::attach_shell(Shell &shell) {
+void Daedalus::attachShell(Shell &shell) {
     
     
     
 }
 
-void Daedalus::detach_shell() {
+void Daedalus::detachShell() {
     
     
     
 }
 
-void Daedalus::create_render_pass() {
+void Daedalus::createRenderPass() {
     
     
     
 }
 
-void Daedalus::create_shader_modules() {
+void Daedalus::createShaderModules() {
     
     
     
 }
 
-void Daedalus::create_descriptor_set_layout() {
+void Daedalus::createDescriptorSetLayout() {
     
     
     
 }
 
-void Daedalus::create_pipeline_layout() {
+void Daedalus::createPipelineLayout() {
     
     
     
 }
 
-void Daedalus::create_pipeline() {
+void Daedalus::createPipeline() {
     
     
     
 }
 
-void Daedalus::create_frame_data(int count) {
+void Daedalus::createFrameData(int count) {
     
     
     
 }
 
-void Daedalus::destroy_frame_data() {
+void Daedalus::destroyFrameData() {
     
     
     
 }
 
-void Daedalus::create_fences() {
+void Daedalus::createFences() {
     
     
     
 }
 
-void Daedalus::create_command_buffers() {
+void Daedalus::createCommandBuffers() {
     
     
     
 }
 
-void Daedalus::create_buffers() {
+void Daedalus::createBuffers() {
     
     
     
 }
 
-void Daedalus::create_buffer_memory() {
+void Daedalus::createBufferMemory() {
     
     
     
 }
 
-void Daedalus::create_descriptor_sets() {
+void Daedalus::createDescriptorSets() {
     
     
     
 }
 
-void Daedalus::attach_swapchain() {
+void Daedalus::attachSwapchain() {
     
     
     
 }
 
-void Daedalus::detach_swapchain() {
+void Daedalus::detachSwapchain() {
     
     
     
 }
 
-void Daedalus::prepare_viewport(const VkExtent2D &extent) {
+void Daedalus::prepareViewport(const VkExtent2D &extent) {
     
     
     
 }
 
-void Daedalus::prepare_framebuffers(VkSwapchainKHR swapchain) {
+void Daedalus::prepareFramebuffers(VkSwapchainKHR swapchain) {
     
     
     
 }
 
-void Daedalus::update_camera() {
+void Daedalus::updateCamera() {
     
     
     
 }
 
-void Daedalus::draw_object(const Scene::Object &object, FrameData &data, VkCommandBuffer command) const {
+void Daedalus::drawObject(const Scene::Object &object, FrameData &data, VkCommandBuffer command) const {
     
     
     
 }
 
-void Daedalus::update_scene(const Worker &worker) {
+void Daedalus::updateScene(const Worker &worker) {
     
     
     
 }
 
-void Daedalus::draw_objects(Worker &worker) {
+void Daedalus::drawObjects(Worker &worker) {
     
     
     
 }
 
-void Daedalus::on_key(Key key) {
+void Daedalus::onKey(Key key) {
     
     
     
 }
 
-void Daedalus::on_tick() {
+void Daedalus::onTick() {
     
     
     
 }
 
-void Daedalus::on_frame() {
+void Daedalus::onFrame() {
     
     
     
@@ -192,9 +192,9 @@ void Daedalus::on_frame() {
 Daedalus::Worker::Worker(Daedalus &daedalus, int index, int object_begin, int object_end)
     : daedalus_(daedalus),
     index_(index),
-    object_begin_(object_begin),
-    object_end_(object_end),
-    tick_interval_(1.0f / daedalus.settings_.ticks_per_second),
+    objectBegin_(object_begin),
+    objectEnd_(object_end),
+    tickInterval_(1.0f / daedalus.settings_.ticksPerSecond),
     state_(INIT) {
     
     
@@ -213,25 +213,25 @@ void Daedalus::Worker::stop() {
     
 }
 
-void Daedalus::Worker::update_scene() {
+void Daedalus::Worker::updateScene() {
     
     
     
 }
 
-void Daedalus::Worker::draw_objects(VkFramebuffer fb) {
+void Daedalus::Worker::drawObjects(VkFramebuffer fb) {
     
     
     
 }
 
-void Daedalus::Worker::wait_idle() {
+void Daedalus::Worker::waitIdle() {
     
     
     
 }
 
-void Daedalus::Worker::update_loop() {
+void Daedalus::Worker::updateLoop() {
     
     
     

@@ -51,7 +51,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
                                     const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
                                     CVOptionFlags* flagsOut, void* target) {
     
-   ((ShellDarwin*) target) -> update_and_draw();
+   ((ShellDarwin*) target) -> updateAndDraw();
     
     return kCVReturnSuccess;
     
@@ -91,7 +91,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             break;
     }
 
-    _engine->on_key(key);
+    _engine->onKey(key);
 }
 
 @end

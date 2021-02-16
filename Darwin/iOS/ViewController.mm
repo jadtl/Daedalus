@@ -47,7 +47,7 @@
 
 -(void) renderLoop {
     
-    _shell->update_and_draw();
+    _shell->updateAndDraw();
     
 }
 

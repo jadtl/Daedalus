@@ -8,11 +8,11 @@ class Meshes {
     
 public:
     
-    Meshes(VkDevice device, const std::vector<VkMemoryPropertyFlags> &memory_flags);
+    Meshes(VkDevice device, const std::vector<VkMemoryPropertyFlags> &memoryFlags);
     ~Meshes();
     
-    const VkPipelineVertexInputStateCreateInfo &vertex_input_state() const { return vertex_input_state_; }
-    const VkPipelineInputAssemblyStateCreateInfo &input_assembly_state() const { return input_assembly_state_; }
+    const VkPipelineVertexInputStateCreateInfo &vertexInputState() const { return vertexInputState_; }
+    const VkPipelineInputAssemblyStateCreateInfo &inputAssemblyState() const { return inputAssemblyState_; }
     
     enum Type {
         MESH_TRIANGLE
@@ -23,21 +23,21 @@ public:
     
 private:
     
-    void allocate_resources(VkDeviceSize vertex_buffer_size, VkDeviceSize index_buffer_size, const std::vector<VkMemoryPropertyFlags> &memory_flags);
+    void allocate_resources(VkDeviceSize vertexBufferSize, VkDeviceSize indexBufferSize, const std::vector<VkMemoryPropertyFlags> &memoryFlags);
 
     VkDevice device_;
 
-    VkVertexInputBindingDescription vertex_input_binding_;
-    std::vector<VkVertexInputAttributeDescription> vertex_input_attributes_;
-    VkPipelineVertexInputStateCreateInfo vertex_input_state_;
-    VkPipelineInputAssemblyStateCreateInfo input_assembly_state_;
-    VkIndexType index_type_;
+    VkVertexInputBindingDescription vertexInputBinding_;
+    std::vector<VkVertexInputAttributeDescription> vertexInputAttributes_;
+    VkPipelineVertexInputStateCreateInfo vertexInputState_;
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState_;
+    VkIndexType indexType_;
 
-    std::vector<VkDrawIndexedIndirectCommand> draw_commands_;
+    std::vector<VkDrawIndexedIndirectCommand> drawCommands_;
 
-    VkBuffer vertex_buffer_;
-    VkBuffer index_buffer_;
+    VkBuffer vertexBuffer_;
+    VkBuffer indexBuffer_;
     VkDeviceMemory memory_;
-    VkDeviceSize index_buffer_memory_offset_;
+    VkDeviceSize indexBufferMemoryOffset_;
     
 };
