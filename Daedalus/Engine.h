@@ -1,130 +1,69 @@
 #pragma once
 
-#include <string>
 #include <vector>
+#include <string>
 
-#include <vulkan/vulkan.hpp>
+#include <MoltenVK/mvk_vulkan.h>
 
-#include <iostream>
-
-class Shell;
+#include "Types.h"
 
 class Engine {
-    
 public:
-    
     Engine(const Engine &engine) = delete;
     Engine &operator = (const Engine &engine) = delete;
-    virtual ~Engine() {}
+    
+    Engine(const std::vector<std::string> &args, void *caMetalLayer);
+    ~Engine();
+    
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkPhysicalDevice physicalDevice;
+    VkDevice device;
+    VkSurfaceKHR surface;
+    
+    VkSwapchainKHR swapchain;
+    VkFormat swapchainImageFormat;
+    std::vector<VkImage> swapchainImages;
+    std::vector<VkImageView> swapchainImageViews;
+    
+    bool isInitialized{false};
+    int frameNumber{0};
     
     struct Settings {
+        std::string engineName = "Daedalus";
+        std::string applicationName = "The Architect";
         
-        std::string name;
-        VkExtent2D initial_extent;
-        int queue_count;
-        int back_buffer_count;
-        int ticks_per_second;
-        bool vsync;
-        bool animate;
-
-        bool validate;
-        bool validate_verbose;
-
-        bool no_tick;
-        bool no_render;
-        bool no_present;
+        VkExtent2D windowExtent{1024, 800};
         
+        bool validate{false};
+        bool verbose{false};
     };
-    
-    const Settings &settings() const { return settings_; }
-
-    virtual void attach_shell(Shell &shell) { shell_ = &shell; }
-    virtual void detach_shell() { shell_ = nullptr; }
-
-    virtual void attach_swapchain() {}
-    virtual void detach_swapchain() {}
+    Settings settings;
     
     enum Key {
-        KEY_UNKNOWN,
-        KEY_ESC,
-        KEY_UP,
-        KEY_DOWN,
+        KEY_A,
+        KEY_S,
+        KEY_D,
+        KEY_Q,
+        KEY_W,
+        KEY_E,
         KEY_SPACE,
-        KEY_F
     };
+    void onKey(Key key);
     
-    virtual void on_key(Key key) {}
-    virtual void on_tick() {}
-    virtual void on_frame() {}
+    void run();
     
-protected:
-    
-    Engine(const std::string &name, const std::vector<std::string> &args) : settings_(), shell_(nullptr) {
-        
-        settings_.name = name;
-        settings_.initial_extent.width = 1280;
-        settings_.initial_extent.height = 1024;
-        settings_.queue_count = 1;
-        settings_.back_buffer_count = 1;
-        settings_.ticks_per_second = 30;
-        settings_.vsync = true;
-        settings_.animate = true;
-
-        settings_.validate = false;
-        settings_.validate_verbose = false;
-
-        settings_.no_tick = false;
-        settings_.no_render = false;
-        settings_.no_present = false;
-        
-        parse_args(args);
-    }
-    
-    Settings settings_;
-    Shell *shell_;
+    void update();
+    void render();
     
 private:
+    void* caMetalLayer;
     
-    void parse_args(const std::vector<std::string> &args) {
-        
-        for (std::string arg : args) {
-            
-            if (arg == "-w") {
-                
-                settings_.initial_extent.width = std::stoi(arg);
-                
-            } else if (arg == "-h") {
-                
-                settings_.initial_extent.height = std::stoi(arg);
-                
-            } else if (arg == "-v") {
-                
-                #if __APPLE__
-                    #include <TargetConditionals.h>
-                    #if !(TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
-                        settings_.validate = true;
-                    #endif
-                #else
-                    settings_.validate = true;
-                #endif
-                
-            } else if (arg == "-vv") {
-                
-                #if __APPLE__
-                    #include <TargetConditionals.h>
-                    #if !(TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
-                        settings_.validate = true;
-                        settings_.validate_verbose = true;
-                    #endif
-                #else
-                    settings_.validate = true;
-                    settings_.validate_verbose = true;
-                #endif
-                
-            }
-            
-        }
-        
-    }
-
+    std::vector<const char *> instanceLayers;
+    std::vector<const char *> instanceExtensions;
+    
+    void initialize();
+    void terminate();
+    
+    void initializeSwapchain();
 };

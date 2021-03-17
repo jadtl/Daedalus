@@ -1,97 +1,87 @@
 #import "ViewController.h"
 #import <QuartzCore/CAMetalLayer.h>
 
-#include "ShellDarwin.h"
-#include "Daedalus.h"
+#include "Engine.h"
+#include <string>
+#include <vector>
 
 #pragma mark -
 #pragma mark ViewController
 
 @implementation ViewController {
-    
-    CVDisplayLinkRef _displayLink;
-    ShellDarwin* _shell;
-    Engine* _engine;
-    
+    CVDisplayLinkRef displayLink;
+    Engine* engine;
 }
 
 - (void) dealloc {
-    
-    delete _shell;
-    delete _engine;
-    CVDisplayLinkRelease(_displayLink);
+    delete engine;
+    CVDisplayLinkRelease(displayLink);
     
     [super dealloc];
-    
 }
 
 - (void) viewDidLoad {
-    
     [super viewDidLoad];
     
     self.view.wantsLayer = YES;
     
     std::vector<std::string> args;
-    args.push_back("-v");
-    _engine = new Daedalus(args);
+    args.push_back("-validate");
+    engine = new Engine(args, self.view.layer);
     
-    _shell = new ShellDarwin(*_engine);
-    _shell -> run(self.view.layer);
+    engine -> run();
     
-    CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
-    CVDisplayLinkSetOutputCallback(_displayLink, &DisplayLinkCallback, _shell);
-    CVDisplayLinkStart(_displayLink);
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+    CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, engine);
+    CVDisplayLinkStart(displayLink);
     
 }
 
 #pragma mark Display loop callback function
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
-static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now,
-                                    const CVTimeStamp* outputTime, CVOptionFlags flagsIn,
-                                    CVOptionFlags* flagsOut, void* target) {
-    
-   ((ShellDarwin*) target) -> update_and_draw();
+static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* engine) {
+    ((Engine*) engine) -> update();
+    ((Engine*) engine) -> render();
     
     return kCVReturnSuccess;
-    
 }
 
 - (void) viewDidAppear {
-    
     [super viewDidAppear];
     
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = @"Daedalus";
-    
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];;
 }
 
 
 -(void) keyDown:(NSEvent*) theEvent {
     Engine::Key key;
     switch (theEvent.keyCode) {
-        case 53:
-            key = Engine::KEY_ESC;
+        case 0:
+            key = Engine::KEY_A;
             break;
-        case 126:
-            key = Engine::KEY_UP;
+        case 1:
+            key = Engine::KEY_S;
             break;
-        case 125:
-            key = Engine::KEY_DOWN;
+        case 2:
+            key = Engine::KEY_D;
+            break;
+        case 12:
+            key = Engine::KEY_Q;
+            break;
+        case 13:
+            key = Engine::KEY_W;
+            break;
+        case 14:
+            key = Engine::KEY_E;
             break;
         case 49:
             key = Engine::KEY_SPACE;
             break;
-        case 3:
-            key = Engine::KEY_F;
-            break;
-        default:
-            key = Engine::KEY_UNKNOWN;
-            break;
     }
-
-    _engine->on_key(key);
+    engine -> onKey(key);
 }
 
 @end
