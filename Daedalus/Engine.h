@@ -19,6 +19,8 @@ public:
     int frameNumber{0};
     VkExtent2D windowExtent{1024, 800};
     
+    std::string applicationName = "Daedalus";
+    
     enum Key {
         KEY_A,
         KEY_S,
