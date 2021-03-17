@@ -25,7 +25,6 @@ Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMet
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
     if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
     
-    // Darwin specific (MoltenVK/mvk_vulkan.h)
     instanceExtensions.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
     
     initialize();
@@ -83,21 +82,27 @@ void Engine::initialize() {
     this->device = vkbDevice.device;
     this->physicalDevice = physicalDevice.physical_device;
     
+    graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+    graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
+    
     initializeSwapchain();
+    
+    initializeCommands();
     
     isInitialized = true;
 }
 
 void Engine::terminate() {
     if (isInitialized) {
-        vkDestroySwapchainKHR(device, swapchain, nullptr);
+        vkDestroyCommandPool(device, commandPool, VK_NULL_HANDLE);
+        vkDestroySwapchainKHR(device, swapchain, VK_NULL_HANDLE);
         std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
-            vkDestroyImageView(device, imageView, nullptr); });
+            vkDestroyImageView(device, imageView, VK_NULL_HANDLE); });
         
-        vkDestroyDevice(device, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkb::destroy_debug_utils_messenger(instance, debugMessenger);
-        vkDestroyInstance(instance, nullptr);
+        vkDestroyDevice(device, VK_NULL_HANDLE);
+        vkDestroySurfaceKHR(instance, surface, VK_NULL_HANDLE);
+        if (settings.validate) vkb::destroy_debug_utils_messenger(instance, debugMessenger);
+        vkDestroyInstance(instance, VK_NULL_HANDLE);
     }
 }
 
@@ -133,4 +138,14 @@ void Engine::initializeSwapchain() {
     swapchainImageViews = vkbSwapchain.get_image_views().value();
     
     swapchainImageFormat = vkbSwapchain.image_format;
+}
+
+void Engine::initializeCommands() {
+    VkCommandPoolCreateInfo commandPoolInfo = init::command_pool_create_info(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, VK_NULL_HANDLE, &commandPool));
+    
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::command_buffer_allocate_info(commandPool, 1);
+
+    VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
 }

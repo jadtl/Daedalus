@@ -26,6 +26,12 @@ public:
     std::vector<VkImage> swapchainImages;
     std::vector<VkImageView> swapchainImageViews;
     
+    VkQueue graphicsQueue;
+    uint32_t graphicsQueueFamily;
+    
+    VkCommandPool commandPool;
+    VkCommandBuffer mainCommandBuffer;
+    
     bool isInitialized{false};
     int frameNumber{0};
     
@@ -66,4 +72,5 @@ private:
     void terminate();
     
     void initializeSwapchain();
+    void initializeCommands();
 };
