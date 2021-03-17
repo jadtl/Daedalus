@@ -11,15 +11,20 @@ class Engine {
 public:
     Engine(const Engine &engine) = delete;
     Engine &operator = (const Engine &engine) = delete;
-    ~Engine();
     
     Engine(const std::vector<std::string> &args);
+    ~Engine();
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
     VkPhysicalDevice physicalDevice;
     VkDevice device;
-    VkSurfaceKHR surface;   
+    VkSurfaceKHR surface;
+    
+    VkSwapchainKHR swapchain;
+    VkFormat swapchainImageFormat;
+    std::vector<VkImage> swapchainImages;
+    std::vector<VkImageView> swapchainImageViews;
     
     bool isInitialized{false};
     int frameNumber{0};

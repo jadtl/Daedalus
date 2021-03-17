@@ -47,8 +47,10 @@ void Engine::initialize() {
     if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
     
-    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](char* instanceLayer) { instanceBuilder.enable_layer(instanceLayer); });
-    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](char* instanceLayer) { instanceBuilder.enable_extension(instanceLayer); });
+    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](char* instanceLayer) {
+        instanceBuilder.enable_layer(instanceLayer); });
+    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](char* instanceLayer) {
+        instanceBuilder.enable_extension(instanceLayer); });
     
     vkb::Instance vkbInstance = instanceBuilder.build().value();
     
@@ -59,7 +61,16 @@ void Engine::initialize() {
 }
 
 void Engine::terminate() {
-    
+    if (isInitialized) {
+        vkDestroySwapchainKHR(device, swapchain, nullptr);
+        std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
+            vkDestroyImageView(device, imageView, nullptr); });
+        
+        vkDestroyDevice(device, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkb::destroy_debug_utils_messenger(instance, debugMessenger);
+        vkDestroyInstance(instance, nullptr);
+    }
 }
 
 void Engine::run(void *caMetalLayer) {
