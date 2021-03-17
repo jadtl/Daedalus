@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include <MoltenVK/mvk_vulkan.h>
+
 #include "Types.h"
 
 class Engine {
@@ -15,7 +17,7 @@ public:
     
     bool isInitialized{false};
     int frameNumber{0};
-    VkExtent2D windowExtent{1700, 900};
+    VkExtent2D windowExtent{1024, 800};
     
     enum Key {
         KEY_A,
@@ -29,13 +31,16 @@ public:
     
     void onKey(Key key);
     
-    void* caMetalLayer;
-    
     void initialize();
-    void cleanup();
+    void cleanUp();
     
+    void run(void* caMetalLayer);
+    void update();
     void render();
-    void run();
     
 private:
+    void* caMetalLayer;
+    
+    std::vector<const char *> instanceLayers;
+    std::vector<const char *> instanceExtensions;
 };

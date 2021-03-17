@@ -1,0 +1,598 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
+		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
+		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
+		05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2A25C8381F00529B60 /* Main.storyboard */; };
+		05C68D2F25C8381F00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2E25C8381F00529B60 /* Main.m */; };
+		05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D3F25C8384D00529B60 /* AppDelegate.m */; };
+		05C68D4625C8384D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4525C8384D00529B60 /* ViewController.mm */; };
+		05C68D4925C8384D00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4725C8384D00529B60 /* Main.storyboard */; };
+		05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4A25C8384E00529B60 /* Assets.xcassets */; };
+		05C68D5125C8384E00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* Main.m */; };
+		05E2DD9225D1693D00C198FA /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */; };
+		05E2DD9325D1693D00C198FA /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		05E2DD9625D1696800C198FA /* vulkan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9525D1696800C198FA /* vulkan.framework */; };
+		05E2DD9725D1696800C198FA /* vulkan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9525D1696800C198FA /* vulkan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
+		05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
+		05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
+		05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
+		05EF4FA42602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
+		05EF4FA52602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		05E2DD7125D1624A00C198FA /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				05E2DD9725D1696800C198FA /* vulkan.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05E2DD9425D1693D00C198FA /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				05E2DD9325D1693D00C198FA /* MoltenVK.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
+		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
+		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C68D2225C8381D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		05C68D2325C8381D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		05C68D2525C8381D00529B60 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		05C68D2625C8381D00529B60 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		05C68D2825C8381F00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05C68D2B25C8381F00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		05C68D2D25C8381F00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05C68D2E25C8381F00529B60 /* Main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		05C68D3C25C8384D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05C68D3E25C8384D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		05C68D3F25C8384D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		05C68D4425C8384D00529B60 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		05C68D4525C8384D00529B60 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		05C68D4825C8384D00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		05C68D4A25C8384E00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		05C68D4F25C8384E00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05C68D5025C8384E00529B60 /* Main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
+		05C68D8E25C853D700529B60 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/MoltenVK.xcframework; sourceTree = "<group>"; };
+		05E2DD6E25D1624A00C198FA /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
+		05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = "../../../../../../usr/local/Caskroom/vulkan-sdk/1.2.162.1/MoltenVK/MoltenVK.xcframework"; sourceTree = "<group>"; };
+		05E2DD9525D1696800C198FA /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = "../../../../../../usr/local/Caskroom/vulkan-sdk/1.2.162.1/macOS/Frameworks/vulkan.framework"; sourceTree = "<group>"; };
+		05EF4F9A2602362A00E293AD /* Engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Engine.cpp; sourceTree = "<group>"; };
+		05EF4F9B2602362A00E293AD /* Engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
+		05EF4F9E2602371A00E293AD /* Initializers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializers.cpp; sourceTree = "<group>"; };
+		05EF4F9F2602371A00E293AD /* Initializers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Initializers.h; sourceTree = "<group>"; };
+		05EF4FA22602372800E293AD /* Types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cpp; sourceTree = "<group>"; };
+		05EF4FA32602372800E293AD /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05C68D1C25C8381D00529B60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05E2DD9625D1696800C198FA /* vulkan.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3925C8384D00529B60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05E2DD9225D1693D00C198FA /* MoltenVK.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05C68D1625C8381C00529B60 = {
+			isa = PBXGroup;
+			children = (
+				05E2DD7825D1676100C198FA /* Daedalus */,
+				05C9D0EB25C879530039E8ED /* Darwin */,
+				05C68D2025C8381D00529B60 /* Products */,
+				05C68D8D25C853D700529B60 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		05C68D2025C8381D00529B60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D1F25C8381D00529B60 /* Daedalus.app */,
+				05C68D3C25C8384D00529B60 /* Daedalus.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05C68D3725C8382F00529B60 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D2225C8381D00529B60 /* AppDelegate.h */,
+				05C68D2325C8381D00529B60 /* AppDelegate.m */,
+				05C68D2525C8381D00529B60 /* ViewController.h */,
+				05C68D2625C8381D00529B60 /* ViewController.mm */,
+				05C68D2D25C8381F00529B60 /* Info.plist */,
+				05C68D2E25C8381F00529B60 /* Main.m */,
+				05C68D5A25C8386000529B60 /* Resources */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		05C68D3D25C8384D00529B60 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D3E25C8384D00529B60 /* AppDelegate.h */,
+				05C68D3F25C8384D00529B60 /* AppDelegate.m */,
+				05C68D4425C8384D00529B60 /* ViewController.h */,
+				05C68D4525C8384D00529B60 /* ViewController.mm */,
+				05C68D4F25C8384E00529B60 /* Info.plist */,
+				05C68D5025C8384E00529B60 /* Main.m */,
+				05C68D5925C8385A00529B60 /* Resources */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		05C68D5925C8385A00529B60 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D4725C8384D00529B60 /* Main.storyboard */,
+				05C68D4A25C8384E00529B60 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		05C68D5A25C8386000529B60 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D2A25C8381F00529B60 /* Main.storyboard */,
+				05C68D2825C8381F00529B60 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		05C68D8D25C853D700529B60 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				05E2DD9525D1696800C198FA /* vulkan.framework */,
+				05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */,
+				05E2DD6E25D1624A00C198FA /* vulkan.framework */,
+				05A64AB425CFFD1900467155 /* libMoltenVK.dylib */,
+				05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */,
+				05C68D8E25C853D700529B60 /* MoltenVK.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05C9D0EB25C879530039E8ED /* Darwin */ = {
+			isa = PBXGroup;
+			children = (
+				05C68D3725C8382F00529B60 /* macOS */,
+				05C68D3D25C8384D00529B60 /* iOS */,
+			);
+			name = Darwin;
+			sourceTree = "<group>";
+		};
+		05E2DD7825D1676100C198FA /* Daedalus */ = {
+			isa = PBXGroup;
+			children = (
+				05EF4F9A2602362A00E293AD /* Engine.cpp */,
+				05EF4F9B2602362A00E293AD /* Engine.h */,
+				05EF4F9E2602371A00E293AD /* Initializers.cpp */,
+				05EF4F9F2602371A00E293AD /* Initializers.h */,
+				05EF4FA22602372800E293AD /* Types.cpp */,
+				05EF4FA32602372800E293AD /* Types.h */,
+			);
+			name = Daedalus;
+			path = ../Daedalus;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		05C68D1E25C8381D00529B60 /* Daedalus (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */;
+			buildPhases = (
+				05C68D1D25C8381D00529B60 /* Resources */,
+				05C68D1B25C8381D00529B60 /* Sources */,
+				05C68D1C25C8381D00529B60 /* Frameworks */,
+				05E2DD7125D1624A00C198FA /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Daedalus (macOS)";
+			productName = Daedalus;
+			productReference = 05C68D1F25C8381D00529B60 /* Daedalus.app */;
+			productType = "com.apple.product-type.application";
+		};
+		05C68D3B25C8384D00529B60 /* Daedalus (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05C68D5225C8384E00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (iOS)" */;
+			buildPhases = (
+				05C68D3A25C8384D00529B60 /* Resources */,
+				05C68D3825C8384D00529B60 /* Sources */,
+				05C68D3925C8384D00529B60 /* Frameworks */,
+				05E2DD9425D1693D00C198FA /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Daedalus (iOS)";
+			productName = "Daedalus-iOS";
+			productReference = 05C68D3C25C8384D00529B60 /* Daedalus.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		05C68D1725C8381C00529B60 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1240;
+				TargetAttributes = {
+					05C68D1E25C8381D00529B60 = {
+						CreatedOnToolsVersion = 12.4;
+					};
+					05C68D3B25C8384D00529B60 = {
+						CreatedOnToolsVersion = 12.4;
+					};
+				};
+			};
+			buildConfigurationList = 05C68D1A25C8381C00529B60 /* Build configuration list for PBXProject "Daedalus" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 05C68D1625C8381C00529B60;
+			productRefGroup = 05C68D2025C8381D00529B60 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				05C68D1E25C8381D00529B60 /* Daedalus (macOS) */,
+				05C68D3B25C8384D00529B60 /* Daedalus (iOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05C68D1D25C8381D00529B60 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
+				05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3A25C8384D00529B60 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */,
+				05C68D4925C8384D00529B60 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05C68D1B25C8381D00529B60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */,
+				05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */,
+				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
+				05EF4FA42602372800E293AD /* Types.cpp in Sources */,
+				05C68D2F25C8381F00529B60 /* Main.m in Sources */,
+				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05C68D3825C8384D00529B60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */,
+				05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */,
+				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
+				05EF4FA52602372800E293AD /* Types.cpp in Sources */,
+				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
+				05C68D5125C8384E00529B60 /* Main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		05C68D2A25C8381F00529B60 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C68D2B25C8381F00529B60 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		05C68D4725C8384D00529B60 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				05C68D4825C8384D00529B60 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		05C68D3125C8381F00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					GLM_FORCE_RADIANS,
+					_DEBUG,
+				);
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				IBSC_MODULE = Daedalus;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		05C68D3225C8381F00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = GLM_FORCE_RADIANS;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				IBSC_MODULE = Daedalus;
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		05C68D3425C8381F00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Frameworks,
+					"/usr/local/Caskroom/vulkan-sdk/1.2.162.1/macOS/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-w",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.macos;
+				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
+			};
+			name = Debug;
+		};
+		05C68D3525C8381F00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Frameworks,
+					"/usr/local/Caskroom/vulkan-sdk/1.2.162.1/macOS/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-w",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.macos;
+				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
+			};
+			name = Release;
+		};
+		05C68D5325C8384E00529B60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.ios;
+				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
+			};
+			name = Debug;
+		};
+		05C68D5425C8384E00529B60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 36YZ6UP6VW;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.ios;
+				PRODUCT_NAME = Daedalus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05C68D1A25C8381C00529B60 /* Build configuration list for PBXProject "Daedalus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D3125C8381F00529B60 /* Debug */,
+				05C68D3225C8381F00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D3425C8381F00529B60 /* Debug */,
+				05C68D3525C8381F00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05C68D5225C8384E00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05C68D5325C8384E00529B60 /* Debug */,
+				05C68D5425C8384E00529B60 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 05C68D1725C8381C00529B60 /* Project object */;
+}

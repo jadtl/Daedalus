@@ -41,7 +41,8 @@
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
 static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* engine) {
-   (Engine*) engine) -> updateAndRender();
+    ((Engine*) engine) -> update();
+    ((Engine*) engine) -> render();
     
     return kCVReturnSuccess;
 }
