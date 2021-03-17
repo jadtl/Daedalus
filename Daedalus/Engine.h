@@ -12,7 +12,7 @@ public:
     Engine(const Engine &engine) = delete;
     Engine &operator = (const Engine &engine) = delete;
     
-    Engine(const std::vector<std::string> &args);
+    Engine(const std::vector<std::string> &args, void *caMetalLayer);
     ~Engine();
     
     VkInstance instance;
@@ -51,7 +51,7 @@ public:
     };
     void onKey(Key key);
     
-    void run(void* caMetalLayer);
+    void run();
     
     void update();
     void render();
@@ -64,4 +64,6 @@ private:
     
     void initialize();
     void terminate();
+    
+    void initializeSwapchain();
 };

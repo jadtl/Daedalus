@@ -5,6 +5,7 @@
 #include "Bootstrap.h"
 
 #include <algorithm>
+#include <iostream>
 
 // We want to immediately abort when there is an error. In normal engines this would give an error message to the user, or perform a dump of state
 #define VK_CHECK(x)                                                      \
@@ -18,7 +19,7 @@
         }                                                                \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args) {
+Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer) {
     instanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
@@ -36,6 +37,7 @@ Engine::~Engine() {
 }
 
 void Engine::initialize() {
+    // Instance and debug messenger creation
     vkb::InstanceBuilder builder;
     
     auto instanceBuilder = builder.set_engine_name(settings.engineName.c_str())
@@ -54,8 +56,31 @@ void Engine::initialize() {
     
     vkb::Instance vkbInstance = instanceBuilder.build().value();
     
-    instance = vkbInstance.instance;
-    debugMessenger = vkbInstance.debug_messenger;
+    this->instance = vkbInstance.instance;
+    this->debugMessenger = vkbInstance.debug_messenger;
+    
+    // Surface creation
+    VkMetalSurfaceCreateInfoEXT surfaceInfo;
+    surfaceInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+    surfaceInfo.pNext = VK_NULL_HANDLE;
+    surfaceInfo.flags = 0;
+    surfaceInfo.pLayer = caMetalLayer;
+    VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, VK_NULL_HANDLE, &this->surface));
+    
+    // Physical device creation
+    vkb::PhysicalDeviceSelector physicalDeviceSelector{vkbInstance};
+    vkb::PhysicalDevice physicalDevice = physicalDeviceSelector
+        .set_minimum_version(1, 1)
+        .set_surface(this->surface)
+        .select()
+        .value();
+    
+    // Device creation
+    vkb::DeviceBuilder deviceBuilder{physicalDevice};
+    vkb::Device vkbDevice = deviceBuilder.build().value();
+    
+    this->device = vkbDevice.device;
+    this->physicalDevice = physicalDevice.physical_device;
     
     isInitialized = true;
 }
@@ -73,8 +98,7 @@ void Engine::terminate() {
     }
 }
 
-void Engine::run(void *caMetalLayer) {
-    this->caMetalLayer = caMetalLayer;
+void Engine::run() {
     // Create context
     // Create/Resize swapchain
 }
@@ -88,5 +112,9 @@ void Engine::render() {
 }
 
 void Engine::onKey(Key key) {
+    
+}
+
+void Engine::initializeSwapchain() {
     
 }
