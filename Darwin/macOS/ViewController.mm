@@ -26,7 +26,7 @@
     self.view.wantsLayer = YES;
     
     std::vector<std::string> args;
-    args.push_back("-v");
+    args.push_back("-validate");
     engine = new Engine(args);
     
     engine -> run(self.view.layer);
@@ -52,7 +52,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = [NSString stringWithUTF8String:engine->applicationName.c_str()];;  
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];;  
 }
 
 

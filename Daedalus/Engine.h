@@ -15,11 +15,25 @@ public:
     
     Engine(const std::vector<std::string> &args);
     
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkPhysicalDevice physicalDevice;
+    VkDevice device;
+    VkSurfaceKHR surface;   
+    
     bool isInitialized{false};
     int frameNumber{0};
-    VkExtent2D windowExtent{1024, 800};
     
-    std::string applicationName = "Daedalus";
+    struct Settings {
+        std::string engineName = "Daedalus";
+        std::string applicationName = "The Architect";
+        
+        VkExtent2D windowExtent{1024, 800};
+        
+        bool validate{false};
+        bool verbose{false};
+    };
+    Settings settings;
     
     enum Key {
         KEY_A,
@@ -30,13 +44,10 @@ public:
         KEY_E,
         KEY_SPACE,
     };
-    
     void onKey(Key key);
     
-    void initialize();
-    void cleanUp();
-    
     void run(void* caMetalLayer);
+    
     void update();
     void render();
     
@@ -45,4 +56,7 @@ private:
     
     std::vector<const char *> instanceLayers;
     std::vector<const char *> instanceExtensions;
+    
+    void initialize();
+    void terminate();
 };

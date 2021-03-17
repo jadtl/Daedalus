@@ -21,24 +21,44 @@
 Engine::Engine(const std::vector<std::string> &args) {
     instanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     
-    if (std::find(args.begin(), args.end(), "-v") != args.end()) {
-        instanceLayers.push_back("VK_LAYER_KHRONOS_validation");
-        instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-    }
+    if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
+    if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
+    
     // Darwin specific (MoltenVK/mvk_vulkan.h)
     instanceExtensions.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
+    
+    initialize();
 }
 
 Engine::~Engine() {
     // Destroy context
-    cleanUp();
+    terminate();
 }
 
 void Engine::initialize() {
+    vkb::InstanceBuilder builder;
+    
+    auto instanceBuilder = builder.set_engine_name(settings.engineName.c_str())
+        .set_engine_version(0, 1)
+        .set_app_name(settings.applicationName.c_str())
+        .set_app_version(0, 1)
+        .require_api_version(1, 1, 0);
+    
+    if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
+    if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
+    
+    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](char* instanceLayer) { instanceBuilder.enable_layer(instanceLayer); });
+    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](char* instanceLayer) { instanceBuilder.enable_extension(instanceLayer); });
+    
+    vkb::Instance vkbInstance = instanceBuilder.build().value();
+    
+    instance = vkbInstance.instance;
+    debugMessenger = vkbInstance.debug_messenger;
+    
     isInitialized = true;
 }
 
-void Engine::cleanUp() {
+void Engine::terminate() {
     
 }
 
