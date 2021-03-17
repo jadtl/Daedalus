@@ -27,6 +27,8 @@
 		05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
 		05EF4FA42602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
 		05EF4FA52602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
+		05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA726026E4300E293AD /* Bootstrap.cpp */; };
+		05EF4FA926026E4400E293AD /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA726026E4300E293AD /* Bootstrap.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -85,6 +87,8 @@
 		05EF4F9F2602371A00E293AD /* Initializers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Initializers.h; sourceTree = "<group>"; };
 		05EF4FA22602372800E293AD /* Types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cpp; sourceTree = "<group>"; };
 		05EF4FA32602372800E293AD /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		05EF4FA626026E4300E293AD /* Bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
+		05EF4FA726026E4300E293AD /* Bootstrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bootstrap.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +201,8 @@
 		05E2DD7825D1676100C198FA /* Daedalus */ = {
 			isa = PBXGroup;
 			children = (
+				05EF4FA726026E4300E293AD /* Bootstrap.cpp */,
+				05EF4FA626026E4300E293AD /* Bootstrap.h */,
 				05EF4F9A2602362A00E293AD /* Engine.cpp */,
 				05EF4F9B2602362A00E293AD /* Engine.h */,
 				05EF4F9E2602371A00E293AD /* Initializers.cpp */,
@@ -308,6 +314,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */,
 				05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */,
 				05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */,
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
@@ -321,6 +328,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05EF4FA926026E4400E293AD /* Bootstrap.cpp in Sources */,
 				05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */,
 				05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */,
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
