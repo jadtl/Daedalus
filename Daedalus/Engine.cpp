@@ -81,6 +81,99 @@ void Engine::render() {
     //wait until the GPU has finished rendering the last frame. Timeout of 1 second
     VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
     VK_CHECK(vkResetFences(device, 1, &renderFence));
+    
+    //request image from the swapchain, one second timeout
+    uint32_t swapchainImageIndex;
+    VK_CHECK(vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, VK_NULL_HANDLE, &swapchainImageIndex));
+    
+    //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
+    VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
+    
+    //naming it cmd for shorter writing
+    VkCommandBuffer cmd = mainCommandBuffer;
+
+    //begin the command buffer recording. We will use this command buffer exactly once, so we want to let Vulkan know that
+    VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+    commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    commandBufferBeginInfo.pNext = VK_NULL_HANDLE;
+
+    commandBufferBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+    commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    VK_CHECK(vkBeginCommandBuffer(cmd, &commandBufferBeginInfo));
+    
+    //make a clear-color from frame number. This will flash with a 120*pi frame period.
+    VkClearValue clearValue;
+    float flash = abs(sin(frameNumber / 120.f));
+    clearValue.color = { { 0.0f, 0.0f, flash, 1.0f } };
+
+    //start the main renderpass.
+    //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
+    VkRenderPassBeginInfo rpInfo = {};
+    rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    rpInfo.pNext = nullptr;
+
+    rpInfo.renderPass = renderPass;
+    rpInfo.renderArea.offset.x = 0;
+    rpInfo.renderArea.offset.y = 0;
+    rpInfo.renderArea.extent = settings.windowExtent;
+    rpInfo.framebuffer = framebuffers[swapchainImageIndex];
+
+    //connect clear values
+    rpInfo.clearValueCount = 1;
+    rpInfo.pClearValues = &clearValue;
+
+    vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
+    
+    //finalize the render pass
+    vkCmdEndRenderPass(cmd);
+    //finalize the command buffer (we can no longer add commands, but it can now be executed)
+    VK_CHECK(vkEndCommandBuffer(cmd));
+    
+    //prepare the submission to the queue.
+    //we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
+    //we will signal the _renderSemaphore, to signal that rendering has finished
+
+    VkSubmitInfo submit = {};
+    submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit.pNext = VK_NULL_HANDLE;
+
+    VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+    submit.pWaitDstStageMask = &waitStage;
+
+    submit.waitSemaphoreCount = 1;
+    submit.pWaitSemaphores = &presentSemaphore;
+
+    submit.signalSemaphoreCount = 1;
+    submit.pSignalSemaphores = &renderSemaphore;
+
+    submit.commandBufferCount = 1;
+    submit.pCommandBuffers = &cmd;
+
+    //submit command buffer to the queue and execute it.
+    // _renderFence will now block until the graphic commands finish execution
+    VK_CHECK(vkQueueSubmit(graphicsQueue, 1, &submit, renderFence));
+    
+    // this will put the image we just rendered into the visible window.
+    // we want to wait on the _renderSemaphore for that,
+    // as it's necessary that drawing commands have finished before the image is displayed to the user
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.pNext = VK_NULL_HANDLE;
+
+    presentInfo.pSwapchains = &swapchain;
+    presentInfo.swapchainCount = 1;
+
+    presentInfo.pWaitSemaphores = &renderSemaphore;
+    presentInfo.waitSemaphoreCount = 1;
+
+    presentInfo.pImageIndices = &swapchainImageIndex;
+
+    VK_CHECK(vkQueuePresentKHR(graphicsQueue, &presentInfo));
+
+    //increase the number of frames drawn
+    frameNumber++;
 }
 
 void Engine::onKey(Key key) {
