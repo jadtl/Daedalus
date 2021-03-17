@@ -46,6 +46,8 @@ void Engine::initialize() {
     
     initializeFramebuffers();
     
+    initializeSyncStructures();
+    
     isInitialized = true;
 }
 
@@ -229,4 +231,26 @@ void Engine::initializeFramebuffers() {
         framebufferCreateInfo.pAttachments = &swapchainImageViews[i];
         VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, VK_NULL_HANDLE, &framebuffers[i]));
     }
+}
+
+void Engine::initializeSyncStructures() {
+    //create syncronization structures
+        
+    VkFenceCreateInfo fenceCreateInfo = {};
+    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCreateInfo.pNext = VK_NULL_HANDLE;
+
+    //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
+    fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
+
+    //for the semaphores we don't need any flags
+    VkSemaphoreCreateInfo semaphoreCreateInfo = {};
+    semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    semaphoreCreateInfo.pNext = VK_NULL_HANDLE;
+    semaphoreCreateInfo.flags = 0;
+
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &presentSemaphore));
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &renderSemaphore));
 }

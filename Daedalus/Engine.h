@@ -36,6 +36,9 @@ public:
 
     std::vector<VkFramebuffer> framebuffers;
     
+    VkSemaphore presentSemaphore, renderSemaphore;
+    VkFence renderFence;
+    
     bool isInitialized{false};
     int frameNumber{0};
     
@@ -80,4 +83,5 @@ private:
     void initializeCommands();
     void initializeDefaultRenderPass();
     void initializeFramebuffers();
+    void initializeSyncStructures();
 };
