@@ -32,6 +32,10 @@ public:
     VkCommandPool commandPool;
     VkCommandBuffer mainCommandBuffer;
     
+    VkRenderPass renderPass;
+
+    std::vector<VkFramebuffer> framebuffers;
+    
     bool isInitialized{false};
     int frameNumber{0};
     
@@ -71,6 +75,9 @@ private:
     void initialize();
     void terminate();
     
+    void initializeVulkan();
     void initializeSwapchain();
     void initializeCommands();
+    void initializeDefaultRenderPass();
+    void initializeFramebuffers();
 };
