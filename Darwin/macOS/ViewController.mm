@@ -27,9 +27,9 @@
     
     std::vector<std::string> args;
     args.push_back("-validate");
-    engine = new Engine(args);
+    engine = new Engine(args, self.view.layer);
     
-    engine -> run(self.view.layer);
+    engine -> run();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
     CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, engine);
@@ -52,12 +52,12 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];;  
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];;
 }
 
 
 -(void) keyDown:(NSEvent*) theEvent {
-   Engine::Key key;
+    Engine::Key key;
     switch (theEvent.keyCode) {
         case 0:
             key = Engine::KEY_A;
@@ -81,7 +81,6 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
             key = Engine::KEY_SPACE;
             break;
     }
-
     engine -> onKey(key);
 }
 

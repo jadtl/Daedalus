@@ -49,9 +49,9 @@ void Engine::initialize() {
     if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
     
-    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](char* instanceLayer) {
+    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](const char* instanceLayer) {
         instanceBuilder.enable_layer(instanceLayer); });
-    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](char* instanceLayer) {
+    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](const char* instanceLayer) {
         instanceBuilder.enable_extension(instanceLayer); });
     
     vkb::Instance vkbInstance = instanceBuilder.build().value();
@@ -72,6 +72,7 @@ void Engine::initialize() {
     vkb::PhysicalDevice physicalDevice = physicalDeviceSelector
         .set_minimum_version(1, 1)
         .set_surface(this->surface)
+        .add_desired_extension("VK_KHR_portability_subset")
         .select()
         .value();
     
@@ -81,6 +82,8 @@ void Engine::initialize() {
     
     this->device = vkbDevice.device;
     this->physicalDevice = physicalDevice.physical_device;
+    
+    initializeSwapchain();
     
     isInitialized = true;
 }
@@ -116,5 +119,18 @@ void Engine::onKey(Key key) {
 }
 
 void Engine::initializeSwapchain() {
+    vkb::SwapchainBuilder swapchainBuilder{physicalDevice, device, surface};
     
+    vkb::Swapchain vkbSwapchain = swapchainBuilder
+        .use_default_format_selection()
+        .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+        .set_desired_extent(settings.windowExtent.width, settings.windowExtent.height)
+        .build()
+        .value();
+    
+    swapchain = vkbSwapchain.swapchain;
+    swapchainImages = vkbSwapchain.get_images().value();
+    swapchainImageViews = vkbSwapchain.get_image_views().value();
+    
+    swapchainImageFormat = vkbSwapchain.image_format;
 }
