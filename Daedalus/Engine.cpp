@@ -78,7 +78,9 @@ void Engine::update() {
 }
 
 void Engine::render() {
-    
+    //wait until the GPU has finished rendering the last frame. Timeout of 1 second
+    VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
+    VK_CHECK(vkResetFences(device, 1, &renderFence));
 }
 
 void Engine::onKey(Key key) {
@@ -95,7 +97,7 @@ void Engine::initializeVulkan() {
         .set_app_version(0, 1)
         .require_api_version(1, 1, 0);
     
-    if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
+    if (settings.validate) instanceBuilder.request_validation_layers(VK_TRUE).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
     
     std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](const char* instanceLayer) {
@@ -243,7 +245,7 @@ void Engine::initializeSyncStructures() {
     //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
     fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
+    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, VK_NULL_HANDLE, &renderFence));
 
     //for the semaphores we don't need any flags
     VkSemaphoreCreateInfo semaphoreCreateInfo = {};
