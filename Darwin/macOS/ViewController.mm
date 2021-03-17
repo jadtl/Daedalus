@@ -52,7 +52,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];;
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];
 }
 
 
