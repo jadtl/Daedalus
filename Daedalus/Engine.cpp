@@ -104,9 +104,9 @@ void Engine::render() {
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
-    float fadeRed = pow(2, sin(frameNumber / 30.f));
-    float fadeGreen = pow(2, cos(frameNumber / 15.f));
-    float fadeBlue = pow(2, sin(frameNumber / 30.f));
+    float fadeRed = pow(2, cos(frameNumber / 25.f));
+    float fadeGreen = pow(2, cos(frameNumber / 20.f) - .25f);
+    float fadeBlue = pow(2, sin(frameNumber / 25.f));
     
     clearValue.color = { { fadeRed, fadeGreen, fadeBlue, 1.0f } };
 

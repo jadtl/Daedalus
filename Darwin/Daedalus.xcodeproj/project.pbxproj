@@ -11,6 +11,8 @@
 		0509E1C72603A20F003B4180 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0509E1C42603A20F003B4180 /* Pipeline.cpp */; };
 		053884D22603E67C00F9B5A8 /* vulkan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; };
 		053884D32603E67C00F9B5A8 /* vulkan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; };
+		053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
@@ -21,8 +23,6 @@
 		05C68D4925C8384D00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4725C8384D00529B60 /* Main.storyboard */; };
 		05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4A25C8384E00529B60 /* Assets.xcassets */; };
 		05C68D5125C8384E00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* Main.m */; };
-		05E2DD9225D1693D00C198FA /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */; };
-		05E2DD9325D1693D00C198FA /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
 		05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
 		05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
@@ -45,13 +45,13 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		05E2DD9425D1693D00C198FA /* Embed Frameworks */ = {
+		053884DE2603FFC300F9B5A8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				05E2DD9325D1693D00C198FA /* MoltenVK.xcframework in Embed Frameworks */,
+				053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -65,6 +65,7 @@
 		0509E1C42603A20F003B4180 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
 		0509E1C52603A20F003B4180 /* Pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipeline.h; sourceTree = "<group>"; };
 		053884D12603E67C00F9B5A8 /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
+		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,7 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05E2DD9225D1693D00C198FA /* MoltenVK.xcframework in Frameworks */,
+				053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +200,7 @@
 		05C68D8D25C853D700529B60 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */,
 				05E2DD9525D1696800C198FA /* vulkan.framework */,
 				053884D12603E67C00F9B5A8 /* vulkan.framework */,
 				05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */,
@@ -266,7 +268,7 @@
 				05C68D3A25C8384D00529B60 /* Resources */,
 				05C68D3825C8384D00529B60 /* Sources */,
 				05C68D3925C8384D00529B60 /* Frameworks */,
-				05E2DD9425D1693D00C198FA /* Embed Frameworks */,
+				053884DE2603FFC300F9B5A8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
