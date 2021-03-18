@@ -356,8 +356,8 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    VkShaderModule triangleFragShader;
-    if (!loadShaderModule("frag.spv", &triangleFragShader))
+    VkShaderModule fragShader;
+    if (!loadShaderModule("frag.spv", &fragShader))
     {
         std::cout << "Error when building the triangle fragment shader module" << std::endl;
     }
@@ -365,8 +365,8 @@ void Engine::initializePipelines() {
         std::cout << "Triangle fragment shader succesfully loaded" << std::endl;
     }
 
-    VkShaderModule triangleVertexShader;
-    if (!loadShaderModule("vert.spv", &triangleVertexShader))
+    VkShaderModule vertexShader;
+    if (!loadShaderModule("vert.spv", &vertexShader))
     {
         std::cout << "Error when building the triangle vertex shader module" << std::endl;
         
