@@ -47,7 +47,7 @@ public:
     
     struct Settings {
         std::string engineName = "Daedalus";
-        std::string applicationName = "The Architect";
+        std::string applicationName = "Daedalus";
         
         VkExtent2D windowExtent{480, 270};
         

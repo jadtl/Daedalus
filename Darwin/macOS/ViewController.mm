@@ -2,6 +2,7 @@
 #import <QuartzCore/CAMetalLayer.h>
 
 #include "Engine.h"
+
 #include <string>
 #include <vector>
 
@@ -27,7 +28,7 @@
     self.view.layer = [CAMetalLayer layer];
     
     std::vector<std::string> args;
-    args.push_back("-validate");
+    //args.push_back("-validate");
     engine = new Engine(args, (__bridge void*) self.view.layer);
     
     engine -> run();

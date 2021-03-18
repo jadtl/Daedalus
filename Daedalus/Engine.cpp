@@ -22,12 +22,8 @@
     } while (0)
 
 Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer) {
-    instanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
     if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
-    
-    instanceExtensions.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
     
     initialize();
 }
@@ -203,11 +199,6 @@ void Engine::initializeVulkan() {
     
     if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
-    
-    std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](const char* instanceLayer) {
-        instanceBuilder.enable_layer(instanceLayer); });
-    std::for_each(instanceExtensions.begin(), instanceExtensions.end(), [&instanceBuilder](const char* instanceLayer) {
-        instanceBuilder.enable_extension(instanceLayer); });
     
     vkb::Instance vkbInstance = instanceBuilder.build().value();
     
