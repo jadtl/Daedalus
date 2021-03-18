@@ -24,10 +24,11 @@
     [super viewDidLoad];
     
     self.view.wantsLayer = YES;
+    self.view.layer = [CAMetalLayer layer];
     
     std::vector<std::string> args;
     args.push_back("-validate");
-    engine = new Engine(args, self.view.layer);
+    engine = new Engine(args, (__bridge void*) self.view.layer);
     
     engine -> run();
     
