@@ -1,6 +1,6 @@
 #import "ViewController.h"
 
-#include <Engine.h>
+#include "Engine.h"
 
 #pragma mark -
 #pragma mark ViewController
@@ -20,13 +20,14 @@
 /** Since this is a single-view app, init Vulkan when the view is loaded. */
 -(void) viewDidLoad {
     [super viewDidLoad];
-
+    
     self.view.contentScaleFactor = UIScreen.mainScreen.nativeScale;
 
     std::vector<std::string> args;
-    args.push_back("-v");
-    engine = new Engine(args);
-    engine->run(self.view.layer);
+    //args.push_back("-validate");
+    engine = new Engine(args, (__bridge void*) self.view.layer);
+    
+    engine->run();
 
     uint32_t fps = 60;
     displayLink = [CADisplayLink displayLinkWithTarget: self selector: @selector(renderLoop)];
@@ -34,7 +35,7 @@
     [displayLink addToRunLoop: NSRunLoop.currentRunLoop forMode: NSDefaultRunLoopMode];
 }
 
--(void) renderLoop { engine -> updateAndDraw(); }
+-(void) renderLoop { engine -> update(); engine -> render(); }
 
 @end
 

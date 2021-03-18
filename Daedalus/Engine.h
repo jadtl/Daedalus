@@ -84,4 +84,7 @@ private:
     void initializeDefaultRenderPass();
     void initializeFramebuffers();
     void initializeSyncStructures();
+    void initializePipelines();
+    
+    bool loadShaderModule(const char* filePath, VkShaderModule* shaderModule);
 };

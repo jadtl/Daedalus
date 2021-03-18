@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0509E1B826036CA2003B4180 /* Triangle.vert in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B626036CA2003B4180 /* Triangle.vert */; };
-		0509E1BB26036CB9003B4180 /* Triangle.frag in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B926036CB9003B4180 /* Triangle.frag */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
@@ -61,6 +59,7 @@
 /* Begin PBXFileReference section */
 		0509E1B626036CA2003B4180 /* Triangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Triangle.vert; sourceTree = "<group>"; };
 		0509E1B926036CB9003B4180 /* Triangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Triangle.frag; sourceTree = "<group>"; };
+		0509E1C3260397B3003B4180 /* Daedalus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Daedalus.entitlements; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,6 +127,7 @@
 		05C68D1625C8381C00529B60 = {
 			isa = PBXGroup;
 			children = (
+				0509E1C3260397B3003B4180 /* Daedalus.entitlements */,
 				05E2DD7825D1676100C198FA /* Daedalus */,
 				0509E1B526036C62003B4180 /* Shaders */,
 				05C9D0EB25C879530039E8ED /* Darwin */,
@@ -318,8 +318,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0509E1B826036CA2003B4180 /* Triangle.vert in Resources */,
-				0509E1BB26036CB9003B4180 /* Triangle.frag in Resources */,
 				05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */,
 				05C68D4925C8384D00529B60 /* Main.storyboard in Resources */,
 			);
@@ -344,7 +342,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ${PROJECT_DIR}/..\nmkdir $(BUILT_PRODUCTS_DIR)/Shaders\nglslc Shaders/Triangle.vert -o Shaders/Triangle.vert.spv\nglslc Shaders/Triangle.frag -o Shaders/Triangle.frag.spv\ncp Shaders/*spv $(BUILT_PRODUCTS_DIR)\necho $(BUILT_PRODUCTS_DIR)\n";
+			shellScript = "glslc ${PROJECT_DIR}/../Shaders/Triangle.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/vert.spv\nglslc ${PROJECT_DIR}/../Shaders/Triangle.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/frag.spv\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -492,7 +490,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -510,6 +508,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-w",
@@ -527,7 +526,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -545,6 +544,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-w",

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 
 // We want to immediately abort when there is an error. In normal engines this would give an error message to the user, or perform a dump of state
 #define VK_CHECK(x)                                                      \
@@ -47,6 +48,8 @@ void Engine::initialize() {
     initializeFramebuffers();
     
     initializeSyncStructures();
+    
+    initializePipelines();
     
     isInitialized = true;
 }
@@ -232,7 +235,6 @@ void Engine::initializeVulkan() {
     
     graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
     graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
-    
 }
 
 void Engine::initializeSwapchain() {
@@ -351,4 +353,63 @@ void Engine::initializeSyncStructures() {
 
     VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &presentSemaphore));
     VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &renderSemaphore));
+}
+
+void Engine::initializePipelines() {
+    VkShaderModule triangleFragShader;
+    if (!loadShaderModule("frag.spv", &triangleFragShader))
+    {
+        std::cout << "Error when building the triangle fragment shader module" << std::endl;
+    }
+    else {
+        std::cout << "Triangle fragment shader succesfully loaded" << std::endl;
+    }
+
+    VkShaderModule triangleVertexShader;
+    if (!loadShaderModule("vert.spv", &triangleVertexShader))
+    {
+        std::cout << "Error when building the triangle vertex shader module" << std::endl;
+        
+    }
+    else {
+        std::cout << "Triangle vertex shader succesfully loaded" << std::endl;
+    }
+}
+
+bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {
+    std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open()) { return false; }
+    
+    //find what the size of the file is by looking up the location of the cursor
+    //because the cursor is at the end, it gives the size directly in bytes
+    size_t fileSize = (size_t)file.tellg();
+
+    //spirv expects the buffer to be on uint32, so make sure to reserve an int vector big enough for the entire file
+    std::vector<uint32_t> buffer(fileSize / sizeof(uint32_t));
+
+    //put file cursor at beggining
+    file.seekg(0);
+
+    //load the entire file into the buffer
+    file.read((char*)buffer.data(), fileSize);
+
+    //now that the file is loaded into the buffer, we can close it
+    file.close();
+    
+    //create a new shader module, using the buffer we loaded
+    VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
+    shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderModuleCreateInfo.pNext = VK_NULL_HANDLE;
+
+    //codeSize has to be in bytes, so multply the ints in the buffer by size of int to know the real size of the buffer
+    shaderModuleCreateInfo.codeSize = buffer.size() * sizeof(uint32_t);
+    shaderModuleCreateInfo.pCode = buffer.data();
+
+    //check that the creation goes well.
+    VkShaderModule result;
+    if (vkCreateShaderModule(device, &shaderModuleCreateInfo, VK_NULL_HANDLE, &result) != VK_SUCCESS) { return false; }
+    *shaderModule = result;
+    
+    return true;
 }
