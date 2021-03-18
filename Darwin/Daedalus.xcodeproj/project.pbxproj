@@ -123,7 +123,8 @@
 				0509E1B626036CA2003B4180 /* Triangle.vert */,
 				0509E1B926036CB9003B4180 /* Triangle.frag */,
 			);
-			path = Shaders;
+			name = Shaders;
+			path = ../Shaders;
 			sourceTree = "<group>";
 		};
 		05C68D1625C8381C00529B60 = {
