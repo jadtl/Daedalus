@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0509E1B726036CA2003B4180 /* Triangle.vert in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B626036CA2003B4180 /* Triangle.vert */; };
+		0509E1B826036CA2003B4180 /* Triangle.vert in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B626036CA2003B4180 /* Triangle.vert */; };
+		0509E1BA26036CB9003B4180 /* Triangle.frag in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B926036CB9003B4180 /* Triangle.frag */; };
+		0509E1BB26036CB9003B4180 /* Triangle.frag in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B926036CB9003B4180 /* Triangle.frag */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
@@ -57,6 +61,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0509E1B626036CA2003B4180 /* Triangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Triangle.vert; sourceTree = "<group>"; };
+		0509E1B926036CB9003B4180 /* Triangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Triangle.frag; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,10 +117,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0509E1B526036C62003B4180 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				0509E1B626036CA2003B4180 /* Triangle.vert */,
+				0509E1B926036CB9003B4180 /* Triangle.frag */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
 		05C68D1625C8381C00529B60 = {
 			isa = PBXGroup;
 			children = (
 				05E2DD7825D1676100C198FA /* Daedalus */,
+				0509E1B526036C62003B4180 /* Shaders */,
 				05C9D0EB25C879530039E8ED /* Darwin */,
 				05C68D2025C8381D00529B60 /* Products */,
 				05C68D8D25C853D700529B60 /* Frameworks */,
@@ -293,6 +309,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0509E1B726036CA2003B4180 /* Triangle.vert in Resources */,
+				0509E1BA26036CB9003B4180 /* Triangle.frag in Resources */,
 				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
 				05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */,
 			);
@@ -302,6 +320,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0509E1B826036CA2003B4180 /* Triangle.vert in Resources */,
+				0509E1BB26036CB9003B4180 /* Triangle.frag in Resources */,
 				05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */,
 				05C68D4925C8384D00529B60 /* Main.storyboard in Resources */,
 			);

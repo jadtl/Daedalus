@@ -104,8 +104,11 @@ void Engine::render() {
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
-    float flash = abs(sin(frameNumber / 120.f));
-    clearValue.color = { { 0.0f, 0.0f, flash, 1.0f } };
+    float fadeRed = pow(2, sin(frameNumber / 30.f));
+    float fadeGreen = pow(2, cos(frameNumber / 15.f));
+    float fadeBlue = pow(2, sin(frameNumber / 30.f));
+    
+    clearValue.color = { { fadeRed, fadeGreen, fadeBlue, 1.0f } };
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
