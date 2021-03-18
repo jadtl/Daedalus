@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0509E1B726036CA2003B4180 /* Triangle.vert in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B626036CA2003B4180 /* Triangle.vert */; };
 		0509E1B826036CA2003B4180 /* Triangle.vert in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B626036CA2003B4180 /* Triangle.vert */; };
-		0509E1BA26036CB9003B4180 /* Triangle.frag in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B926036CB9003B4180 /* Triangle.frag */; };
 		0509E1BB26036CB9003B4180 /* Triangle.frag in Resources */ = {isa = PBXBuildFile; fileRef = 0509E1B926036CB9003B4180 /* Triangle.frag */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
@@ -239,6 +237,7 @@
 			buildConfigurationList = 05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */;
 			buildPhases = (
 				05C68D1D25C8381D00529B60 /* Resources */,
+				0509E1BC26036E1D003B4180 /* Compile Shaders */,
 				05C68D1B25C8381D00529B60 /* Sources */,
 				05C68D1C25C8381D00529B60 /* Frameworks */,
 				05E2DD7125D1624A00C198FA /* Embed Frameworks */,
@@ -310,8 +309,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0509E1B726036CA2003B4180 /* Triangle.vert in Resources */,
-				0509E1BA26036CB9003B4180 /* Triangle.frag in Resources */,
 				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
 				05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */,
 			);
@@ -329,6 +326,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0509E1BC26036E1D003B4180 /* Compile Shaders */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Shaders";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}/..\nmkdir $(BUILT_PRODUCTS_DIR)/Shaders\nglslc Shaders/Triangle.vert -o Shaders/Triangle.vert.spv\nglslc Shaders/Triangle.frag -o Shaders/Triangle.frag.spv\ncp Shaders/*spv $(BUILT_PRODUCTS_DIR)\necho $(BUILT_PRODUCTS_DIR)\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		05C68D1B25C8381D00529B60 /* Sources */ = {
