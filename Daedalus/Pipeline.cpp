@@ -7,7 +7,7 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass renderPa
     //at the moment we won't support multiple viewports or scissors
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.pNext = VK_NULL_HANDLE;
+    viewportState.pNext = nullptr;
 
     viewportState.viewportCount = 1;
     viewportState.pViewports = &viewport;
@@ -18,7 +18,7 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass renderPa
     //the blending is just "no blend", but we do write to the color attachment
     VkPipelineColorBlendStateCreateInfo colorBlending = {};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.pNext = VK_NULL_HANDLE;
+    colorBlending.pNext = nullptr;
 
     colorBlending.logicOpEnable = VK_FALSE;
     colorBlending.logicOp = VK_LOGIC_OP_COPY;
@@ -29,7 +29,7 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass renderPa
     //we now use all of the info structs we have been writing into into this one to create the pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.pNext = VK_NULL_HANDLE;
+    pipelineInfo.pNext = nullptr;
 
     pipelineInfo.stageCount = shaderStages.size();
     pipelineInfo.pStages = shaderStages.data();
@@ -42,12 +42,12 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass renderPa
     pipelineInfo.layout = pipelineLayout;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineHandle = nullptr;
 
     //it's easy to error out on create graphics pipeline, so we handle it a bit better than the common VK_CHECK case
     VkPipeline newPipeline;
     if (vkCreateGraphicsPipelines(
-        device, VK_NULL_HANDLE, 1, &pipelineInfo, VK_NULL_HANDLE, &newPipeline) != VK_SUCCESS) {
+        device, nullptr, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS) {
         std::cout << "Failed to create pipeline" << "\n";
         return VK_NULL_HANDLE; // Failed to create graphics pipeline
     }

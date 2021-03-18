@@ -57,18 +57,18 @@ void Engine::initialize() {
 
 void Engine::terminate() {
     if (isInitialized) {
-        vkDestroyCommandPool(device, commandPool, VK_NULL_HANDLE);
-        vkDestroySwapchainKHR(device, swapchain, VK_NULL_HANDLE);
-        vkDestroyRenderPass(device, renderPass, VK_NULL_HANDLE);
+        vkDestroyCommandPool(device, commandPool, nullptr);
+        vkDestroySwapchainKHR(device, swapchain, nullptr);
+        vkDestroyRenderPass(device, renderPass, nullptr);
         std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer) {
-            vkDestroyFramebuffer(device, framebuffer, VK_NULL_HANDLE); });
+            vkDestroyFramebuffer(device, framebuffer, nullptr); });
         std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
-            vkDestroyImageView(device, imageView, VK_NULL_HANDLE); });
+            vkDestroyImageView(device, imageView, nullptr); });
         
-        vkDestroyDevice(device, VK_NULL_HANDLE);
-        vkDestroySurfaceKHR(instance, surface, VK_NULL_HANDLE);
+        vkDestroyDevice(device, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
         if (settings.validate) vkb::destroy_debug_utils_messenger(instance, debugMessenger);
-        vkDestroyInstance(instance, VK_NULL_HANDLE);
+        vkDestroyInstance(instance, nullptr);
     }
 }
 
@@ -88,7 +88,7 @@ void Engine::render() {
     
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
-    VK_CHECK(vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, VK_NULL_HANDLE, &swapchainImageIndex));
+    VK_CHECK(vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex));
     
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
     VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
@@ -99,9 +99,9 @@ void Engine::render() {
     //begin the command buffer recording. We will use this command buffer exactly once, so we want to let Vulkan know that
     VkCommandBufferBeginInfo commandBufferBeginInfo = {};
     commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    commandBufferBeginInfo.pNext = VK_NULL_HANDLE;
+    commandBufferBeginInfo.pNext = nullptr;
 
-    commandBufferBeginInfo.pInheritanceInfo = VK_NULL_HANDLE;
+    commandBufferBeginInfo.pInheritanceInfo = nullptr;
     commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     VK_CHECK(vkBeginCommandBuffer(cmd, &commandBufferBeginInfo));
@@ -118,7 +118,7 @@ void Engine::render() {
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
     VkRenderPassBeginInfo rpInfo = {};
     rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpInfo.pNext = VK_NULL_HANDLE;
+    rpInfo.pNext = nullptr;
 
     rpInfo.renderPass = renderPass;
     rpInfo.renderArea.offset.x = 0;
@@ -147,7 +147,7 @@ void Engine::render() {
 
     VkSubmitInfo submit = {};
     submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submit.pNext = VK_NULL_HANDLE;
+    submit.pNext = nullptr;
 
     VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
@@ -171,7 +171,7 @@ void Engine::render() {
     // as it's necessary that drawing commands have finished before the image is displayed to the user
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.pNext = VK_NULL_HANDLE;
+    presentInfo.pNext = nullptr;
 
     presentInfo.pSwapchains = &swapchain;
     presentInfo.swapchainCount = 1;
@@ -201,7 +201,7 @@ void Engine::initializeVulkan() {
         .set_app_version(0, 1)
         .require_api_version(1, 1, 0);
     
-    if (settings.validate) instanceBuilder.request_validation_layers(VK_TRUE).use_default_debug_messenger();
+    if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
     
     std::for_each(instanceLayers.begin(), instanceLayers.end(), [&instanceBuilder](const char* instanceLayer) {
@@ -217,10 +217,10 @@ void Engine::initializeVulkan() {
     // Surface creation
     VkMetalSurfaceCreateInfoEXT surfaceInfo;
     surfaceInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-    surfaceInfo.pNext = VK_NULL_HANDLE;
+    surfaceInfo.pNext = nullptr;
     surfaceInfo.flags = 0;
     surfaceInfo.pLayer = caMetalLayer;
-    VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, VK_NULL_HANDLE, &this->surface));
+    VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, nullptr, &this->surface));
     
     // Physical device creation
     vkb::PhysicalDeviceSelector physicalDeviceSelector{vkbInstance};
@@ -262,7 +262,7 @@ void Engine::initializeSwapchain() {
 void Engine::initializeCommands() {
     VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, VK_NULL_HANDLE, &commandPool));
+    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool));
     
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
 
@@ -311,15 +311,14 @@ void Engine::initializeDefaultRenderPass() {
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
 
-    
-    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, VK_NULL_HANDLE, &renderPass));
+    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
 }
 
 void Engine::initializeFramebuffers() {
     //create the framebuffers for the swapchain images. This will connect the render-pass to the images for rendering
     VkFramebufferCreateInfo framebufferCreateInfo = {};
     framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    framebufferCreateInfo.pNext = VK_NULL_HANDLE;
+    framebufferCreateInfo.pNext = nullptr;
 
     framebufferCreateInfo.renderPass = renderPass;
     framebufferCreateInfo.attachmentCount = 1;
@@ -334,7 +333,7 @@ void Engine::initializeFramebuffers() {
     //create framebuffers for each of the swapchain image views
     for (int i = 0; i < swapchain_imagecount; i++) {
         framebufferCreateInfo.pAttachments = &swapchainImageViews[i];
-        VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, VK_NULL_HANDLE, &framebuffers[i]));
+        VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]));
     }
 }
 
@@ -343,21 +342,21 @@ void Engine::initializeSyncStructures() {
         
     VkFenceCreateInfo fenceCreateInfo = {};
     fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.pNext = VK_NULL_HANDLE;
+    fenceCreateInfo.pNext = nullptr;
 
     //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
     fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, VK_NULL_HANDLE, &renderFence));
+    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
 
     //for the semaphores we don't need any flags
     VkSemaphoreCreateInfo semaphoreCreateInfo = {};
     semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    semaphoreCreateInfo.pNext = VK_NULL_HANDLE;
+    semaphoreCreateInfo.pNext = nullptr;
     semaphoreCreateInfo.flags = 0;
 
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &presentSemaphore));
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, VK_NULL_HANDLE, &renderSemaphore));
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentSemaphore));
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphore));
 }
 
 void Engine::initializePipelines() {
@@ -373,7 +372,7 @@ void Engine::initializePipelines() {
     
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
-    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, VK_NULL_HANDLE, &pipelineLayout));
+    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout));
     
     //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
     PipelineBuilder pipelineBuilder;
@@ -400,7 +399,7 @@ void Engine::initializePipelines() {
     pipelineBuilder.viewport.minDepth = 0.0f;
     pipelineBuilder.viewport.maxDepth = 1.0f;
     
-    pipelineBuilder.scissor.offset = { 0, 0 };
+    pipelineBuilder.scissor.offset = {0, 0};
     pipelineBuilder.scissor.extent = settings.windowExtent;
 
     //configure the rasterizer to draw filled triangles
@@ -443,7 +442,7 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
     //create a new shader module, using the buffer we loaded
     VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
     shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    shaderModuleCreateInfo.pNext = VK_NULL_HANDLE;
+    shaderModuleCreateInfo.pNext = nullptr;
 
     //codeSize has to be in bytes, so multply the ints in the buffer by size of int to know the real size of the buffer
     shaderModuleCreateInfo.codeSize = buffer.size() * sizeof(uint32_t);
@@ -451,7 +450,7 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
 
     //check that the creation goes well.
     VkShaderModule result;
-    if (vkCreateShaderModule(device, &shaderModuleCreateInfo, VK_NULL_HANDLE, &result) != VK_SUCCESS) { return false; }
+    if (vkCreateShaderModule(device, &shaderModuleCreateInfo, nullptr, &result) != VK_SUCCESS) { return false; }
     *shaderModule = result;
     
     return true;

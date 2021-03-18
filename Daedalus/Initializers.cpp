@@ -3,7 +3,7 @@
 VkCommandPoolCreateInfo init::commandPoolCreateInfo(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags) {
     VkCommandPoolCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     info.queueFamilyIndex = queueFamilyIndex;
     info.flags = flags;
@@ -13,7 +13,7 @@ VkCommandPoolCreateInfo init::commandPoolCreateInfo(uint32_t queueFamilyIndex, V
 VkCommandBufferAllocateInfo init::commandBufferAllocateInfo(VkCommandPool pool, uint32_t count, VkCommandBufferLevel level) {
     VkCommandBufferAllocateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     info.commandPool = pool;
     info.commandBufferCount = count;
@@ -24,7 +24,7 @@ VkCommandBufferAllocateInfo init::commandBufferAllocateInfo(VkCommandPool pool, 
 VkPipelineShaderStageCreateInfo init::pipelineShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule) {
     VkPipelineShaderStageCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     //shader stage
     info.stage = stage;
@@ -38,7 +38,7 @@ VkPipelineShaderStageCreateInfo init::pipelineShaderStageCreateInfo(VkShaderStag
 VkPipelineVertexInputStateCreateInfo init::vertexInputStateCreateInfo() {
     VkPipelineVertexInputStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     //no vertex bindings or attributes
     info.vertexBindingDescriptionCount = 0;
@@ -49,7 +49,7 @@ VkPipelineVertexInputStateCreateInfo init::vertexInputStateCreateInfo() {
 VkPipelineInputAssemblyStateCreateInfo init::inputAssemblyCreateInfo(VkPrimitiveTopology topology) {
     VkPipelineInputAssemblyStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     info.topology = topology;
     //we are not going to use primitive restart on the entire tutorial so leave it on false
@@ -60,7 +60,7 @@ VkPipelineInputAssemblyStateCreateInfo init::inputAssemblyCreateInfo(VkPrimitive
 VkPipelineRasterizationStateCreateInfo init::rasterizationStateCreateInfo(VkPolygonMode polygonMode) {
     VkPipelineRasterizationStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     info.depthClampEnable = VK_FALSE;
     //discards all primitives before the rasterization stage if enabled which we don't want
@@ -83,13 +83,13 @@ VkPipelineRasterizationStateCreateInfo init::rasterizationStateCreateInfo(VkPoly
 VkPipelineMultisampleStateCreateInfo init::multisamplingStateCreateInfo() {
     VkPipelineMultisampleStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     info.sampleShadingEnable = VK_FALSE;
     //multisampling defaulted to no multisampling (1 sample per pixel)
     info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     info.minSampleShading = 1.0f;
-    info.pSampleMask = VK_NULL_HANDLE;
+    info.pSampleMask = nullptr;
     info.alphaToCoverageEnable = VK_FALSE;
     info.alphaToOneEnable = VK_FALSE;
     return info;
@@ -106,13 +106,13 @@ VkPipelineColorBlendAttachmentState init::colorBlendAttachmentState() {
 VkPipelineLayoutCreateInfo init::pipelineLayoutCreateInfo() {
     VkPipelineLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    info.pNext = VK_NULL_HANDLE;
+    info.pNext = nullptr;
 
     // Empty defaults
     info.flags = 0;
     info.setLayoutCount = 0;
-    info.pSetLayouts = VK_NULL_HANDLE;
+    info.pSetLayouts = nullptr;
     info.pushConstantRangeCount = 0;
-    info.pPushConstantRanges = VK_NULL_HANDLE;
+    info.pPushConstantRanges = nullptr;
     return info;
 }
