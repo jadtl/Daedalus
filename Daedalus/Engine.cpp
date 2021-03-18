@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "Initializers.h"
 #include "Bootstrap.h"
+#include "Pipeline.h"
 
 #include <algorithm>
 #include <iostream>
@@ -131,7 +132,11 @@ void Engine::render() {
 
     vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
     
-    //finalize the render pass
+    //once we start adding rendering commands, they will go here
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdDraw(cmd, 3, 1, 0, 0);
+    
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
     VK_CHECK(vkEndCommandBuffer(cmd));
@@ -255,11 +260,11 @@ void Engine::initializeSwapchain() {
 }
 
 void Engine::initializeCommands() {
-    VkCommandPoolCreateInfo commandPoolInfo = init::command_pool_create_info(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
     VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, VK_NULL_HANDLE, &commandPool));
     
-    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::command_buffer_allocate_info(commandPool, 1);
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
 
     VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
 }
@@ -357,23 +362,61 @@ void Engine::initializeSyncStructures() {
 
 void Engine::initializePipelines() {
     VkShaderModule fragShader;
-    if (!loadShaderModule("frag.spv", &fragShader))
-    {
-        std::cout << "Error when building the triangle fragment shader module" << std::endl;
-    }
-    else {
-        std::cout << "Triangle fragment shader succesfully loaded" << std::endl;
-    }
+    if (!loadShaderModule("frag.spv", &fragShader)) {
+        std::cout << "Error when building the triangle fragment shader module" << "\n";
+    } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
 
     VkShaderModule vertexShader;
-    if (!loadShaderModule("vert.spv", &vertexShader))
-    {
-        std::cout << "Error when building the triangle vertex shader module" << std::endl;
-        
-    }
-    else {
-        std::cout << "Triangle vertex shader succesfully loaded" << std::endl;
-    }
+    if (!loadShaderModule("vert.spv", &vertexShader)) {
+        std::cout << "Error when building the triangle vertex shader module" << "\n";
+    } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
+    
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
+    
+    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, VK_NULL_HANDLE, &pipelineLayout));
+    
+    //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
+    PipelineBuilder pipelineBuilder;
+
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, vertexShader));
+
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, fragShader));
+
+
+    //vertex input controls how to read vertices from vertex buffers. We aren't using it yet
+    pipelineBuilder.vertexInputInfo = init::vertexInputStateCreateInfo();
+    
+    //input assembly is the configuration for drawing triangle lists, strips, or individual points.
+    //we are just going to draw triangle list
+    pipelineBuilder.inputAssembly = init::inputAssemblyCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+    //build viewport and scissor from the swapchain extents
+    pipelineBuilder.viewport.x = 0.0f;
+    pipelineBuilder.viewport.y = 0.0f;
+    pipelineBuilder.viewport.width = (float)settings.windowExtent.width;
+    pipelineBuilder.viewport.height = (float)settings.windowExtent.height;
+    pipelineBuilder.viewport.minDepth = 0.0f;
+    pipelineBuilder.viewport.maxDepth = 1.0f;
+    
+    pipelineBuilder.scissor.offset = { 0, 0 };
+    pipelineBuilder.scissor.extent = settings.windowExtent;
+
+    //configure the rasterizer to draw filled triangles
+    pipelineBuilder.rasterizer = init::rasterizationStateCreateInfo(VK_POLYGON_MODE_FILL);
+
+    //we don't use multisampling, so just run the default one
+    pipelineBuilder.multisampling = init::multisamplingStateCreateInfo();
+
+    //a single blend attachment with no blending and writing to RGBA
+    pipelineBuilder.colorBlendAttachment = init::colorBlendAttachmentState();
+
+    //use the triangle layout we created
+    pipelineBuilder.pipelineLayout = pipelineLayout;
+
+    //finally build the pipeline
+    pipeline = pipelineBuilder.buildPipeline(device, renderPass);
 }
 
 bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {

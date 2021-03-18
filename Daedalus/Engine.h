@@ -39,6 +39,9 @@ public:
     VkSemaphore presentSemaphore, renderSemaphore;
     VkFence renderFence;
     
+    VkPipelineLayout pipelineLayout;
+    VkPipeline pipeline;
+    
     bool isInitialized{false};
     int frameNumber{0};
     
