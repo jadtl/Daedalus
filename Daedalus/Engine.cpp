@@ -118,7 +118,7 @@ void Engine::render() {
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
     VkRenderPassBeginInfo rpInfo = {};
     rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpInfo.pNext = nullptr;
+    rpInfo.pNext = VK_NULL_HANDLE;
 
     rpInfo.renderPass = renderPass;
     rpInfo.renderArea.offset.x = 0;
