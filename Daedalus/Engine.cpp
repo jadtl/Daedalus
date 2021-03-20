@@ -136,9 +136,9 @@ void Engine::render() {
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
-    float fadeRed = pow(2, cos(frameNumber / 25.f));
-    float fadeGreen = pow(2, cos(frameNumber / 20.f) - .25f);
-    float fadeBlue = pow(2, sin(frameNumber / 25.f));
+    float fadeRed = pow(2, cos(frameNumber / 25.f)) / 10.f;
+    float fadeGreen = pow(2, cos(frameNumber / 20.f)) / 10.f;
+    float fadeBlue = pow(2, sin(frameNumber / 25.f)) / 10.f;
     
     clearValue.color = { { fadeRed, fadeGreen, fadeBlue, 1.0f } };
 
@@ -285,7 +285,6 @@ void Engine::initializeSwapchain() {
     swapchainImages = vkbSwapchain.get_images().value();
     swapchainImageViews = vkbSwapchain.get_image_views().value();
     settings.windowExtent = vkbSwapchain.extent;
-    
     swapchainImageFormat = vkbSwapchain.image_format;
 }
 

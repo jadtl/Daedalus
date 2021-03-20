@@ -49,7 +49,7 @@ public:
         std::string engineName = "Daedalus";
         std::string applicationName = "The Architect";
         
-        VkExtent2D windowExtent{480, 270};
+        VkExtent2D windowExtent;
         
         bool validate{false};
         bool verbose{false};
