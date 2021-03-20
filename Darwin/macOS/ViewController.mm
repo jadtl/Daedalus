@@ -7,7 +7,10 @@
 #pragma mark -
 #pragma mark ViewController
 
-@implementation ViewController
+@implementation ViewController {
+    CVDisplayLinkRef displayLink;
+    Engine* engine;
+}
 
 - (void) dealloc {
     delete engine;
@@ -25,37 +28,18 @@
     std::vector<std::string> args;
     //args.push_back("-validate");
     engine = new Engine(args, (__bridge void*)self.view.layer);
-    
-    updateFrameSize(self, engine);
     engine -> initialize();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
     CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, (__bridge void *)self);
     CVDisplayLinkStart(displayLink);
-    
-}
 
-static void updateFrameSize(ViewController* viewController, void* engine) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"From %f %f to %u %u", viewController.view.frame.size.width, viewController.view.frame.size.height,
-              ((Engine*)engine) -> settings.windowExtent.width, ((Engine*)engine) -> settings.windowExtent.height);
-    
-        CGRect frame = viewController.view.frame;
-    
-        frame.size.width = ((Engine*)engine) -> settings.windowExtent.width;
-        frame.size.height = ((Engine*)engine) -> settings.windowExtent.height;
-    
-        viewController.view.frame = frame;
-    });
 }
 
 #pragma mark Display loop callback function
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
 static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* viewController) {
-    
-    updateFrameSize((ViewController*)viewController, ((ViewController*)viewController)->engine);
-    
     ((ViewController*)viewController)->engine->update();
     ((ViewController*)viewController)->engine->render();
     
@@ -63,8 +47,6 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) viewDidAppear {
-    [super viewDidAppear];
-    
     self.view.window.initialFirstResponder = self.view;
     
     self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];

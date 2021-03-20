@@ -49,7 +49,6 @@ public:
         std::string engineName = "Daedalus";
         std::string applicationName = "The Architect";
         
-        //VkExtent2D windowExtent{1920, 1200};
         VkExtent2D windowExtent{480, 270};
         
         bool validate{false};

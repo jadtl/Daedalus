@@ -278,13 +278,13 @@ void Engine::initializeSwapchain() {
     vkb::Swapchain vkbSwapchain = swapchainBuilder
         .use_default_format_selection()
         .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-        .set_desired_extent(settings.windowExtent.width, settings.windowExtent.height)
         .build()
         .value();
     
     swapchain = vkbSwapchain.swapchain;
     swapchainImages = vkbSwapchain.get_images().value();
     swapchainImageViews = vkbSwapchain.get_image_views().value();
+    settings.windowExtent = vkbSwapchain.extent;
     
     swapchainImageFormat = vkbSwapchain.image_format;
 }
