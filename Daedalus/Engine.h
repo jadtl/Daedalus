@@ -49,7 +49,7 @@ public:
         std::string engineName = "Daedalus";
         std::string applicationName = "The Architect";
         
-        VkExtent2D windowExtent{480, 270};
+        VkExtent2D windowExtent{1080, 900};
         
         bool validate{false};
         bool verbose{false};
@@ -87,6 +87,7 @@ private:
     void initializePipelines();
     
     void terminate();
+    void terminateSwapchain();
     
     bool loadShaderModule(const char* filePath, VkShaderModule* shaderModule);
 };

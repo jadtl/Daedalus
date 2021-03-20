@@ -1,18 +1,13 @@
 #import "ViewController.h"
 #import <QuartzCore/CAMetalLayer.h>
 
-#include "Engine.h"
-
 #include <string>
 #include <vector>
 
 #pragma mark -
 #pragma mark ViewController
 
-@implementation ViewController {
-    CVDisplayLinkRef displayLink;
-    Engine* engine;
-}
+@implementation ViewController
 
 - (void) dealloc {
     delete engine;
@@ -29,33 +24,35 @@
     
     std::vector<std::string> args;
     //args.push_back("-validate");
-    engine = new Engine(args, (__bridge void*) self.view.layer);
+    engine = new Engine(args, (__bridge void*)self.view.layer);
     
-    [self updateFrame];
+    updateFrameSize(self, engine);
     engine -> initialize();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
-    CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, engine);
+    CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, (__bridge void *)self);
     CVDisplayLinkStart(displayLink);
     
 }
 
-- (void) updateFrame {
-    NSLog(@"From %f %f to %u %u", self.view.frame.size.width, self.view.frame.size.height,
-          engine -> settings.windowExtent.width, engine -> settings.windowExtent.height);
-    CGRect frame = self.view.frame;
-    frame.size.width = engine -> settings.windowExtent.width;
-    frame.size.height = engine -> settings.windowExtent.height;
-    self.view.frame = frame;
+static void updateFrameSize(ViewController* viewController, void* engine) {
+    NSLog(@"From %f %f to %u %u", viewController.view.frame.size.width, viewController.view.frame.size.height,
+              ((Engine*)engine) -> settings.windowExtent.width, ((Engine*)engine) -> settings.windowExtent.height);
+    CGRect frame = viewController.view.frame;
+    frame.size.width = ((Engine*)engine) -> settings.windowExtent.width;
+    frame.size.height = ((Engine*)engine) -> settings.windowExtent.height;
+    viewController.view.frame = frame;
 }
 
 #pragma mark Display loop callback function
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
-static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* engine) {
+static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* viewController) {
     
-    ((Engine*) engine) -> update();
-    ((Engine*) engine) -> render();
+    updateFrameSize((ViewController*)viewController, ((ViewController*)viewController)->engine);
+    
+    ((ViewController*)viewController)->engine->update();
+    ((ViewController*)viewController)->engine->render();
     
     return kCVReturnSuccess;
 }

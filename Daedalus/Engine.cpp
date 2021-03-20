@@ -51,33 +51,56 @@ void Engine::initialize() {
 
 void Engine::terminate() {
     if (isInitialized) {
+        terminateSwapchain();
+        
+        // Terminate sync objects
+        vkDestroySemaphore(device, presentSemaphore, nullptr);
+        vkDestroySemaphore(device, renderSemaphore, nullptr);
+        vkDestroyFence(device, renderFence, nullptr);
+        
         vkDestroyCommandPool(device, commandPool, nullptr);
-        vkDestroySwapchainKHR(device, swapchain, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
-        std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer) {
-            vkDestroyFramebuffer(device, framebuffer, nullptr); });
-        std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
-            vkDestroyImageView(device, imageView, nullptr); });
         
         vkDestroyDevice(device, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
+        
         if (settings.validate) vkb::destroy_debug_utils_messenger(instance, debugMessenger);
+        
+        vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
     }
 }
 
-void Engine::update() {
+void Engine::terminateSwapchain() {
+    std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr); });
     
+    vkFreeCommandBuffers(device, commandPool, 1, &mainCommandBuffer);
+    
+    vkDestroyPipeline(device, pipeline, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    vkDestroyRenderPass(device, renderPass, nullptr);
+    
+    vkDestroyRenderPass(device, renderPass, nullptr);
+    
+    std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
+        vkDestroyImageView(device, imageView, nullptr); });
+    
+    vkDestroySwapchainKHR(device, swapchain, nullptr);
+}
+
+void Engine::update() {
+    // Everything that happens in the world is updated, should be using ticks
 }
 
 void Engine::render() {
+    
+    
     //wait until the GPU has finished rendering the last frame. Timeout of 1 second
     VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
     VK_CHECK(vkResetFences(device, 1, &renderFence));
     
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
-    VK_CHECK(vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex));
+    vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex);
     
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
     VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
@@ -170,7 +193,7 @@ void Engine::render() {
 
     presentInfo.pImageIndices = &swapchainImageIndex;
 
-    VK_CHECK(vkQueuePresentKHR(graphicsQueue, &presentInfo));
+    vkQueuePresentKHR(graphicsQueue, &presentInfo);
 
     //increase the number of frames drawn
     frameNumber++;
