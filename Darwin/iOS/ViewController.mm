@@ -25,9 +25,8 @@
 
     std::vector<std::string> args;
     //args.push_back("-validate");
-    engine = new Engine(args, (__bridge void*) self.view.layer);
-    
-    engine->run();
+    engine = new Engine(args, (__bridge void*)self.view.layer);
+    engine -> initialize();
 
     uint32_t fps = 60;
     displayLink = [CADisplayLink displayLinkWithTarget: self selector: @selector(renderLoop)];

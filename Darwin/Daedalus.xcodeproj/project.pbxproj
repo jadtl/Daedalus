@@ -66,6 +66,8 @@
 		0509E1C52603A20F003B4180 /* Pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipeline.h; sourceTree = "<group>"; };
 		053884D12603E67C00F9B5A8 /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
 		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
+		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
+		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +127,8 @@
 			children = (
 				0509E1B626036CA2003B4180 /* Triangle.vert */,
 				0509E1B926036CB9003B4180 /* Triangle.frag */,
+				05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */,
+				05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */,
 			);
 			name = Shaders;
 			path = ../Shaders;
@@ -247,8 +251,8 @@
 			buildConfigurationList = 05C68D3325C8381F00529B60 /* Build configuration list for PBXNativeTarget "Daedalus (macOS)" */;
 			buildPhases = (
 				05C68D1D25C8381D00529B60 /* Resources */,
-				0509E1BC26036E1D003B4180 /* Compile Shaders */,
 				05C68D1B25C8381D00529B60 /* Sources */,
+				0509E1BC26036E1D003B4180 /* Compile Shaders */,
 				05C68D1C25C8381D00529B60 /* Frameworks */,
 				053884D42603E67C00F9B5A8 /* Embed Frameworks */,
 			);
@@ -352,7 +356,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "glslc ${PROJECT_DIR}/../Shaders/Triangle.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/vert.spv\nglslc ${PROJECT_DIR}/../Shaders/Triangle.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/frag.spv\n";
+			shellScript = "glslc ${PROJECT_DIR}/../Shaders/ColoredTriangle.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/vert.spv\nglslc ${PROJECT_DIR}/../Shaders/ColoredTriangle.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/frag.spv\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
