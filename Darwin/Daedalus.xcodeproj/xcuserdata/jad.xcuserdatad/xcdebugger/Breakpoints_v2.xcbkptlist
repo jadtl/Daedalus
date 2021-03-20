@@ -14,8 +14,8 @@
             filePath = "../Daedalus/Engine.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "Engine::initialize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "../Daedalus/Engine.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "325"
-            endingLineNumber = "325"
+            startingLineNumber = "318"
+            endingLineNumber = "318"
             landmarkName = "Engine::initializeFramebuffers()"
             landmarkType = "7">
          </BreakpointContent>

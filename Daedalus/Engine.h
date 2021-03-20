@@ -47,7 +47,7 @@ public:
     
     struct Settings {
         std::string engineName = "Daedalus";
-        std::string applicationName = "Daedalus";
+        std::string applicationName = "The Architect";
         
         VkExtent2D windowExtent{480, 270};
         
@@ -67,7 +67,7 @@ public:
     };
     void onKey(Key key);
     
-    void run();
+    void initialize();
     
     void update();
     void render();
@@ -78,9 +78,6 @@ private:
     std::vector<const char *> instanceLayers;
     std::vector<const char *> instanceExtensions;
     
-    void initialize();
-    void terminate();
-    
     void initializeVulkan();
     void initializeSwapchain();
     void initializeCommands();
@@ -88,6 +85,8 @@ private:
     void initializeFramebuffers();
     void initializeSyncStructures();
     void initializePipelines();
+    
+    void terminate();
     
     bool loadShaderModule(const char* filePath, VkShaderModule* shaderModule);
 };

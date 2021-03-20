@@ -31,7 +31,8 @@
     //args.push_back("-validate");
     engine = new Engine(args, (__bridge void*) self.view.layer);
     
-    engine -> run();
+    [self updateFrame];
+    engine -> initialize();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
     CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, engine);
@@ -39,10 +40,20 @@
     
 }
 
+- (void) updateFrame {
+    NSLog(@"From %f %f to %u %u", self.view.frame.size.width, self.view.frame.size.height,
+          engine -> settings.windowExtent.width, engine -> settings.windowExtent.height);
+    CGRect frame = self.view.frame;
+    frame.size.width = engine -> settings.windowExtent.width;
+    frame.size.height = engine -> settings.windowExtent.height;
+    self.view.frame = frame;
+}
+
 #pragma mark Display loop callback function
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
 static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* engine) {
+    
     ((Engine*) engine) -> update();
     ((Engine*) engine) -> render();
     

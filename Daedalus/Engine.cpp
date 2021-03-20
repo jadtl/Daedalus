@@ -24,8 +24,6 @@
 Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer) {
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
     if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
-    
-    initialize();
 }
 
 Engine::~Engine() {
@@ -66,11 +64,6 @@ void Engine::terminate() {
         if (settings.validate) vkb::destroy_debug_utils_messenger(instance, debugMessenger);
         vkDestroyInstance(instance, nullptr);
     }
-}
-
-void Engine::run() {
-    // Create context
-    // Create/Resize swapchain
 }
 
 void Engine::update() {
