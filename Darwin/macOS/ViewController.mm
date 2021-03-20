@@ -36,12 +36,17 @@
 }
 
 static void updateFrameSize(ViewController* viewController, void* engine) {
-    NSLog(@"From %f %f to %u %u", viewController.view.frame.size.width, viewController.view.frame.size.height,
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"From %f %f to %u %u", viewController.view.frame.size.width, viewController.view.frame.size.height,
               ((Engine*)engine) -> settings.windowExtent.width, ((Engine*)engine) -> settings.windowExtent.height);
-    CGRect frame = viewController.view.frame;
-    frame.size.width = ((Engine*)engine) -> settings.windowExtent.width;
-    frame.size.height = ((Engine*)engine) -> settings.windowExtent.height;
-    viewController.view.frame = frame;
+    
+        CGRect frame = viewController.view.frame;
+    
+        frame.size.width = ((Engine*)engine) -> settings.windowExtent.width;
+        frame.size.height = ((Engine*)engine) -> settings.windowExtent.height;
+    
+        viewController.view.frame = frame;
+    });
 }
 
 #pragma mark Display loop callback function
