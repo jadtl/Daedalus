@@ -79,12 +79,22 @@ void Engine::terminateSwapchain() {
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     
-    vkDestroyRenderPass(device, renderPass, nullptr);
-    
     std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
         vkDestroyImageView(device, imageView, nullptr); });
     
     vkDestroySwapchainKHR(device, swapchain, nullptr);
+}
+
+void Engine::updateSwapchain() {
+    vkDeviceWaitIdle(device);
+    
+    terminateSwapchain();
+    
+    initializeSwapchain();
+    initializeDefaultRenderPass();
+    initializePipelines();
+    initializeFramebuffers();
+    initializeCommands();
 }
 
 void Engine::update() {
@@ -100,7 +110,13 @@ void Engine::render() {
     
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
-    vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex);
+    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex);
+    if (swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
+        updateSwapchain();
+        return;
+    } else if (swapchainStatus != VK_SUCCESS && swapchainStatus != VK_SUBOPTIMAL_KHR) {
+        throw std::runtime_error("Failed to acquire swapchain image!");
+    }
     
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
     VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
@@ -193,7 +209,14 @@ void Engine::render() {
 
     presentInfo.pImageIndices = &swapchainImageIndex;
 
-    vkQueuePresentKHR(graphicsQueue, &presentInfo);
+    swapchainStatus = vkQueuePresentKHR(graphicsQueue, &presentInfo);
+    if (swapchainStatus == VK_SUBOPTIMAL_KHR || swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
+        updateSwapchain();
+        return;
+    }
+    else if (swapchainStatus != VK_SUCCESS) {
+        throw std::runtime_error("Failed to present swapchain image!");
+    }
 
     //increase the number of frames drawn
     frameNumber++;
