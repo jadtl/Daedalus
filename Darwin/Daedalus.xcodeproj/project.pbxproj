@@ -356,7 +356,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "glslc ${PROJECT_DIR}/../Shaders/ColoredTriangle.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/vert.spv\nglslc ${PROJECT_DIR}/../Shaders/ColoredTriangle.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/frag.spv\n";
+			shellScript = "FILES=\"Triangle\nColoredTriangle\"\n\nfor f in $FILES\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.vert.spv\n    glslc ${PROJECT_DIR}/../Shaders/$f.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.frag.spv\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -22,6 +22,8 @@
     } while (0)
 
 Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer) {
+    settings.selectedShader = 0;
+    
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
     if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
 }
@@ -75,12 +77,13 @@ void Engine::terminateSwapchain() {
     
     vkFreeCommandBuffers(device, commandPool, 1, &mainCommandBuffer);
     
-    vkDestroyPipeline(device, pipeline, nullptr);
+    vkDestroyPipeline(device, trianglePipeline, nullptr);
+    vkDestroyPipeline(device, coloredTrianglePipeline, nullptr);
+    
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     
-    std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) {
-        vkDestroyImageView(device, imageView, nullptr); });
+    std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) { vkDestroyImageView(device, imageView, nullptr); });
     
     vkDestroySwapchainKHR(device, swapchain, nullptr);
 }
@@ -102,8 +105,6 @@ void Engine::update() {
 }
 
 void Engine::render() {
-    
-    
     //wait until the GPU has finished rendering the last frame. Timeout of 1 second
     VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
     VK_CHECK(vkResetFences(device, 1, &renderFence));
@@ -162,7 +163,7 @@ void Engine::render() {
     
     //once we start adding rendering commands, they will go here
 
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, settings.selectedShader == 0 ? trianglePipeline : coloredTrianglePipeline);
     vkCmdDraw(cmd, 3, 1, 0, 0);
     
     vkCmdEndRenderPass(cmd);
@@ -223,7 +224,29 @@ void Engine::render() {
 }
 
 void Engine::onKey(Key key) {
-    
+    switch (key) {
+        case KEY_A:
+            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
+            break;
+        case KEY_S:
+            
+            break;
+        case KEY_D:
+            
+            break;
+        case KEY_Q:
+            
+            break;
+        case KEY_W:
+            
+            break;
+        case KEY_E:
+            
+            break;
+        case Key::KEY_SPACE:
+            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
+            break;
+    }
 }
 
 void Engine::initializeVulkan() {
@@ -389,15 +412,23 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    VkShaderModule fragShader;
-    if (!loadShaderModule("frag.spv", &fragShader)) {
-        std::cout << "Error when building the triangle fragment shader module" << "\n";
-    } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
+    if (!isInitialized) {
+        if (!loadShaderModule("ColoredTriangle.frag.spv", &coloredTriangleFragShader)) {
+            std::cout << "Error when building the triangle fragment shader module" << "\n";
+        } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
 
-    VkShaderModule vertexShader;
-    if (!loadShaderModule("vert.spv", &vertexShader)) {
-        std::cout << "Error when building the triangle vertex shader module" << "\n";
-    } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
+        if (!loadShaderModule("ColoredTriangle.vert.spv", &coloredTriangleVertexShader)) {
+            std::cout << "Error when building the triangle vertex shader module" << "\n";
+        } else { std::cout << "Colored triangle vertex shader succesfully loaded" << "\n"; }
+        
+        if (!loadShaderModule("Triangle.frag.spv", &triangleFragShader)) {
+            std::cout << "Error when building the triangle fragment shader module" << "\n";
+        } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
+
+        if (!loadShaderModule("Triangle.vert.spv", &triangleVertexShader)) {
+            std::cout << "Error when building the triangle vertex shader module" << "\n";
+        } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
+    }
     
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
@@ -407,10 +438,10 @@ void Engine::initializePipelines() {
     PipelineBuilder pipelineBuilder;
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, vertexShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, triangleVertexShader));
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, fragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, triangleFragShader));
 
 
     //vertex input controls how to read vertices from vertex buffers. We aren't using it yet
@@ -444,7 +475,17 @@ void Engine::initializePipelines() {
     pipelineBuilder.pipelineLayout = pipelineLayout;
 
     //finally build the pipeline
-    pipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    trianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    
+    pipelineBuilder.shaderStages.clear();
+    
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, coloredTriangleVertexShader));
+
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
+    
+    coloredTrianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
 }
 
 bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {

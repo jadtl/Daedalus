@@ -40,7 +40,13 @@ public:
     VkFence renderFence;
     
     VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
+    VkPipeline trianglePipeline;
+    VkPipeline coloredTrianglePipeline;
+    
+    VkShaderModule coloredTriangleFragShader;
+    VkShaderModule coloredTriangleVertexShader;
+    VkShaderModule triangleFragShader;
+    VkShaderModule triangleVertexShader;
     
     bool isInitialized{false};
     int frameNumber{0};
@@ -50,6 +56,7 @@ public:
         std::string applicationName = "The Architect";
         
         VkExtent2D windowExtent;
+        int selectedShader;
         
         bool validate{false};
         bool verbose{false};

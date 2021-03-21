@@ -22,6 +22,8 @@
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    //[[self keyDown] makeFirstResponder:self];
+    
     self.view.wantsLayer = YES;
     self.view.layer = [CAMetalLayer layer];
     
@@ -80,6 +82,8 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     }
     engine -> onKey(key);
 }
+
+-(BOOL) acceptsFirstResponder { return YES; }
 
 @end
 
