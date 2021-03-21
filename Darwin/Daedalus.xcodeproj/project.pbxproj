@@ -512,7 +512,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
@@ -534,7 +534,7 @@
 					"-ObjC",
 					"-w",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.macos;
 				PRODUCT_NAME = Daedalus;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
@@ -553,7 +553,7 @@
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
 				CODE_SIGN_ENTITLEMENTS = Daedalus.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
@@ -575,7 +575,7 @@
 					"-ObjC",
 					"-w",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.macos;
 				PRODUCT_NAME = Daedalus;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "../Daedalus/**";
@@ -599,7 +599,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.ios;
 				PRODUCT_NAME = Daedalus;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -625,7 +625,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.diligentnetrunner.daedalus.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.ios;
 				PRODUCT_NAME = Daedalus;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
