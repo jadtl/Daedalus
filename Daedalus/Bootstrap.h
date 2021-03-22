@@ -82,6 +82,7 @@ template <typename T> class Result {
 		m_error = error;
 		return *this;
 	}
+    
 	// clang-format off
 	const T* operator-> () const { assert (m_init); return &m_value; }
 	T*       operator-> ()       { assert (m_init); return &m_value; }

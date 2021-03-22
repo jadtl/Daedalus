@@ -7,4 +7,4 @@
 struct AllocatedBuffer {
     VkBuffer buffer;
     VmaAllocation allocation;
-}
+};

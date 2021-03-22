@@ -48,6 +48,8 @@ public:
     VkShaderModule triangleFragShader;
     VkShaderModule triangleVertexShader;
     
+    VmaAllocator allocator;
+    
     bool isInitialized{false};
     int frameNumber{0};
     

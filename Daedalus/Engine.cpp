@@ -259,17 +259,13 @@ void Engine::initializeVulkan() {
         .set_engine_version(0, 1)
         .set_app_name(settings.applicationName.c_str())
         .set_app_version(0, 1)
-        .require_api_version(1, 1, 0);
+        .require_api_version(1, 1, 0)
+        .build();
     
-    if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
-    if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
+    if (!instanceBuilder)
+        std::cerr << "Failed to create Vulkan instance: " << instanceBuilder.error() << "\n";
     
-    auto instanceBuilderSuccess = instanceBuilder.build();
-    
-    if (!instanceBuilderSuccess)
-        std::cerr << "Failed to create Vulkan instance: " << instanceBuilderSuccess.error() << "\n";
-    
-    vkb::Instance vkbInstance = instanceBuilderSuccess.value();
+    vkb::Instance vkbInstance = instanceBuilder.value();
     
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;
@@ -302,6 +298,12 @@ void Engine::initializeVulkan() {
     
     graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
     graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
+    
+    VmaAllocatorCreateInfo info{};
+    info.physicalDevice = this->physicalDevice;
+    info.device = this->device;
+    info.instance = this->instance;
+    vmaCreateAllocator(&info, &this->allocator);
 }
 
 void Engine::initializeSwapchain() {
