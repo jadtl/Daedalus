@@ -9,7 +9,7 @@
 
 @implementation ViewController
 
-- (void) dealloc {
+- (void) dealloc { 
     delete engine;
     CVDisplayLinkRelease(displayLink);
     

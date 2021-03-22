@@ -277,19 +277,21 @@ void Engine::initializeVulkan() {
     
     // Physical device creation
     vkb::PhysicalDeviceSelector physicalDeviceSelector{vkbInstance};
-    vkb::PhysicalDevice physicalDevice = physicalDeviceSelector
+    auto physicalDevice = physicalDeviceSelector
         .set_minimum_version(1, 1)
         .set_surface(this->surface)
-        .add_desired_extension("VK_KHR_portability_subset")
-        .select()
-        .value();
+        .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
+        .select();
+        
+    if (!physicalDevice)
+        std::cerr << "Failed to select Vulkan physical device: " << physicalDevice.error().message() << "\n";
     
     // Device creation
-    vkb::DeviceBuilder deviceBuilder{physicalDevice};
+    vkb::DeviceBuilder deviceBuilder{physicalDevice.value()};
     vkb::Device vkbDevice = deviceBuilder.build().value();
     
     this->device = vkbDevice.device;
-    this->physicalDevice = physicalDevice.physical_device;
+    this->physicalDevice = physicalDevice.value().physical_device;
     
     graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
     graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
