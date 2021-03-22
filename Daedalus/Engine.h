@@ -82,9 +82,6 @@ public:
 private:
     void* caMetalLayer;
     
-    std::vector<const char *> instanceLayers;
-    std::vector<const char *> instanceExtensions;
-    
     void initializeVulkan();
     void initializeSwapchain();
     void initializeCommands();

@@ -262,7 +262,12 @@ void Engine::initializeVulkan() {
     if (settings.validate) instanceBuilder.request_validation_layers(true).use_default_debug_messenger();
     if (settings.verbose) instanceBuilder.add_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT);
     
-    vkb::Instance vkbInstance = instanceBuilder.build().value();
+    auto instanceBuilderSuccess = instanceBuilder.build();
+    
+    if (!instanceBuilderSuccess)
+        std::cerr << "Failed to create Vulkan instance: " << instanceBuilderSuccess.error() << "\n";
+    
+    vkb::Instance vkbInstance = instanceBuilderSuccess.value();
     
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;

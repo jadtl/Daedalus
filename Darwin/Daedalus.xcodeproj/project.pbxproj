@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		0509E1C62603A20F003B4180 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0509E1C42603A20F003B4180 /* Pipeline.cpp */; };
 		0509E1C72603A20F003B4180 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0509E1C42603A20F003B4180 /* Pipeline.cpp */; };
-		053884D22603E67C00F9B5A8 /* vulkan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; };
-		053884D32603E67C00F9B5A8 /* vulkan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		053136E62608B05B0052851C /* vulkan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; };
+		053136E72608B05B0052851C /* vulkan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; };
 		053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0538D25426081F6900CF7C96 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0538D25326081F6900CF7C96 /* Main.storyboard */; };
@@ -34,13 +34,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		053884D42603E67C00F9B5A8 /* Embed Frameworks */ = {
+		053136E82608B05B0052851C /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				053884D32603E67C00F9B5A8 /* vulkan.framework in Embed Frameworks */,
+				053136E72608B05B0052851C /* vulkan.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -107,7 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				053884D22603E67C00F9B5A8 /* vulkan.framework in Frameworks */,
+				053136E62608B05B0052851C /* vulkan.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,7 +254,7 @@
 				05C68D1B25C8381D00529B60 /* Sources */,
 				0509E1BC26036E1D003B4180 /* Compile Shaders */,
 				05C68D1C25C8381D00529B60 /* Frameworks */,
-				053884D42603E67C00F9B5A8 /* Embed Frameworks */,
+				053136E82608B05B0052851C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
