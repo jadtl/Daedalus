@@ -65,11 +65,14 @@ public:
     VkShaderModule coloredTriangleVertexShader;
     VkShaderModule triangleFragShader;
     VkShaderModule triangleVertexShader;
+    VkShaderModule meshVertexShader;
     
     VmaAllocator allocator;
     
     VkPipeline meshPipeline;
     Mesh triangleMesh;
+    
+    DeletionQueue mainDeletionQueue;
     
     bool isInitialized{false};
     int frameNumber{0};

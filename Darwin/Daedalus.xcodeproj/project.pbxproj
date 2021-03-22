@@ -69,6 +69,7 @@
 		053884D12603E67C00F9B5A8 /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
 		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
 		0538D25326081F6900CF7C96 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
@@ -134,6 +135,7 @@
 				0509E1B926036CB9003B4180 /* Triangle.frag */,
 				05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */,
 				05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */,
+				05A1075E2609597200FABA6A /* TriangleMesh.vert */,
 			);
 			name = Shaders;
 			path = ../Shaders;
@@ -364,7 +366,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "FILES=\"Triangle\nColoredTriangle\"\n\nfor f in $FILES\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.vert.spv\n    glslc ${PROJECT_DIR}/../Shaders/$f.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.frag.spv\ndone\n";
+			shellScript = "vertShaders=\"Triangle\nColoredTriangle\nTriangleMesh\"\n\nfragShaders=\"Triangle\nColoredTriangle\"\n\nfor f in $vertShaders\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.vert.spv\ndone\n\nfor f in $fragShaders\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.frag.spv\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

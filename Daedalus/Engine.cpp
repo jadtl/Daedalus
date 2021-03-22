@@ -499,6 +499,56 @@ void Engine::initializePipelines() {
         init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
     
     coloredTrianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    
+    //build the mesh pipeline
+
+    VertexInputDescription vertexDescription = Vertex::getVertexDescription();
+
+    //connect the pipeline builder vertex input info to the one we get from Vertex
+    pipelineBuilder.vertexInputInfo.pVertexAttributeDescriptions = vertexDescription.attributes.data();
+    pipelineBuilder.vertexInputInfo.vertexAttributeDescriptionCount = vertexDescription.attributes.size();
+
+    pipelineBuilder.vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
+    pipelineBuilder.vertexInputInfo.vertexBindingDescriptionCount = vertexDescription.bindings.size();
+
+    //clear the shader stages for the builder
+    pipelineBuilder.shaderStages.clear();
+
+    //compile mesh vertex shader
+    if (!loadShaderModule("../../shaders/tri_mesh.vert.spv", &meshVertexShader))
+    {
+        std::cout << "Error when building the triangle vertex shader module" << std::endl;
+    }
+    else {
+        std::cout << "Red Triangle vertex shader succesfully loaded" << std::endl;
+    }
+
+    //add the other shaders
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, meshVertexShader));
+
+    //make sure that triangleFragShader is holding the compiled colored_triangle.frag
+    pipelineBuilder.shaderStages.push_back(
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, triangleFragShader));
+
+    //build the mesh triangle pipeline
+    meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
+
+    //deleting all of the vulkan shaders
+    vkDestroyShaderModule(device, meshVertexShader, nullptr);
+    vkDestroyShaderModule(device, triangleVertexShader, nullptr);
+    vkDestroyShaderModule(device, triangleFragShader, nullptr);
+    vkDestroyShaderModule(device, triangleFragShader, nullptr);
+    vkDestroyShaderModule(device, triangleVertexShader, nullptr);
+
+    //adding the pipelines to the deletion queue
+    mainDeletionQueue.push_function([=]() {
+        vkDestroyPipeline(device, trianglePipeline, nullptr);
+        vkDestroyPipeline(device, trianglePipeline, nullptr);
+        vkDestroyPipeline(device, meshPipeline, nullptr);
+
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    });
 }
 
 bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {
@@ -590,5 +640,5 @@ void Engine::uploadMesh(Mesh &mesh) {
 
     memcpy(data, mesh.vertices.data(), mesh.vertices.size() * sizeof(Vertex));
 
-    vmaUnmapMemory(allocator, mesh._vertexBuffer.allocation);
+    vmaUnmapMemory(allocator, mesh.vertexBuffer.allocation);
 }

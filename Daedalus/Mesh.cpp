@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-VertexInputDescription Vertex::get_vertex_description() {
+VertexInputDescription Vertex::getVertexDescription() {
     VertexInputDescription description;
 
     //we will have just 1 vertex buffer binding, with a per-vertex rate
