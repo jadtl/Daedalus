@@ -541,19 +541,54 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
 
 void Engine::loadMeshes() {
     //make the array 3 vertices long
-        triangleMesh.vertices.resize(3);
+    triangleMesh.vertices.resize(3);
 
-        //vertex positions
-        triangleMesh.vertices[0].position = { 1.f, 1.f, 0.0f };
-        triangleMesh.vertices[1].position = {-1.f, 1.f, 0.0f };
-        triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
+    //vertex positions
+    triangleMesh.vertices[0].position = { 1.f, 1.f, 0.0f };
+    triangleMesh.vertices[1].position = {-1.f, 1.f, 0.0f };
+    triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
 
-        //vertex colors, all green
-        triangleMesh.vertices[0].color = { 0.f, 1.f, 0.0f }; //pure green
-        triangleMesh.vertices[1].color = { 0.f, 1.f, 0.0f }; //pure green
-        triangleMesh.vertices[2].color = { 0.f, 1.f, 0.0f }; //pure green
-        
-        //we don't care about the vertex normals
+    //vertex colors, all green
+    triangleMesh.vertices[0].color = { 0.f, 1.f, 0.0f }; //pure green
+    triangleMesh.vertices[1].color = { 0.f, 1.f, 0.0f }; //pure green
+    triangleMesh.vertices[2].color = { 0.f, 1.f, 0.0f }; //pure green
+    
+    //we don't care about the vertex normals
 
-        uploadMesh(triangleMesh);
+    uploadMesh(triangleMesh);
+}
+
+void Engine::uploadMesh(Mesh &mesh) {
+    //allocate vertex buffer
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    //this is the total size, in bytes, of the buffer we are allocating
+    bufferInfo.size = mesh.vertices.size() * sizeof(Vertex);
+    //this buffer is going to be used as a Vertex Buffer
+    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+
+    //let the VMA library know that this data should be writeable by CPU, but also readable by GPU
+    VmaAllocationCreateInfo vmaallocInfo = {};
+    vmaallocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+    //allocate the buffer
+    VK_CHECK(vmaCreateBuffer(allocator, &bufferInfo, &vmaallocInfo,
+        &mesh.vertexBuffer.buffer,
+        &mesh.vertexBuffer.allocation,
+        nullptr));
+
+    //add the destruction of triangle mesh buffer to the deletion queue
+    mainDeletionQueue.push_function([=]() {
+
+        vmaDestroyBuffer(allocator, mesh.vertexBuffer.buffer, mesh.vertexBuffer.allocation);
+    });
+    
+    //copy vertex data
+    void* data;
+    vmaMapMemory(allocator, mesh.vertexBuffer.allocation, &data);
+
+    memcpy(data, mesh.vertices.data(), mesh.vertices.size() * sizeof(Vertex));
+
+    vmaUnmapMemory(allocator, mesh._vertexBuffer.allocation);
 }
