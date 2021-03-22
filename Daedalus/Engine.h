@@ -6,6 +6,7 @@
 #include <MoltenVK/mvk_vulkan.h>
 
 #include "Types.h"
+#include "Mesh.h"
 
 class Engine {
 public:
@@ -50,6 +51,9 @@ public:
     
     VmaAllocator allocator;
     
+    VkPipeline meshPipeline;
+    Mesh triangleMesh;
+    
     bool isInitialized{false};
     int frameNumber{0};
     
@@ -92,10 +96,13 @@ private:
     void initializeSyncStructures();
     void initializePipelines();
     
-    void updateSwapchain();
-    
     void terminate();
     void terminateSwapchain();
     
+    void updateSwapchain();
+    
     bool loadShaderModule(const char* filePath, VkShaderModule* shaderModule);
+    void loadMeshes();
+    
+    void uploadMesh(Mesh &mesh);
 };

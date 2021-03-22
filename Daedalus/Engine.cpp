@@ -304,6 +304,8 @@ void Engine::initializeVulkan() {
     info.device = this->device;
     info.instance = this->instance;
     vmaCreateAllocator(&info, &this->allocator);
+    
+    loadMeshes();
 }
 
 void Engine::initializeSwapchain() {
@@ -535,4 +537,23 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
     *shaderModule = result;
     
     return true;
+}
+
+void Engine::loadMeshes() {
+    //make the array 3 vertices long
+        triangleMesh.vertices.resize(3);
+
+        //vertex positions
+        triangleMesh.vertices[0].position = { 1.f, 1.f, 0.0f };
+        triangleMesh.vertices[1].position = {-1.f, 1.f, 0.0f };
+        triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
+
+        //vertex colors, all green
+        triangleMesh.vertices[0].color = { 0.f, 1.f, 0.0f }; //pure green
+        triangleMesh.vertices[1].color = { 0.f, 1.f, 0.0f }; //pure green
+        triangleMesh.vertices[2].color = { 0.f, 1.f, 0.0f }; //pure green
+        
+        //we don't care about the vertex normals
+
+        uploadMesh(triangleMesh);
 }
