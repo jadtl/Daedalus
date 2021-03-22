@@ -14,6 +14,8 @@
 		053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; };
 		053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0538D25426081F6900CF7C96 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0538D25326081F6900CF7C96 /* Main.storyboard */; };
+		05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
+		05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
@@ -72,6 +74,8 @@
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05B4940F2608E2F7007B8BA1 /* MemoryAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MemoryAllocator.h; sourceTree = "<group>"; };
+		05B494102608E44B007B8BA1 /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		05B494112608E44B007B8BA1 /* Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05C68D2225C8381D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		05C68D2325C8381D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -240,6 +244,8 @@
 				05EF4FA32602372800E293AD /* Types.h */,
 				0509E1C42603A20F003B4180 /* Pipeline.cpp */,
 				0509E1C52603A20F003B4180 /* Pipeline.h */,
+				05B494102608E44B007B8BA1 /* Mesh.cpp */,
+				05B494112608E44B007B8BA1 /* Mesh.h */,
 			);
 			name = Daedalus;
 			path = ../Daedalus;
@@ -367,6 +373,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */,
 				05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */,
 				05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */,
 				05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */,
@@ -382,6 +389,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */,
 				05EF4FA926026E4400E293AD /* Bootstrap.cpp in Sources */,
 				05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */,
 				05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */,
