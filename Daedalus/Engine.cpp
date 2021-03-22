@@ -70,6 +70,8 @@ void Engine::terminate() {
         
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
+        
+        vmaDestroyAllocator(allocator);
     }
 }
 
@@ -81,6 +83,7 @@ void Engine::terminateSwapchain() {
     
     vkDestroyPipeline(device, trianglePipeline, nullptr);
     vkDestroyPipeline(device, coloredTrianglePipeline, nullptr);
+    vkDestroyPipeline(device, meshPipeline, nullptr);
     
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
@@ -519,7 +522,7 @@ void Engine::initializePipelines() {
     pipelineBuilder.shaderStages.clear();
 
     //compile mesh vertex shader
-    if (!loadShaderModule("../../shaders/tri_mesh.vert.spv", &meshVertexShader))
+    if (!loadShaderModule("TriangleMesh.vert.spv", &meshVertexShader))
     {
         std::cout << "Error when building the triangle vertex shader module" << std::endl;
     }
@@ -542,8 +545,8 @@ void Engine::initializePipelines() {
     vkDestroyShaderModule(device, meshVertexShader, nullptr);
     vkDestroyShaderModule(device, triangleVertexShader, nullptr);
     vkDestroyShaderModule(device, triangleFragShader, nullptr);
-    vkDestroyShaderModule(device, triangleFragShader, nullptr);
-    vkDestroyShaderModule(device, triangleVertexShader, nullptr);
+    vkDestroyShaderModule(device, coloredTriangleFragShader, nullptr);
+    vkDestroyShaderModule(device, coloredTriangleVertexShader, nullptr);
 
     //adding the pipelines to the deletion queue
     mainDeletionQueue.push_function([=]() {
