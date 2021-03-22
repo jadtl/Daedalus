@@ -71,6 +71,7 @@
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
 		05A64ABA25CFFD5500467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/iOS/libMoltenVK.dylib; sourceTree = "<group>"; };
+		05B4940F2608E2F7007B8BA1 /* MemoryAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MemoryAllocator.h; sourceTree = "<group>"; };
 		05C68D1F25C8381D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05C68D2225C8381D00529B60 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		05C68D2325C8381D00529B60 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -228,6 +229,7 @@
 		05E2DD7825D1676100C198FA /* Daedalus */ = {
 			isa = PBXGroup;
 			children = (
+				05B4940F2608E2F7007B8BA1 /* MemoryAllocator.h */,
 				05EF4FA726026E4300E293AD /* Bootstrap.cpp */,
 				05EF4FA626026E4300E293AD /* Bootstrap.h */,
 				05EF4F9A2602362A00E293AD /* Engine.cpp */,

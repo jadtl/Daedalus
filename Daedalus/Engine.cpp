@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#define VMA_IMPLEMENTATION
+#include "MemoryAllocator.h"
 #include "Types.h"
 #include "Initializers.h"
 #include "Bootstrap.h"
