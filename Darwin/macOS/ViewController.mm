@@ -7,10 +7,7 @@
 #pragma mark -
 #pragma mark ViewController
 
-@implementation ViewController {
-    CVDisplayLinkRef displayLink;
-    Engine* engine;
-}
+@implementation ViewController
 
 - (void) dealloc {
     delete engine;
@@ -21,8 +18,6 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    [self.view becomeFirstResponder];
     
     self.view.wantsLayer = YES;
     self.view.layer = [CAMetalLayer layer];
@@ -83,8 +78,6 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     engine -> onKey(key);
 }
 
--(BOOL) acceptsFirstResponder { return YES; }
-
 @end
 
 #pragma mark -
@@ -107,5 +100,9 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 -(BOOL) acceptsFirstResponder { return YES; }
+
+-(void) keyDown:(NSEvent *) theEvent {
+    self.nextResponder.keydow
+}
 
 @end
