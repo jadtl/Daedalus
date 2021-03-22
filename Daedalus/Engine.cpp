@@ -162,11 +162,15 @@ void Engine::render() {
     rpInfo.pClearValues = &clearValue;
 
     vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
-    
-    //once we start adding rendering commands, they will go here
+    //drawing start
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
 
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, settings.selectedShader == 0 ? trianglePipeline : coloredTrianglePipeline);
-    vkCmdDraw(cmd, 3, 1, 0, 0);
+        //bind the mesh vertex buffer with offset 0
+        VkDeviceSize offset = 0;
+        vkCmdBindVertexBuffers(cmd, 0, 1, &triangleMesh.vertexBuffer.buffer, &offset);
+
+        //we can now draw the mesh
+        vkCmdDraw(cmd, triangleMesh.vertices.size(), 1, 0, 0);
     
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
