@@ -13,10 +13,10 @@
 		053884D32603E67C00F9B5A8 /* vulkan.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884D12603E67C00F9B5A8 /* vulkan.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; };
 		053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0538D25426081F6900CF7C96 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0538D25326081F6900CF7C96 /* Main.storyboard */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
 		05C68D2725C8381D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2625C8381D00529B60 /* ViewController.mm */; };
 		05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2825C8381F00529B60 /* Assets.xcassets */; };
-		05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D2A25C8381F00529B60 /* Main.storyboard */; };
 		05C68D2F25C8381F00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2E25C8381F00529B60 /* Main.m */; };
 		05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D3F25C8384D00529B60 /* AppDelegate.m */; };
 		05C68D4625C8384D00529B60 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D4525C8384D00529B60 /* ViewController.mm */; };
@@ -66,6 +66,7 @@
 		0509E1C52603A20F003B4180 /* Pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipeline.h; sourceTree = "<group>"; };
 		053884D12603E67C00F9B5A8 /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
 		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
+		0538D25326081F6900CF7C96 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
 		05A64AB425CFFD1900467155 /* libMoltenVK.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMoltenVK.dylib; path = ../GameDev/MoltenVK/Package/Debug/MoltenVK/dylib/macOS/libMoltenVK.dylib; sourceTree = "<group>"; };
@@ -76,7 +77,6 @@
 		05C68D2525C8381D00529B60 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		05C68D2625C8381D00529B60 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		05C68D2825C8381F00529B60 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		05C68D2B25C8381F00529B60 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		05C68D2D25C8381F00529B60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		05C68D2E25C8381F00529B60 /* Main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Main.m; sourceTree = "<group>"; };
 		05C68D3C25C8384D00529B60 /* Daedalus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Daedalus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -195,7 +195,7 @@
 		05C68D5A25C8386000529B60 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				05C68D2A25C8381F00529B60 /* Main.storyboard */,
+				0538D25326081F6900CF7C96 /* Main.storyboard */,
 				05C68D2825C8381F00529B60 /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -323,8 +323,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0538D25426081F6900CF7C96 /* Main.storyboard in Resources */,
 				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
-				05C68D2C25C8381F00529B60 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,14 +394,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		05C68D2A25C8381F00529B60 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				05C68D2B25C8381F00529B60 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		05C68D4725C8384D00529B60 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -516,7 +508,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Frameworks,
@@ -557,7 +549,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 36YZ6UP6VW;
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Frameworks,

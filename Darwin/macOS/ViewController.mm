@@ -20,7 +20,6 @@
     [super viewDidLoad];
     
     self.view.wantsLayer = YES;
-    self.view.layer = [CAMetalLayer layer];
     
     std::vector<std::string> args;
     //args.push_back("-validate");
@@ -100,9 +99,5 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 -(BOOL) acceptsFirstResponder { return YES; }
-
--(void) keyDown:(NSEvent *) theEvent {
-    self.nextResponder.keydow
-}
 
 @end
