@@ -170,14 +170,14 @@ void Engine::render() {
     
     //make a model view matrix for rendering the object
     //camera position
-    glm::vec3 cameraPosition = { 0.f, 0.5f, -30.f };
+    glm::vec3 cameraPosition = { 0.f, -20.f, -500.f };
 
     glm::mat4 view = glm::translate(glm::mat4(1.f), cameraPosition);
     //camera projection
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings.windowExtent.width / settings.windowExtent.height), 0.1f, 200.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings.windowExtent.width / settings.windowExtent.height), 0.1f, 900.0f);
     projection[1][1] *= -1;
     //model rotation
-    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(frameNumber * 1.f), glm::vec3(1, 0, 1));
+    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(frameNumber * 1.f), glm::vec3(0, 1, 0));
 
     //calculate final mesh matrix
     glm::mat4 meshMatrix = projection * view * model;
@@ -709,7 +709,7 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
     triangleMesh.vertices[2].color = { 0.75f, 0.75f, 1.f };
     
-    monkeyMesh.loadFromObj(shell.asset("Fouchette.obj").c_str());
+    monkeyMesh.loadFromObj(shell.asset("Couch.obj").c_str());
 
     uploadMesh(triangleMesh);
     uploadMesh(monkeyMesh);
