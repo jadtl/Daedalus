@@ -5,9 +5,15 @@
 #include <deque>
 
 #include <MoltenVK/mvk_vulkan.h>
+#include <glm/glm.hpp>
 
 #include "Types.h"
 #include "Mesh.h"
+
+struct MeshPushConstants {
+    glm::vec4 data;
+    glm::mat4 renderMatrix;
+};
 
 struct DeletionQueue {
     std::deque<std::function<void()>> deletors;
@@ -70,6 +76,7 @@ public:
     VmaAllocator allocator;
     
     VkPipeline meshPipeline;
+    VkPipelineLayout meshPipelineLayout;
     Mesh triangleMesh;
     
     DeletionQueue mainDeletionQueue;

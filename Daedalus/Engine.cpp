@@ -515,6 +515,23 @@ void Engine::initializePipelines() {
 
     //clear the shader stages for the builder
     pipelineBuilder.shaderStages.clear();
+    
+    //we start from just the default empty pipeline layout info
+    VkPipelineLayoutCreateInfo info = vkinit::pipelineLayoutCreateInfo();
+    
+    //setup push constants
+    VkPushConstantRange pushConstant;
+    //this push constant range starts at the beginning
+    pushConstant.offset = 0;
+    //this push constant range takes up the size of a MeshPushConstants struct
+    pushConstant.size = sizeof(MeshPushConstants);
+    //this push constant range is accessible only in the vertex shader
+    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    info.pPushConstantRanges = &pushConstant;
+    info.pushConstantRangeCount = 1;
+
+    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
 
     //compile mesh vertex shader
     if (!loadShaderModule("TriangleMesh.vert.spv", &meshVertexShader))
@@ -550,6 +567,7 @@ void Engine::initializePipelines() {
         vkDestroyPipeline(device, meshPipeline, nullptr);
 
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(device, meshPipelineLayout, nullptr);
     });
 }
 
