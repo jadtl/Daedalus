@@ -512,26 +512,9 @@ void Engine::initializePipelines() {
 
     pipelineBuilder.vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
     pipelineBuilder.vertexInputInfo.vertexBindingDescriptionCount = vertexDescription.bindings.size();
-
+    
     //clear the shader stages for the builder
     pipelineBuilder.shaderStages.clear();
-    
-    //we start from just the default empty pipeline layout info
-    VkPipelineLayoutCreateInfo info = vkinit::pipelineLayoutCreateInfo();
-    
-    //setup push constants
-    VkPushConstantRange pushConstant;
-    //this push constant range starts at the beginning
-    pushConstant.offset = 0;
-    //this push constant range takes up the size of a MeshPushConstants struct
-    pushConstant.size = sizeof(MeshPushConstants);
-    //this push constant range is accessible only in the vertex shader
-    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    info.pPushConstantRanges = &pushConstant;
-    info.pushConstantRangeCount = 1;
-
-    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
 
     //compile mesh vertex shader
     if (!loadShaderModule("TriangleMesh.vert.spv", &meshVertexShader))
@@ -549,6 +532,25 @@ void Engine::initializePipelines() {
     //make sure that triangleFragShader is holding the compiled colored_triangle.frag
     pipelineBuilder.shaderStages.push_back(
         init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
+    
+    //we start from just the default empty pipeline layout info
+    VkPipelineLayoutCreateInfo info = init::pipelineLayoutCreateInfo();
+    
+    //setup push constants
+    VkPushConstantRange pushConstant;
+    //this push constant range starts at the beginning
+    pushConstant.offset = 0;
+    //this push constant range takes up the size of a MeshPushConstants struct
+    pushConstant.size = sizeof(MeshPushConstants);
+    //this push constant range is accessible only in the vertex shader
+    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    info.pPushConstantRanges = &pushConstant;
+    info.pushConstantRangeCount = 1;
+
+    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
+    
+    pipelineBuilder.pipelineLayout = meshPipelineLayout;
 
     //build the mesh triangle pipeline
     meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
