@@ -78,6 +78,8 @@ public:
     VkPipeline meshPipeline;
     VkPipelineLayout meshPipelineLayout;
     Mesh triangleMesh;
+    Mesh monkeyMesh;
+    
     
     DeletionQueue mainDeletionQueue;
     

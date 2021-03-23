@@ -69,6 +69,7 @@
 		053884D12603E67C00F9B5A8 /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
 		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
 		0538D25326081F6900CF7C96 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		053DCD36260A08B900C64B1F /* OBJLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OBJLoader.h; sourceTree = "<group>"; };
 		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
@@ -235,6 +236,7 @@
 		05E2DD7825D1676100C198FA /* Daedalus */ = {
 			isa = PBXGroup;
 			children = (
+				053DCD36260A08B900C64B1F /* OBJLoader.h */,
 				05B4940F2608E2F7007B8BA1 /* MemoryAllocator.h */,
 				05EF4FA726026E4300E293AD /* Bootstrap.cpp */,
 				05EF4FA626026E4300E293AD /* Bootstrap.h */,
