@@ -452,22 +452,19 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    std::cout << strcmp(shell.shaders().append("/ColoredTriangle.frag.spv").c_str(), "../Daedalus/Shaders/ColoredTriangle.frag.spv") << "\n";
-    char* filename;
-    strcpy(filename, shell.shaders().append("/ColoredTriangle.frag.spv").c_str());
-    if (!loadShaderModule(filename, &coloredTriangleFragShader)) {
+    if (!loadShaderModule(shell.shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
         std::cout << "Error when building the triangle fragment shader module" << "\n";
     } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
 
-    if (!loadShaderModule(shell.shaders().append("ColoredTriangle.vert.spv").c_str(), &coloredTriangleVertexShader)) {
+    if (!loadShaderModule(shell.shader("ColoredTriangle.vert.spv").c_str(), &coloredTriangleVertexShader)) {
         std::cout << "Error when building the triangle vertex shader module" << "\n";
     } else { std::cout << "Colored triangle vertex shader succesfully loaded" << "\n"; }
     
-    if (!loadShaderModule(shell.shaders().append("Triangle.frag.spv").c_str(), &triangleFragShader)) {
+    if (!loadShaderModule(shell.shader("Triangle.frag.spv").c_str(), &triangleFragShader)) {
         std::cout << "Error when building the triangle fragment shader module" << "\n";
     } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
 
-    if (!loadShaderModule(shell.shaders().append("Triangle.vert.spv").c_str(), &triangleVertexShader)) {
+    if (!loadShaderModule(shell.shader("Triangle.vert.spv").c_str(), &triangleVertexShader)) {
         std::cout << "Error when building the triangle vertex shader module" << "\n";
     } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
     
@@ -543,7 +540,7 @@ void Engine::initializePipelines() {
     pipelineBuilder.shaderStages.clear();
 
     //compile mesh vertex shader
-    if (!loadShaderModule(shell.shaders().append("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
+    if (!loadShaderModule(shell.shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
     {
         std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
     }

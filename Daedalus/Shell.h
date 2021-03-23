@@ -25,11 +25,12 @@ class Shell {
 public:
     Shell(std::string pathFromExecutable);
     
-    boost::filesystem::path shaders();
-    boost::filesystem::path assets();
+    std::string shader(std::string fileName);
+    std::string asset(std::string fileName);
     
 private:
     boost::filesystem::path executable();
     boost::filesystem::path programRoot;
+    
     std::string currentWorkingDirectory();
 };

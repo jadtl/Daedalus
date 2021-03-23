@@ -4,13 +4,9 @@ Shell::Shell(std::string pathFromExecutable) {
     programRoot =  boost::filesystem::relative(executable().remove_filename().append(pathFromExecutable), currentWorkingDirectory());
 }
 
-boost::filesystem::path Shell::shaders() {
-    return programRoot.append("/Shaders");
-}
+std::string Shell::shader(std::string fileName) { return programRoot.string() + "/Shaders/" + fileName; }
 
-boost::filesystem::path Shell::assets() {
-    return programRoot.append("/Assets");
-}
+std::string Shell::asset(std::string fileName) { return programRoot.string() + "/Assets/" + fileName; }
 
 boost::filesystem::path Shell::executable() {
   unsigned int bufferSize = 512;
