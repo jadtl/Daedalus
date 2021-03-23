@@ -147,24 +147,24 @@ void Engine::render() {
     
     float fadeBlue = abs(sin(frameNumber / 25.f)) / 7.5f;
     clearValue.color = { { 0.f, 0.f, fadeBlue, 1.0f } };
+    
+    //clear depth at 1
+    VkClearValue depthClear;
+    depthClear.depthStencil.depth = 1.f;
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
-    VkRenderPassBeginInfo rpInfo = {};
-    rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpInfo.pNext = nullptr;
-
-    rpInfo.renderPass = renderPass;
-    rpInfo.renderArea.offset.x = 0;
-    rpInfo.renderArea.offset.y = 0;
-    rpInfo.renderArea.extent = settings.windowExtent;
-    rpInfo.framebuffer = framebuffers[swapchainImageIndex];
+    VkRenderPassBeginInfo renderPassInfo = init::renderPassBeginInfo(renderPass, settings.windowExtent, framebuffers[swapchainImageIndex]);
 
     //connect clear values
-    rpInfo.clearValueCount = 1;
-    rpInfo.pClearValues = &clearValue;
+    renderPassInfo.clearValueCount = 2;
+    
+    VkClearValue clearValues[] = { clearValue, depthClear };
 
-    vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
+    renderPassInfo.pClearValues = &clearValues[0];
+
+    vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
     //drawing start
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
     
