@@ -142,11 +142,8 @@ void Engine::render() {
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
-    float fadeRed = pow(2, cos(frameNumber / 25.f)) / 10.f;
-    float fadeGreen = pow(2, cos(frameNumber / 20.f)) / 10.f;
-    float fadeBlue = pow(2, sin(frameNumber / 25.f)) / 10.f;
     
-    clearValue.color = { { fadeRed, fadeGreen, fadeBlue, 1.0f } };
+    clearValue.color = { { 0.f, 0.f, 0.f, 1.0f } };
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
@@ -168,12 +165,12 @@ void Engine::render() {
     //drawing start
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
 
-        //bind the mesh vertex buffer with offset 0
-        VkDeviceSize offset = 0;
-        vkCmdBindVertexBuffers(cmd, 0, 1, &triangleMesh.vertexBuffer.buffer, &offset);
+    //bind the mesh vertex buffer with offset 0
+    VkDeviceSize offset = 0;
+    vkCmdBindVertexBuffers(cmd, 0, 1, &triangleMesh.vertexBuffer.buffer, &offset);
 
-        //we can now draw the mesh
-        vkCmdDraw(cmd, triangleMesh.vertices.size(), 1, 0, 0);
+    //we can now draw the mesh
+    vkCmdDraw(cmd, triangleMesh.vertices.size(), 1, 0, 0);
     
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
@@ -602,11 +599,15 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[0].position = { 1.f, 1.f, 0.0f };
     triangleMesh.vertices[1].position = {-1.f, 1.f, 0.0f };
     triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
+    /*
+    float fadeRed = pow(2, cos(frameNumber / 25.f)) / 10.f;
+    float fadeGreen = pow(2, cos(frameNumber / 20.f)) / 10.f;
+    float fadeBlue = pow(2, sin(frameNumber / 25.f)) / 10.f;
+     */
 
-    //vertex colors, all green
-    triangleMesh.vertices[0].color = { 0.f, 1.f, 0.0f }; //pure green
-    triangleMesh.vertices[1].color = { 0.f, 1.f, 0.0f }; //pure green
-    triangleMesh.vertices[2].color = { 0.f, 1.f, 0.0f }; //pure green
+    triangleMesh.vertices[0].color = { 0.f, 0.f, 1.f};
+    triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
+    triangleMesh.vertices[2].color = { 0.75f, 0.75f, 1.f };
     
     //we don't care about the vertex normals
 
