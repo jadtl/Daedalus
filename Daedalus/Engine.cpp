@@ -536,10 +536,10 @@ void Engine::initializePipelines() {
     //compile mesh vertex shader
     if (!loadShaderModule("TriangleMesh.vert.spv", &meshVertexShader))
     {
-        std::cout << "Error when building the triangle vertex shader module" << std::endl;
+        std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
     }
     else {
-        std::cout << "Red Triangle vertex shader succesfully loaded" << std::endl;
+        std::cout << "Triangle mesh vertex shader succesfully loaded" << std::endl;
     }
 
     //add the other shaders
