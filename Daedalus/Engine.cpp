@@ -349,6 +349,38 @@ void Engine::initializeSwapchain() {
     swapchainImageViews = vkbSwapchain.get_image_views().value();
     settings.windowExtent = vkbSwapchain.extent;
     swapchainImageFormat = vkbSwapchain.image_format;
+    
+    //depth image size will match the window
+    VkExtent3D depthImageExtent = {
+        settings.windowExtent.width,
+        settings.windowExtent.height,
+        1
+    };
+
+    //hardcoding the depth format to 32 bit float
+    depthFormat = VK_FORMAT_D32_SFLOAT;
+
+    //the depth image will be an image with the format we selected and Depth Attachment usage flag
+    VkImageCreateInfo dimg_info = init::imageCreateInfo(depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
+
+    //for the depth image, we want to allocate it from GPU local memory
+    VmaAllocationCreateInfo dimg_allocinfo = {};
+    dimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+    dimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    //allocate and create the image
+    vmaCreateImage(allocator, &dimg_info, &dimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr);
+
+    //build an image-view for the depth image to use for rendering
+    VkImageViewCreateInfo dview_info = init::imageViewCreateInfo(depthFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
+
+    VK_CHECK(vkCreateImageView(device, &dview_info, nullptr, &depthImageView));
+
+    //add to deletion queues
+    mainDeletionQueue.push_function([=]() {
+        vkDestroyImageView(device, depthImageView, nullptr);
+        vmaDestroyImage(allocator, depthImage.image, depthImage.allocation);
+    });
 }
 
 void Engine::initializeCommands() {
@@ -382,23 +414,46 @@ void Engine::initializeDefaultRenderPass() {
     //after the renderpass ends, the image has to be on a layout ready for display
     colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     
+    
+    
     VkAttachmentReference colorAttachmentReference = {};
     //attachment number will index into the pAttachments array in the parent renderpass itself
     colorAttachmentReference.attachment = 0;
     colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    
+    VkAttachmentDescription depthAttachment = {};
+    // Depth attachment
+    depthAttachment.flags = 0;
+    depthAttachment.format = depthFormat;
+    depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentReference depthAttachementReference = {};
+    depthAttachementReference.attachment = 1;
+    depthAttachementReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     //we are going to create 1 subpass, which is the minimum you can do
     VkSubpassDescription subpass = {};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentReference;
+    //hook the depth attachment into the subpass
+    subpass.pDepthStencilAttachment = &depthAttachementReference;
+    
+    //array of 2 attachments, one for the color, and other for depth
+    VkAttachmentDescription attachments[2] = { colorAttachment, depthAttachment };
     
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
     //connect the color attachment to the info
-    renderPassInfo.attachmentCount = 1;
-    renderPassInfo.pAttachments = &colorAttachment;
+    renderPassInfo.attachmentCount = 2;
+    renderPassInfo.pAttachments = &attachments[0];
     //connect the subpass to the info
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
@@ -413,18 +468,23 @@ void Engine::initializeFramebuffers() {
     framebufferCreateInfo.pNext = nullptr;
 
     framebufferCreateInfo.renderPass = renderPass;
-    framebufferCreateInfo.attachmentCount = 1;
     framebufferCreateInfo.width = settings.windowExtent.width;
     framebufferCreateInfo.height = settings.windowExtent.height;
     framebufferCreateInfo.layers = 1;
 
     //grab how many images we have in the swapchain
-    const uint32_t swapchain_imagecount = swapchainImages.size();
-    framebuffers = std::vector<VkFramebuffer>(swapchain_imagecount);
+    const uint32_t swapchainImagecount = swapchainImages.size();
+    framebuffers = std::vector<VkFramebuffer>(swapchainImagecount);
 
     //create framebuffers for each of the swapchain image views
-    for (int i = 0; i < swapchain_imagecount; i++) {
-        framebufferCreateInfo.pAttachments = &swapchainImageViews[i];
+    for (int i = 0; i < swapchainImagecount; i++) {
+        VkImageView attachments[2];
+        attachments[0] = swapchainImageViews[i];
+        attachments[1] = depthImageView;
+
+        framebufferCreateInfo.pAttachments = attachments;
+        framebufferCreateInfo.attachmentCount = 2;
+        
         VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]));
     }
 }
