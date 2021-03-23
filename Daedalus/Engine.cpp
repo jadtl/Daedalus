@@ -145,7 +145,8 @@ void Engine::render() {
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
     
-    clearValue.color = { { 0.f, 0.f, 0.f, 1.0f } };
+    float fadeBlue = abs(sin(frameNumber / 25.f)) / 7.5f;
+    clearValue.color = { { 0.f, 0.f, fadeBlue, 1.0f } };
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
@@ -641,11 +642,6 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[0].position = { .5f, .5f, 0.0f };
     triangleMesh.vertices[1].position = {-.5f, .5f, 0.0f };
     triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
-    /*
-    float fadeRed = pow(2, cos(frameNumber / 25.f)) / 10.f;
-    float fadeGreen = pow(2, cos(frameNumber / 20.f)) / 10.f;
-    float fadeBlue = pow(2, sin(frameNumber / 25.f)) / 10.f;
-     */
 
     triangleMesh.vertices[0].color = { 0.f, 0.f, 1.f};
     triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
