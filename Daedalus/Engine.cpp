@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#include <glm/gtx/transform.hpp>
+
 #define VMA_IMPLEMENTATION
 #include "MemoryAllocator.h"
 #include "Types.h"
@@ -168,6 +170,26 @@ void Engine::render() {
     //bind the mesh vertex buffer with offset 0
     VkDeviceSize offset = 0;
     vkCmdBindVertexBuffers(cmd, 0, 1, &triangleMesh.vertexBuffer.buffer, &offset);
+    
+    //make a model view matrix for rendering the object
+    //camera position
+    glm::vec3 cameraPosition = { 0.f,0.25f,-3.f };
+
+    glm::mat4 view = glm::translate(glm::mat4(1.f), cameraPosition);
+    //camera projection
+    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings.windowExtent.width / settings.windowExtent.height), 0.1f, 200.0f);
+    projection[1][1] *= -1;
+    //model rotation
+    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(frameNumber * 1.f), glm::vec3(0, 1, 0));
+
+    //calculate final mesh matrix
+    glm::mat4 meshMatrix = projection * view * model;
+
+    MeshPushConstants constants;
+    constants.renderMatrix = meshMatrix;
+
+    //upload the matrix to the GPU via pushconstants
+    vkCmdPushConstants(cmd, meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
 
     //we can now draw the mesh
     vkCmdDraw(cmd, triangleMesh.vertices.size(), 1, 0, 0);
@@ -616,8 +638,8 @@ void Engine::loadMeshes() {
     triangleMesh.vertices.resize(3);
 
     //vertex positions
-    triangleMesh.vertices[0].position = { 1.f, 1.f, 0.0f };
-    triangleMesh.vertices[1].position = {-1.f, 1.f, 0.0f };
+    triangleMesh.vertices[0].position = { .5f, .5f, 0.0f };
+    triangleMesh.vertices[1].position = {-.5f, .5f, 0.0f };
     triangleMesh.vertices[2].position = { 0.f,-1.f, 0.0f };
     /*
     float fadeRed = pow(2, cos(frameNumber / 25.f)) / 10.f;
