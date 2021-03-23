@@ -432,23 +432,21 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    if (!isInitialized) {
-        if (!loadShaderModule("ColoredTriangle.frag.spv", &coloredTriangleFragShader)) {
-            std::cout << "Error when building the triangle fragment shader module" << "\n";
-        } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
+    if (!loadShaderModule("ColoredTriangle.frag.spv", &coloredTriangleFragShader)) {
+        std::cout << "Error when building the triangle fragment shader module" << "\n";
+    } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
 
-        if (!loadShaderModule("ColoredTriangle.vert.spv", &coloredTriangleVertexShader)) {
-            std::cout << "Error when building the triangle vertex shader module" << "\n";
-        } else { std::cout << "Colored triangle vertex shader succesfully loaded" << "\n"; }
-        
-        if (!loadShaderModule("Triangle.frag.spv", &triangleFragShader)) {
-            std::cout << "Error when building the triangle fragment shader module" << "\n";
-        } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
+    if (!loadShaderModule("ColoredTriangle.vert.spv", &coloredTriangleVertexShader)) {
+        std::cout << "Error when building the triangle vertex shader module" << "\n";
+    } else { std::cout << "Colored triangle vertex shader succesfully loaded" << "\n"; }
+    
+    if (!loadShaderModule("Triangle.frag.spv", &triangleFragShader)) {
+        std::cout << "Error when building the triangle fragment shader module" << "\n";
+    } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
 
-        if (!loadShaderModule("Triangle.vert.spv", &triangleVertexShader)) {
-            std::cout << "Error when building the triangle vertex shader module" << "\n";
-        } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
-    }
+    if (!loadShaderModule("Triangle.vert.spv", &triangleVertexShader)) {
+        std::cout << "Error when building the triangle vertex shader module" << "\n";
+    } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
     
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
@@ -536,7 +534,7 @@ void Engine::initializePipelines() {
 
     //make sure that triangleFragShader is holding the compiled colored_triangle.frag
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, triangleFragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
 
     //build the mesh triangle pipeline
     meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
