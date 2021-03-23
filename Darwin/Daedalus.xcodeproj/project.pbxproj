@@ -368,7 +368,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ..\nVertexShaders=Shaders/*.vert\nFragmentShaders=Shaders/*.frag\nDaedalus=${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Shaders\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Assets\n\nfor f in $VertexShaders\ndo\n    glslc $f -o $Daedalus/$f.spv\ndone\n\nfor f in $FragmentShaders\ndo\n    glslc $f -o $Daedalus/$f.spv\ndone\n";
+			shellScript = "cd ..\nVertexShaders=Shaders/*.vert\nFragmentShaders=Shaders/*.frag\nDaedalus=${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Shaders\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Assets\n\nfor vertexShader in $VertexShaders\ndo\n    glslc $vertexShader -o $Daedalus/$vertexShader.spv\ndone\n\nfor fragmentShader in $FragmentShaders\ndo\n    glslc $fragmentShader -o $Daedalus/$fragmentShader.spv\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
