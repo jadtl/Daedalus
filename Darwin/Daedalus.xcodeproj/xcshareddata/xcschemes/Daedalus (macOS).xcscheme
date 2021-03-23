@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/"
+      customWorkingDirectory = "${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"

@@ -14,6 +14,12 @@
 		053884DC2603FFC300F9B5A8 /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; };
 		053884DD2603FFC300F9B5A8 /* MoltenVK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0538D25426081F6900CF7C96 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0538D25326081F6900CF7C96 /* Main.storyboard */; };
+		053DCD3A260A17AC00C64B1F /* Shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 053DCD38260A17AC00C64B1F /* Shell.cpp */; };
+		053DCD3B260A17AC00C64B1F /* Shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 053DCD38260A17AC00C64B1F /* Shell.cpp */; };
+		053DCD3D260A2E6E00C64B1F /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */; };
+		053DCD3E260A2E6E00C64B1F /* libboost_system.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		053DCD40260A2E8700C64B1F /* libboost_filesystem.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */; };
+		053DCD41260A2E8700C64B1F /* libboost_filesystem.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
@@ -42,7 +48,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				053DCD41260A2E8700C64B1F /* libboost_filesystem.dylib in Embed Frameworks */,
 				053136E72608B05B0052851C /* vulkan.framework in Embed Frameworks */,
+				053DCD3E260A2E6E00C64B1F /* libboost_system.dylib in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +78,10 @@
 		053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = ../../../../../../usr/local/Frameworks/MoltenVK.xcframework; sourceTree = "<group>"; };
 		0538D25326081F6900CF7C96 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		053DCD36260A08B900C64B1F /* OBJLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OBJLoader.h; sourceTree = "<group>"; };
+		053DCD38260A17AC00C64B1F /* Shell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shell.cpp; sourceTree = "<group>"; };
+		053DCD39260A17AC00C64B1F /* Shell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shell.h; sourceTree = "<group>"; };
+		053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../../../../usr/local/Cellar/boost/1.75.0_2/lib/libboost_system.dylib; sourceTree = "<group>"; };
+		053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_filesystem.dylib; path = ../../../../../../usr/local/Cellar/boost/1.75.0_2/lib/libboost_filesystem.dylib; sourceTree = "<group>"; };
 		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
@@ -114,7 +126,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				053DCD40260A2E8700C64B1F /* libboost_filesystem.dylib in Frameworks */,
 				053136E62608B05B0052851C /* vulkan.framework in Frameworks */,
+				053DCD3D260A2E6E00C64B1F /* libboost_system.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,6 +226,8 @@
 		05C68D8D25C853D700529B60 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */,
+				053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */,
 				053884DB2603FFC300F9B5A8 /* MoltenVK.xcframework */,
 				05E2DD9525D1696800C198FA /* vulkan.framework */,
 				053884D12603E67C00F9B5A8 /* vulkan.framework */,
@@ -250,6 +266,8 @@
 				0509E1C52603A20F003B4180 /* Pipeline.h */,
 				05B494102608E44B007B8BA1 /* Mesh.cpp */,
 				05B494112608E44B007B8BA1 /* Mesh.h */,
+				053DCD38260A17AC00C64B1F /* Shell.cpp */,
+				053DCD39260A17AC00C64B1F /* Shell.h */,
 			);
 			name = Daedalus;
 			path = ../Daedalus;
@@ -385,6 +403,7 @@
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
 				05EF4FA42602372800E293AD /* Types.cpp in Sources */,
 				05C68D2F25C8381F00529B60 /* Main.m in Sources */,
+				053DCD3A260A17AC00C64B1F /* Shell.cpp in Sources */,
 				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,6 +420,7 @@
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
 				05EF4FA52602372800E293AD /* Types.cpp in Sources */,
 				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
+				053DCD3B260A17AC00C64B1F /* Shell.cpp in Sources */,
 				05C68D5125C8384E00529B60 /* Main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -534,7 +554,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/boost/1.75.0_2/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -575,7 +595,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/boost/1.75.0_2/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-ObjC",

@@ -7,6 +7,7 @@
 #include <MoltenVK/mvk_vulkan.h>
 #include <glm/glm.hpp>
 
+#include "Shell.h"
 #include "Types.h"
 #include "Mesh.h"
 
@@ -38,6 +39,8 @@ public:
     
     Engine(const std::vector<std::string> &args, void *caMetalLayer);
     ~Engine();
+    
+    Shell shell;
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;

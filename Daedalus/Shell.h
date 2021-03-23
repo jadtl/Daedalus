@@ -1,13 +1,35 @@
-//
-//  Shell.hpp
-//  Daedalus
-//
-//  Created by Jad Tala on 23.03.21.
-//
+#pragma once
 
-#ifndef Shell_hpp
-#define Shell_hpp
+#include <boost/filesystem.hpp>
 
-#include <stdio.h>
+#if defined(_WIN32)
+  #include <windows.h>
+#elif defined(__linux__)
+  #include <sstream>
+  #include <unistd.h>
+#elif defined(__APPLE__)
+  #include <mach-o/dyld.h>
+#endif
 
-#endif /* Shell_hpp */
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+
+#include <string>
+
+class Shell {
+public:
+    Shell(std::string pathFromExecutable);
+    
+    boost::filesystem::path shaders();
+    boost::filesystem::path assets();
+    
+private:
+    boost::filesystem::path executable();
+    boost::filesystem::path programRoot;
+    std::string currentWorkingDirectory();
+};
