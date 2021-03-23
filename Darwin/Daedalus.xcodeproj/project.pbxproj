@@ -43,8 +43,6 @@
 		05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
 		05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
 		05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
-		05EF4FA42602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
-		05EF4FA52602372800E293AD /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA22602372800E293AD /* Types.cpp */; };
 		05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA726026E4300E293AD /* Bootstrap.cpp */; };
 		05EF4FA926026E4400E293AD /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA726026E4300E293AD /* Bootstrap.cpp */; };
 /* End PBXBuildFile section */
@@ -127,7 +125,6 @@
 		05EF4F9B2602362A00E293AD /* Engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
 		05EF4F9E2602371A00E293AD /* Initializers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializers.cpp; sourceTree = "<group>"; };
 		05EF4F9F2602371A00E293AD /* Initializers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Initializers.h; sourceTree = "<group>"; };
-		05EF4FA22602372800E293AD /* Types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Types.cpp; sourceTree = "<group>"; };
 		05EF4FA32602372800E293AD /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		05EF4FA626026E4300E293AD /* Bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
 		05EF4FA726026E4300E293AD /* Bootstrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bootstrap.cpp; sourceTree = "<group>"; };
@@ -285,7 +282,6 @@
 				05EF4F9B2602362A00E293AD /* Engine.h */,
 				05EF4F9E2602371A00E293AD /* Initializers.cpp */,
 				05EF4F9F2602371A00E293AD /* Initializers.h */,
-				05EF4FA22602372800E293AD /* Types.cpp */,
 				05EF4FA32602372800E293AD /* Types.h */,
 				0509E1C42603A20F003B4180 /* Pipeline.cpp */,
 				0509E1C52603A20F003B4180 /* Pipeline.h */,
@@ -434,7 +430,6 @@
 				05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */,
 				0509E1C62603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
-				05EF4FA42602372800E293AD /* Types.cpp in Sources */,
 				05C68D2F25C8381F00529B60 /* Main.m in Sources */,
 				053DCD3A260A17AC00C64B1F /* Shell.cpp in Sources */,
 				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
@@ -451,7 +446,6 @@
 				05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */,
 				0509E1C72603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
-				05EF4FA52602372800E293AD /* Types.cpp in Sources */,
 				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
 				053DCD3B260A17AC00C64B1F /* Shell.cpp in Sources */,
 				05C68D5125C8384E00529B60 /* Main.m in Sources */,

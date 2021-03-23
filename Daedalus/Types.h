@@ -8,3 +8,8 @@ struct AllocatedBuffer {
     VkBuffer buffer;
     VmaAllocation allocation;
 };
+
+struct AllocatedImage {
+    VkImage _image;
+    VmaAllocation _allocation;
+};

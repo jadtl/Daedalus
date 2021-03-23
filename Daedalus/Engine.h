@@ -83,6 +83,11 @@ public:
     Mesh triangleMesh;
     Mesh monkeyMesh;
     
+    VkImageView depthImageView;
+    AllocatedImage depthImage;
+    
+    VkFormat depthFormat;
+    
     
     DeletionQueue mainDeletionQueue;
     
