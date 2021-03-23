@@ -571,6 +571,8 @@ void Engine::initializePipelines() {
 
     //use the triangle layout we created
     pipelineBuilder.pipelineLayout = pipelineLayout;
+    
+    pipelineBuilder.depthStencil = init::depthStencilCreateInfo(true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
     //finally build the pipeline
     trianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
