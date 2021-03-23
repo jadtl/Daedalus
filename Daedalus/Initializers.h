@@ -17,4 +17,8 @@ VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo();
 VkImageCreateInfo imageCreateInfo(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent);
 VkImageViewCreateInfo imageViewCreateInfo(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags);
 VkPipelineDepthStencilStateCreateInfo depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp);
+
+VkSubmitInfo submitInfo(VkCommandBuffer* cmd);
+VkPresentInfoKHR presentInfo();
+VkRenderPassBeginInfo renderPassBeginInfo(VkRenderPass renderPass, VkExtent2D windowExtent, VkFramebuffer framebuffer);
 }
