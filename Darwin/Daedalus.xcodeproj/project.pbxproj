@@ -264,7 +264,7 @@
 			buildPhases = (
 				05C68D1D25C8381D00529B60 /* Resources */,
 				05C68D1B25C8381D00529B60 /* Sources */,
-				0509E1BC26036E1D003B4180 /* Compile Shaders */,
+				0509E1BC26036E1D003B4180 /* Add Assets */,
 				05C68D1C25C8381D00529B60 /* Frameworks */,
 				053136E82608B05B0052851C /* Embed Frameworks */,
 			);
@@ -352,7 +352,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0509E1BC26036E1D003B4180 /* Compile Shaders */ = {
+		0509E1BC26036E1D003B4180 /* Add Assets */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -361,14 +361,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Compile Shaders";
+			name = "Add Assets";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "vertShaders=\"Triangle\nColoredTriangle\nTriangleMesh\"\n\nfragShaders=\"Triangle\nColoredTriangle\"\n\nfor f in $vertShaders\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.vert -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.vert.spv\ndone\n\nfor f in $fragShaders\ndo\n    glslc ${PROJECT_DIR}/../Shaders/$f.frag -o ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/MacOS/$f.frag.spv\ndone\n";
+			shellScript = "cd ..\nVertexShaders=Shaders/*.vert\nFragmentShaders=Shaders/*.frag\nDaedalus=${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Shaders\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Assets\n\nfor f in $VertexShaders\ndo\n    glslc $f -o $Daedalus/$f.spv\ndone\n\nfor f in $FragmentShaders\ndo\n    glslc $f -o $Daedalus/$f.spv\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
