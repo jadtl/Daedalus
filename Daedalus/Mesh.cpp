@@ -1,5 +1,9 @@
 #include "Mesh.h"
 
+#include "OBJLoader.h"
+
+#include <iostream>
+
 VertexInputDescription Vertex::getVertexDescription() {
     VertexInputDescription description;
 
@@ -37,4 +41,32 @@ VertexInputDescription Vertex::getVertexDescription() {
     description.attributes.push_back(colorAttribute);
     
     return description;
+}
+
+bool Mesh::loadFromObj(const char *fileName) {
+    //attrib will contain the vertex arrays of the file
+    tinyobj::attrib_t attrib;
+    //shapes contains the info for each separate object in the file
+    std::vector<tinyobj::shape_t> shapes;
+    //materials contains the information about the material of each shape, but we won't use it.
+    std::vector<tinyobj::material_t> materials;
+
+    //error and warning output from the load function
+    std::string warn;
+    std::string err;
+
+    //load the OBJ file
+    tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fileName, nullptr);
+    //make sure to output the warnings to the console, in case there are issues with the file
+    if (!warn.empty()) {
+        std::cout << "OBJ Loader Warning: " << warn << std::endl;
+    }
+    //if we have any error, print it to the console, and break the mesh loading.
+    //This happens if the file can't be found or is malformed
+    if (!err.empty()) {
+        std::cerr << err << std::endl;
+        return false;
+    }
+    
+    return true;
 }

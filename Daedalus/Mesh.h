@@ -25,5 +25,5 @@ struct Mesh {
     std::vector<Vertex> vertices;
     AllocatedBuffer vertexBuffer;
     
-    bool loadFromObj(const char* fileName);
+    bool loadFromObj(const char *fileName);
 };
