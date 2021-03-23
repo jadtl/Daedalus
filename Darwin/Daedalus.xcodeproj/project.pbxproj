@@ -20,6 +20,14 @@
 		053DCD3E260A2E6E00C64B1F /* libboost_system.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		053DCD40260A2E8700C64B1F /* libboost_filesystem.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */; };
 		053DCD41260A2E8700C64B1F /* libboost_filesystem.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		053DCD47260A6CE000C64B1F /* MonkeySmooth.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD43260A6CE000C64B1F /* MonkeySmooth.mtl */; };
+		053DCD48260A6CE000C64B1F /* MonkeySmooth.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD43260A6CE000C64B1F /* MonkeySmooth.mtl */; };
+		053DCD49260A6CE000C64B1F /* MonkeyFlat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD44260A6CE000C64B1F /* MonkeyFlat.mtl */; };
+		053DCD4A260A6CE000C64B1F /* MonkeyFlat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD44260A6CE000C64B1F /* MonkeyFlat.mtl */; };
+		053DCD4B260A6CE000C64B1F /* MonkeySmooth.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD45260A6CE000C64B1F /* MonkeySmooth.obj */; };
+		053DCD4C260A6CE000C64B1F /* MonkeySmooth.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD45260A6CE000C64B1F /* MonkeySmooth.obj */; };
+		053DCD4D260A6CE000C64B1F /* MonkeyFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */; };
+		053DCD4E260A6CE000C64B1F /* MonkeyFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */; };
 		05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
@@ -82,6 +90,10 @@
 		053DCD39260A17AC00C64B1F /* Shell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shell.h; sourceTree = "<group>"; };
 		053DCD3C260A2E6E00C64B1F /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../../../../usr/local/Cellar/boost/1.75.0_2/lib/libboost_system.dylib; sourceTree = "<group>"; };
 		053DCD3F260A2E8700C64B1F /* libboost_filesystem.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_filesystem.dylib; path = ../../../../../../usr/local/Cellar/boost/1.75.0_2/lib/libboost_filesystem.dylib; sourceTree = "<group>"; };
+		053DCD43260A6CE000C64B1F /* MonkeySmooth.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MonkeySmooth.mtl; sourceTree = "<group>"; };
+		053DCD44260A6CE000C64B1F /* MonkeyFlat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MonkeyFlat.mtl; sourceTree = "<group>"; };
+		053DCD45260A6CE000C64B1F /* MonkeySmooth.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MonkeySmooth.obj; sourceTree = "<group>"; };
+		053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MonkeyFlat.obj; sourceTree = "<group>"; };
 		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
@@ -156,9 +168,22 @@
 			path = ../Shaders;
 			sourceTree = "<group>";
 		};
+		053DCD42260A6CDF00C64B1F /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				053DCD43260A6CE000C64B1F /* MonkeySmooth.mtl */,
+				053DCD44260A6CE000C64B1F /* MonkeyFlat.mtl */,
+				053DCD45260A6CE000C64B1F /* MonkeySmooth.obj */,
+				053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */,
+			);
+			name = Assets;
+			path = ../Assets;
+			sourceTree = "<group>";
+		};
 		05C68D1625C8381C00529B60 = {
 			isa = PBXGroup;
 			children = (
+				053DCD42260A6CDF00C64B1F /* Assets */,
 				0509E1C3260397B3003B4180 /* Daedalus.entitlements */,
 				05E2DD7825D1676100C198FA /* Daedalus */,
 				0509E1B526036C62003B4180 /* Shaders */,
@@ -353,8 +378,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				053DCD47260A6CE000C64B1F /* MonkeySmooth.mtl in Resources */,
 				0538D25426081F6900CF7C96 /* Main.storyboard in Resources */,
 				05C68D2925C8381F00529B60 /* Assets.xcassets in Resources */,
+				053DCD4B260A6CE000C64B1F /* MonkeySmooth.obj in Resources */,
+				053DCD49260A6CE000C64B1F /* MonkeyFlat.mtl in Resources */,
+				053DCD4D260A6CE000C64B1F /* MonkeyFlat.obj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,8 +391,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				053DCD48260A6CE000C64B1F /* MonkeySmooth.mtl in Resources */,
 				05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */,
 				05C68D4925C8384D00529B60 /* Main.storyboard in Resources */,
+				053DCD4C260A6CE000C64B1F /* MonkeySmooth.obj in Resources */,
+				053DCD4A260A6CE000C64B1F /* MonkeyFlat.mtl in Resources */,
+				053DCD4E260A6CE000C64B1F /* MonkeyFlat.obj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
