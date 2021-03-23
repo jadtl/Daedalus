@@ -167,14 +167,10 @@ void Engine::render() {
     vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
     //drawing start
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
-
-    //bind the mesh vertex buffer with offset 0
-    VkDeviceSize offset = 0;
-    vkCmdBindVertexBuffers(cmd, 0, 1, &triangleMesh.vertexBuffer.buffer, &offset);
     
     //make a model view matrix for rendering the object
     //camera position
-    glm::vec3 cameraPosition = { 0.f,0.25f,-3.f };
+    glm::vec3 cameraPosition = { 0.f, 0.f, -5.f };
 
     glm::mat4 view = glm::translate(glm::mat4(1.f), cameraPosition);
     //camera projection
@@ -191,9 +187,13 @@ void Engine::render() {
 
     //upload the matrix to the GPU via pushconstants
     vkCmdPushConstants(cmd, meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+    
+    //bind the mesh vertex buffer with offset 0
+    VkDeviceSize offset = 0;
+    vkCmdBindVertexBuffers(cmd, 0, 1, &monkeyMesh.vertexBuffer.buffer, &offset);
 
     //we can now draw the mesh
-    vkCmdDraw(cmd, triangleMesh.vertices.size(), 1, 0, 0);
+    vkCmdDraw(cmd, monkeyMesh.vertices.size(), 1, 0, 0);
     
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
@@ -647,9 +647,10 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
     triangleMesh.vertices[2].color = { 0.75f, 0.75f, 1.f };
     
-    //we don't care about the vertex normals
+    monkeyMesh.loadFromObj(shell.asset("MonkeySmooth.obj").c_str());
 
     uploadMesh(triangleMesh);
+    uploadMesh(monkeyMesh);
 }
 
 void Engine::uploadMesh(Mesh &mesh) {
