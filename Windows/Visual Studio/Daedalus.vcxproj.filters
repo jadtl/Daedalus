@@ -33,6 +33,9 @@
     <ClCompile Include="..\..\Daedalus\Shell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Daedalus\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Daedalus\Bootstrap.h">
@@ -65,5 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

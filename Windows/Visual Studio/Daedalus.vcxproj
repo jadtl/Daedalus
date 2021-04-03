@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\Daedalus\Bootstrap.cpp" />
     <ClCompile Include="..\..\Daedalus\Engine.cpp" />
     <ClCompile Include="..\..\Daedalus\Initializers.cpp" />
+    <ClCompile Include="..\..\Daedalus\Main.cpp" />
     <ClCompile Include="..\..\Daedalus\Mesh.cpp" />
     <ClCompile Include="..\..\Daedalus\Pipeline.cpp" />
     <ClCompile Include="..\..\Daedalus\Shell.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\..\Daedalus\Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
