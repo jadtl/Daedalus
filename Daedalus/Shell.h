@@ -11,7 +11,7 @@
   #include <mach-o/dyld.h>
 #endif
 
-#ifdef WINDOWS
+#if defined(_WIN32)
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #else

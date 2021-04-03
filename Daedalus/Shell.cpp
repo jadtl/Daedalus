@@ -13,7 +13,7 @@ boost::filesystem::path Shell::executable() {
   std::vector<char> buffer(bufferSize + 1);
 
 #if defined(_WIN32)
-  ::GetModuleFileName(NULL, &buffer[0], bufferSize);
+  ::GetModuleFileName(NULL, (LPWSTR)&buffer[0], bufferSize);
 
 #elif defined(__linux__)
   // Get the process ID.
