@@ -108,7 +108,7 @@ void Engine::updateSwapchain() {
 }
 
 void Engine::update() {
-    // Everything that happens in the world is updated, should be using ticks
+    //everything that happens in the world is updated, should be using ticks
 }
 
 void Engine::render() {
@@ -118,7 +118,8 @@ void Engine::render() {
     
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
-    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex);
+
+    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, NULL, &swapchainImageIndex);
     if (swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
         updateSwapchain();
         return;
@@ -296,7 +297,11 @@ void Engine::initializeVulkan() {
     
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;
+
+#ifdef WIN32
+#endif
     
+#ifdef __APPLE__
     // Surface creation
     VkMetalSurfaceCreateInfoEXT surfaceInfo;
     surfaceInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
@@ -304,6 +309,7 @@ void Engine::initializeVulkan() {
     surfaceInfo.flags = 0;
     surfaceInfo.pLayer = caMetalLayer;
     VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, nullptr, &this->surface));
+#endif
     
     // Physical device creation
     vkb::PhysicalDeviceSelector physicalDeviceSelector{vkbInstance};
