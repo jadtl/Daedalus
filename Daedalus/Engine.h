@@ -4,7 +4,10 @@
 #include <string>
 #include <deque>
 
-#include <MoltenVK/mvk_vulkan.h>
+#ifdef __APPLE__
+    #include <MoltenVK/mvk_vulkan.h>
+#endif
+
 #include <glm/glm.hpp>
 
 #include "Shell.h"
