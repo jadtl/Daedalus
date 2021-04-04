@@ -37,6 +37,13 @@ Engine::~Engine() {
     terminate();
 }
 
+#if defined(_WIN32)
+LRESULT Engine::handleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    return LRESULT();
+}
+#endif
+
 void Engine::initialize() {
     initializeVulkan();
     
