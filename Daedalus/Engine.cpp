@@ -25,7 +25,7 @@
         }                                                                \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer),  shell("../Daedalus") {
+Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle),  shell("../Daedalus") {
     settings.selectedShader = 0;
     
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
@@ -298,10 +298,9 @@ void Engine::initializeVulkan() {
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;
 
-#ifdef WIN32
-#endif
+#if defined(_WIN32)
     
-#ifdef __APPLE__
+#elif defined(__APPLE__)
     // Surface creation
     VkMetalSurfaceCreateInfoEXT surfaceInfo;
     surfaceInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;

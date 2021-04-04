@@ -4,11 +4,13 @@
 #include <string>
 #include <deque>
 
-#if defined(__APPLE__)
+#include <glm/glm.hpp>
+
+#if defined(_WIN32)
+    #include <Windows.h>
+#elif defined(__APPLE__)
     #include <MoltenVK/mvk_vulkan.h>
 #endif
-
-#include <glm/glm.hpp>
 
 #include "Shell.h"
 #include "Types.h"
