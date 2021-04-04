@@ -40,7 +40,7 @@ public:
     Engine(const Engine &engine) = delete;
     Engine &operator = (const Engine &engine) = delete;
     
-    Engine(const std::vector<std::string> &args, void *caMetalLayer);
+    Engine(const std::vector<std::string> &args, void *windowHandle);
     ~Engine();
     
     Shell shell;
@@ -126,7 +126,7 @@ public:
     void render();
     
 private:
-    void* caMetalLayer;
+    void* windowHandle;
     
     void initializeVulkan();
     void initializeSwapchain();
