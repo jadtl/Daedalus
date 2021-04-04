@@ -4,7 +4,7 @@
 #include <string>
 #include <deque>
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
     #include <MoltenVK/mvk_vulkan.h>
 #endif
 
