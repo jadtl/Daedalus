@@ -36,6 +36,9 @@
     <ClCompile Include="..\..\Daedalus\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ShellWindows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Daedalus\Bootstrap.h">
