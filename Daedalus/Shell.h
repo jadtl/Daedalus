@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
+#include <vulkan/vulkan.h>
 
 #if defined(_WIN32)
   #include <windows.h>
