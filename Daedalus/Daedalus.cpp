@@ -1,141 +1,87 @@
-#include "Engine.h"
+#include "Daedalus.h"
 
 #include <glm/gtx/transform.hpp>
 
-#define VMA_IMPLEMENTATION
-#include "MemoryAllocator.h"
 #include "Types.h"
 #include "Initializers.h"
 #include "Bootstrap.h"
 #include "Pipeline.h"
+#include "Engine.h"
 
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 
-// We want to immediately abort when there is an error. In normal engines this would give an error message to the user, or perform a dump of state
-#define VK_CHECK(x)                                                      \
-    do                                                                   \
-    {                                                                    \
-        VkResult error = x;                                              \
-        if (error)                                                       \
-        {                                                                \
-            std::cout <<"Detected Vulkan error: " << error << std::endl; \
-            abort();                                                     \
-        }                                                                \
-    } while (0)
+Daedalus::Daedalus(const char* applicationName, const std::vector<std::string>& args) 
+    : Engine(applicationName, "Daedalus", args) {}
 
-Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle),  shell("../Daedalus") {
-    settings.selectedShader = 0;
+Daedalus::~Daedalus() {}
+
+void Daedalus::attachShell(Shell& shell) {
+    Engine::attachShell(shell);
     
-    if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
-    if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
+    const Shell::Context &context = shell.context();
+    this->instance = context.instance;
+    this->physicalDevice = context.physicalDevice;
+    this->device = context.device;
+    this->graphicsQueue = context.graphicsQueue;
+    this->graphicsQueueFamily = context.graphicsQueueFamily;
+    
+    this->allocator = context.allocator;
+    
+    loadMeshes();
 }
 
-Engine::~Engine() {
-    // Destroy context
-    terminate();
-}
-
-#if defined(_WIN32)
-LRESULT Engine::handleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
-{
-    return LRESULT();
-}
-#endif
-
-void Engine::initialize() {
-    initializeVulkan();
-    
-    initializeSwapchain();
-    
-    initializeCommands();
-    
-    initializeDefaultRenderPass();
-    
-    initializeFramebuffers();
-    
-    initializeSyncStructures();
-    
-    initializePipelines();
-    
-    isInitialized = true;
-}
-
-void Engine::terminate() {
-    if (isInitialized) {
-        terminateSwapchain();
-        
-        // Terminate sync objects
-        vkDestroySemaphore(device, presentSemaphore, nullptr);
-        vkDestroySemaphore(device, renderSemaphore, nullptr);
-        vkDestroyFence(device, renderFence, nullptr);
-        
-        vkDestroyCommandPool(device, commandPool, nullptr);
-        
-        vkDestroyDevice(device, nullptr);
-        
-        if (settings.validate) vkb::destroy_debug_utils_messenger(instance, debugMessenger);
-        
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
-        
-        vmaDestroyAllocator(allocator);
-    }
-}
-
-void Engine::terminateSwapchain() {
-    std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer) {
-        vkDestroyFramebuffer(device, framebuffer, nullptr); });
-    
+void Daedalus::detachShell() {
     vkFreeCommandBuffers(device, commandPool, 1, &mainCommandBuffer);
     
     vkDestroyPipeline(device, trianglePipeline, nullptr);
     vkDestroyPipeline(device, coloredTrianglePipeline, nullptr);
     vkDestroyPipeline(device, meshPipeline, nullptr);
-    
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    
     vkDestroyRenderPass(device, renderPass, nullptr);
+    vkDestroyCommandPool(device, commandPool, nullptr);
     
-    std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) { vkDestroyImageView(device, imageView, nullptr); });
+    vkDestroyDevice(device, nullptr);
+    vkDestroyInstance(instance, nullptr);
     
-    vkDestroySwapchainKHR(device, swapchain, nullptr);
+    vmaDestroyAllocator(allocator);
+    
+    Engine::detachShell();
 }
 
-void Engine::updateSwapchain() {
-    vkDeviceWaitIdle(device);
+void Daedalus::attachSwapchain(vkb::Swapchain vkbSwapchain) {
+    this->vkbSwapchain = vkbSwapchain;
     
-    terminateSwapchain();
-    
-    initializeSwapchain();
+    initializeDepthBuffers();
     initializeDefaultRenderPass();
     initializePipelines();
     initializeFramebuffers();
     initializeCommands();
 }
 
-void Engine::update() {
-    //everything that happens in the world is updated, should be using ticks
+void Daedalus::detachSwapchain() {
+    std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr); });
 }
 
-void Engine::render() {
-    //wait until the GPU has finished rendering the last frame. Timeout of 1 second
-    VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
-    VK_CHECK(vkResetFences(device, 1, &renderFence));
+void Daedalus::acquireBackBuffer() {
     
-    //request image from the swapchain, one second timeout
-    uint32_t swapchainImageIndex;
+}
 
-    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, NULL, &swapchainImageIndex);
-    if (swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
-        updateSwapchain();
-        return;
-    } else if (swapchainStatus != VK_SUCCESS && swapchainStatus != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("Failed to acquire swapchain image!");
-    }
+void Daedalus::presentBackBuffer() {
     
+}
+
+void Daedalus::onTick() {
+    //everything that happens in the world is updated here
+}
+
+void Daedalus::onFrame() {
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
-    VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
+    vkResetCommandBuffer(mainCommandBuffer, 0) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Command buffer reset") : shell_->log(Shell::LOG_ERROR, "Command buffer failed to reset!");
     
     //naming it cmd for shorter writing
     VkCommandBuffer cmd = mainCommandBuffer;
@@ -148,12 +94,13 @@ void Engine::render() {
     commandBufferBeginInfo.pInheritanceInfo = nullptr;
     commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    VK_CHECK(vkBeginCommandBuffer(cmd, &commandBufferBeginInfo));
+    vkBeginCommandBuffer(cmd, &commandBufferBeginInfo) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Command buffer begins") : shell_->log(Shell::LOG_ERROR, "Command buffer failed to begin!");
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
     
-    float fadeBlue = abs(sin(frameNumber / 25.f)) / 7.5f;
+    float fadeBlue = abs(sin(shell_->context().backBuffer.frameNumber / 25.f)) / 7.5f;
     clearValue.color = { { 0.f, 0.f, fadeBlue, 1.0f } };
     
     //clear depth at 1
@@ -162,7 +109,7 @@ void Engine::render() {
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
-    VkRenderPassBeginInfo renderPassInfo = init::renderPassBeginInfo(renderPass, settings.windowExtent, framebuffers[swapchainImageIndex]);
+    VkRenderPassBeginInfo renderPassInfo = init::renderPassBeginInfo(renderPass, vkbSwapchain.extent, framebuffers[shell_->context().swapchainImageIndex]);
 
     //connect clear values
     renderPassInfo.clearValueCount = 2;
@@ -182,10 +129,10 @@ void Engine::render() {
 
     glm::mat4 view = glm::translate(glm::mat4(1.f), cameraPosition);
     //camera projection
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings.windowExtent.width / settings.windowExtent.height), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings_.initialWindowExtent.width / settings_.initialWindowExtent.height), 0.1f, 100.0f);
     projection[1][1] *= -1;
     //model rotation
-    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(frameNumber * 1.f), glm::vec3(0, 1, 0));
+    glm::mat4 model = glm::rotate(glm::mat4{ 1.0f }, glm::radians(shell_->context().backBuffer.frameNumber * 1.f), glm::vec3(0, 1, 0));
 
     //calculate final mesh matrix
     glm::mat4 meshMatrix = projection * view * model;
@@ -205,7 +152,8 @@ void Engine::render() {
     
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
-    VK_CHECK(vkEndCommandBuffer(cmd));
+    vkEndCommandBuffer(cmd) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Command buffer ends") : shell_->log(Shell::LOG_ERROR, "Command buffer failed to end!");;
     
     //prepare the submission to the queue.
     //we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
@@ -220,50 +168,27 @@ void Engine::render() {
     submit.pWaitDstStageMask = &waitStage;
 
     submit.waitSemaphoreCount = 1;
-    submit.pWaitSemaphores = &presentSemaphore;
+    submit.pWaitSemaphores = &shell_->context().backBuffer.presentSemaphore;
 
     submit.signalSemaphoreCount = 1;
-    submit.pSignalSemaphores = &renderSemaphore;
+    submit.pSignalSemaphores = &shell_->context().backBuffer.renderSemaphore;
 
     submit.commandBufferCount = 1;
     submit.pCommandBuffers = &cmd;
 
     //submit command buffer to the queue and execute it.
     // _renderFence will now block until the graphic commands finish execution
-    VK_CHECK(vkQueueSubmit(graphicsQueue, 1, &submit, renderFence));
-    
-    // this will put the image we just rendered into the visible window.
-    // we want to wait on the _renderSemaphore for that,
-    // as it's necessary that drawing commands have finished before the image is displayed to the user
-    VkPresentInfoKHR presentInfo = {};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.pNext = nullptr;
-
-    presentInfo.pSwapchains = &swapchain;
-    presentInfo.swapchainCount = 1;
-
-    presentInfo.pWaitSemaphores = &renderSemaphore;
-    presentInfo.waitSemaphoreCount = 1;
-
-    presentInfo.pImageIndices = &swapchainImageIndex;
-
-    swapchainStatus = vkQueuePresentKHR(graphicsQueue, &presentInfo);
-    if (swapchainStatus == VK_SUBOPTIMAL_KHR || swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
-        updateSwapchain();
-        return;
-    }
-    else if (swapchainStatus != VK_SUCCESS) {
-        throw std::runtime_error("Failed to present swapchain image!");
-    }
+    vkQueueSubmit(shell_->context().graphicsQueue, 1, &submit, shell_->context().backBuffer.renderFence) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Queue successfully submitted") : shell_->log(Shell::LOG_ERROR, "Queue failed to submit!");
 
     //increase the number of frames drawn
     frameNumber++;
 }
 
-void Engine::onKey(Key key) {
+void Daedalus::onKey(Key key) {
     switch (key) {
         case KEY_A:
-            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
+            settings_.selectedShader = settings_.selectedShader == 0 ? 1 : 0;
             break;
         case KEY_S:
             
@@ -281,135 +206,67 @@ void Engine::onKey(Key key) {
             
             break;
         case Key::KEY_SPACE:
-            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
+            settings_.selectedShader = settings_.selectedShader == 0 ? 1 : 0;
             break;
     }
 }
 
-void Engine::initializeVulkan() {
-    // Instance and debug messenger creation
-    vkb::InstanceBuilder builder;
-    
-    auto instanceBuilder = builder.set_engine_name(settings.engineName.c_str())
-        .set_engine_version(0, 1)
-        .set_app_name(settings.applicationName.c_str())
-        .set_app_version(0, 1)
-        .require_api_version(1, 1, 0)
-        .build();
-    
-    if (!instanceBuilder)
-        std::cerr << "Failed to create Vulkan instance: " << instanceBuilder.error() << "\n";
-    
-    vkb::Instance vkbInstance = instanceBuilder.value();
-    
-    this->instance = vkbInstance.instance;
-    this->debugMessenger = vkbInstance.debug_messenger;
+void Daedalus::initializeCommands() {
+    VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-#if defined(_WIN32)
+    vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Command pool successfully created") :
+    shell_->log(Shell::LOG_ERROR, "Command pool failed to create!");
     
-#elif defined(__APPLE__)
-    // Surface creation
-    VkMetalSurfaceCreateInfoEXT surfaceInfo;
-    surfaceInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-    surfaceInfo.pNext = nullptr;
-    surfaceInfo.flags = 0;
-    surfaceInfo.pLayer = windowHandle;
-    VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, nullptr, &this->surface));
-#endif
-    
-    // Physical device creation
-    vkb::PhysicalDeviceSelector physicalDeviceSelector{vkbInstance};
-    auto physicalDevice = physicalDeviceSelector
-        .set_minimum_version(1, 1)
-        .set_surface(this->surface)
-        .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
-        .select();
-        
-    if (!physicalDevice)
-        std::cerr << "Failed to select Vulkan physical device: " << physicalDevice.error().message() << "\n";
-    
-    // Device creation
-    vkb::DeviceBuilder deviceBuilder{physicalDevice.value()};
-    vkb::Device vkbDevice = deviceBuilder.build().value();
-    
-    this->device = vkbDevice.device;
-    this->physicalDevice = physicalDevice.value().physical_device;
-    
-    graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
-    graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
-    
-    VmaAllocatorCreateInfo info{};
-    info.physicalDevice = this->physicalDevice;
-    info.device = this->device;
-    info.instance = this->instance;
-    vmaCreateAllocator(&info, &this->allocator);
-    
-    loadMeshes();
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
+
+    vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Command buffers successfully allocated") :
+    shell_->log(Shell::LOG_ERROR, "Command buffers failed to allocate!");
 }
 
-void Engine::initializeSwapchain() {
-    vkb::SwapchainBuilder swapchainBuilder{physicalDevice, device, surface};
-    
-    vkb::Swapchain vkbSwapchain = swapchainBuilder
-        .use_default_format_selection()
-        .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-        .build()
-        .value();
-    
-    swapchain = vkbSwapchain.swapchain;
-    swapchainImages = vkbSwapchain.get_images().value();
-    swapchainImageViews = vkbSwapchain.get_image_views().value();
-    settings.windowExtent = vkbSwapchain.extent;
-    swapchainImageFormat = vkbSwapchain.image_format;
-    
+void Daedalus::initializeDepthBuffers() {
     //depth image size will match the window
     VkExtent3D depthImageExtent = {
-        settings.windowExtent.width,
-        settings.windowExtent.height,
+        vkbSwapchain.extent.width,
+        vkbSwapchain.extent.height,
         1
     };
-
+    
     //hardcoding the depth format to 32 bit float
     depthFormat = VK_FORMAT_D32_SFLOAT;
 
     //the depth image will be an image with the format we selected and Depth Attachment usage flag
-    VkImageCreateInfo dimg_info = init::imageCreateInfo(depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
+    VkImageCreateInfo depthImageInfo = init::imageCreateInfo(depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
 
     //for the depth image, we want to allocate it from GPU local memory
-    VmaAllocationCreateInfo dimg_allocinfo = {};
-    dimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-    dimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    VmaAllocationCreateInfo depthImageAllocationInfo = {};
+    depthImageAllocationInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+    depthImageAllocationInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     //allocate and create the image
-    vmaCreateImage(allocator, &dimg_info, &dimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr);
+    vmaCreateImage(allocator, &depthImageInfo, &depthImageAllocationInfo, &depthImage.image, &depthImage.allocation, nullptr);
 
     //build an image-view for the depth image to use for rendering
-    VkImageViewCreateInfo dview_info = init::imageViewCreateInfo(depthFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
+    VkImageViewCreateInfo depthViewInfo = init::imageViewCreateInfo(depthFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
 
-    VK_CHECK(vkCreateImageView(device, &dview_info, nullptr, &depthImageView));
+    vkCreateImageView(device, &depthViewInfo, nullptr, &depthImageView) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Image view successfully created") : shell_->log(Shell::LOG_ERROR, "Image view failed to create!");
 
     //add to deletion queues
     mainDeletionQueue.push_function([=]() {
         vkDestroyImageView(device, depthImageView, nullptr);
+        shell_->log(Shell::LOG_INFO, "Image view destroyed");
         vmaDestroyImage(allocator, depthImage.image, depthImage.allocation);
+        shell_->log(Shell::LOG_INFO, "Image destroyed");
     });
 }
 
-void Engine::initializeCommands() {
-    VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool));
-    
-    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
-
-    VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
-}
-
-void Engine::initializeDefaultRenderPass() {
+void Daedalus::initializeDefaultRenderPass() {
     // the renderpass will use this color attachment.
     VkAttachmentDescription colorAttachment = {};
     //the attachment will have the format needed by the swapchain
-    colorAttachment.format = swapchainImageFormat;
+    colorAttachment.format = vkbSwapchain.image_format;
     //1 sample, we won't be doing MSAA
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     // we Clear when this attachment is loaded
@@ -425,8 +282,6 @@ void Engine::initializeDefaultRenderPass() {
 
     //after the renderpass ends, the image has to be on a layout ready for display
     colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-    
-    
     
     VkAttachmentReference colorAttachmentReference = {};
     //attachment number will index into the pAttachments array in the parent renderpass itself
@@ -470,79 +325,63 @@ void Engine::initializeDefaultRenderPass() {
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
 
-    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
+    vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Render pass successfully created") :
+    shell_->log(Shell::LOG_ERROR, "Render pass failed to create!");
 }
 
-void Engine::initializeFramebuffers() {
+void Daedalus::initializeFramebuffers() {
     //create the framebuffers for the swapchain images. This will connect the render-pass to the images for rendering
     VkFramebufferCreateInfo framebufferCreateInfo = {};
     framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferCreateInfo.pNext = nullptr;
 
     framebufferCreateInfo.renderPass = renderPass;
-    framebufferCreateInfo.width = settings.windowExtent.width;
-    framebufferCreateInfo.height = settings.windowExtent.height;
+    framebufferCreateInfo.width = vkbSwapchain.extent.width;
+    framebufferCreateInfo.height = vkbSwapchain.extent.height;
     framebufferCreateInfo.layers = 1;
 
     //grab how many images we have in the swapchain
-    const uint32_t swapchainImagecount = swapchainImages.size();
+    const uint32_t swapchainImagecount = vkbSwapchain.get_images().value().size();
     framebuffers = std::vector<VkFramebuffer>(swapchainImagecount);
 
     //create framebuffers for each of the swapchain image views
     for (int i = 0; i < swapchainImagecount; i++) {
         VkImageView attachments[2];
-        attachments[0] = swapchainImageViews[i];
+        attachments[0] = vkbSwapchain.get_image_views().value().at(i);
         attachments[1] = depthImageView;
 
         framebufferCreateInfo.pAttachments = attachments;
         framebufferCreateInfo.attachmentCount = 2;
         
-        VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]));
+        vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]) == VK_SUCCESS ?
+        shell_->log(Shell::LOG_INFO, "Framebuffer successfully created") :
+        shell_->log(Shell::LOG_ERROR, "Framebuffer failed to create!");
     }
 }
 
-void Engine::initializeSyncStructures() {
-    //create syncronization structures
-        
-    VkFenceCreateInfo fenceCreateInfo = {};
-    fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceCreateInfo.pNext = nullptr;
-
-    //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
-    fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
-
-    //for the semaphores we don't need any flags
-    VkSemaphoreCreateInfo semaphoreCreateInfo = {};
-    semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    semaphoreCreateInfo.pNext = nullptr;
-    semaphoreCreateInfo.flags = 0;
-
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentSemaphore));
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphore));
-}
-
-void Engine::initializePipelines() {
-    if (!loadShaderModule(shell.shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
+void Daedalus::initializePipelines() {
+    if (!loadShaderModule(shell_->explorer_.shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
         std::cout << "Error when building the triangle fragment shader module" << "\n";
     } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
 
-    if (!loadShaderModule(shell.shader("ColoredTriangle.vert.spv").c_str(), &coloredTriangleVertexShader)) {
+    if (!loadShaderModule(shell_->explorer_.shader("ColoredTriangle.vert.spv").c_str(), &coloredTriangleVertexShader)) {
         std::cout << "Error when building the triangle vertex shader module" << "\n";
     } else { std::cout << "Colored triangle vertex shader succesfully loaded" << "\n"; }
     
-    if (!loadShaderModule(shell.shader("Triangle.frag.spv").c_str(), &triangleFragShader)) {
+    if (!loadShaderModule(shell_->explorer_.shader("Triangle.frag.spv").c_str(), &triangleFragShader)) {
         std::cout << "Error when building the triangle fragment shader module" << "\n";
     } else { std::cout << "Triangle fragment shader succesfully loaded" << "\n"; }
 
-    if (!loadShaderModule(shell.shader("Triangle.vert.spv").c_str(), &triangleVertexShader)) {
+    if (!loadShaderModule(shell_->explorer_.shader("Triangle.vert.spv").c_str(), &triangleVertexShader)) {
         std::cout << "Error when building the triangle vertex shader module" << "\n";
     } else { std::cout << "Triangle vertex shader succesfully loaded" << "\n"; }
     
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
-    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout));
+    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Pipeline layout successfully created") :
+    shell_->log(Shell::LOG_ERROR, "Pipeline layout failed to create!");
     
     //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
     PipelineBuilder pipelineBuilder;
@@ -564,13 +403,13 @@ void Engine::initializePipelines() {
     //build viewport and scissor from the swapchain extents
     pipelineBuilder.viewport.x = 0.0f;
     pipelineBuilder.viewport.y = 0.0f;
-    pipelineBuilder.viewport.width = (float)settings.windowExtent.width;
-    pipelineBuilder.viewport.height = (float)settings.windowExtent.height;
+    pipelineBuilder.viewport.width = (float)vkbSwapchain.extent.width;
+    pipelineBuilder.viewport.height = (float)vkbSwapchain.extent.height;
     pipelineBuilder.viewport.minDepth = 0.0f;
     pipelineBuilder.viewport.maxDepth = 1.0f;
     
     pipelineBuilder.scissor.offset = {0, 0};
-    pipelineBuilder.scissor.extent = settings.windowExtent;
+    pipelineBuilder.scissor.extent = vkbSwapchain.extent;
 
     //configure the rasterizer to draw filled triangles
     pipelineBuilder.rasterizer = init::rasterizationStateCreateInfo(VK_POLYGON_MODE_FILL);
@@ -614,13 +453,9 @@ void Engine::initializePipelines() {
     pipelineBuilder.shaderStages.clear();
 
     //compile mesh vertex shader
-    if (!loadShaderModule(shell.shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
-    {
-        std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
-    }
-    else {
-        std::cout << "Triangle mesh vertex shader succesfully loaded" << std::endl;
-    }
+    loadShaderModule(shell_->explorer_.shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader) ?
+    shell_->log(Shell::LOG_INFO, "Triangle mesh vertex shader succesfully loaded") :
+    shell_->log(Shell::LOG_ERROR, "Error when building the triangle mesh vertex shader module");
 
     //add the other shaders
     pipelineBuilder.shaderStages.push_back(
@@ -645,7 +480,9 @@ void Engine::initializePipelines() {
     info.pPushConstantRanges = &pushConstant;
     info.pushConstantRangeCount = 1;
 
-    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
+    vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Pipeline layout successfully created") :
+    shell_->log(Shell::LOG_ERROR, "Pipeline layout failed to create!");
     
     pipelineBuilder.pipelineLayout = meshPipelineLayout;
 
@@ -670,7 +507,7 @@ void Engine::initializePipelines() {
     });
 }
 
-bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {
+bool Daedalus::loadShaderModule(const char *filePath, VkShaderModule *shaderModule) {
     std::ifstream file(filePath, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) { return false; }
@@ -708,7 +545,7 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
     return true;
 }
 
-void Engine::loadMeshes() {
+void Daedalus::loadMeshes() {
     //make the array 3 vertices long
     triangleMesh.vertices.resize(3);
 
@@ -721,13 +558,13 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
     triangleMesh.vertices[2].color = { 0.75f, 0.75f, 1.f };
     
-    monkeyMesh.loadFromObj(shell.asset("Buddha.obj").c_str());
+    monkeyMesh.loadFromObj(shell_->explorer_.asset("Buddha.obj").c_str());
 
     uploadMesh(triangleMesh);
     uploadMesh(monkeyMesh);
 }
 
-void Engine::uploadMesh(Mesh &mesh) {
+void Daedalus::uploadMesh(Mesh &mesh) {
     //allocate vertex buffer
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -742,14 +579,15 @@ void Engine::uploadMesh(Mesh &mesh) {
     vmaallocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
     //allocate the buffer
-    VK_CHECK(vmaCreateBuffer(allocator, &bufferInfo, &vmaallocInfo,
+    vmaCreateBuffer(allocator, &bufferInfo, &vmaallocInfo,
         &mesh.vertexBuffer.buffer,
         &mesh.vertexBuffer.allocation,
-        nullptr));
+        nullptr) == VK_SUCCESS ?
+    shell_->log(Shell::LOG_INFO, "Mesh buffer successfully allocated") :
+    shell_->log(Shell::LOG_ERROR, "Mesh buffer failed to allocate!");
 
     //add the destruction of triangle mesh buffer to the deletion queue
     mainDeletionQueue.push_function([=]() {
-
         vmaDestroyBuffer(allocator, mesh.vertexBuffer.buffer, mesh.vertexBuffer.allocation);
     });
     
