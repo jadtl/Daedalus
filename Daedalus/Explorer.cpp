@@ -4,7 +4,6 @@ Explorer::Explorer(const std::string& pathFromExecutable) {
     programRoot = boost::filesystem::relative(executable().remove_filename().append(pathFromExecutable), currentWorkingDirectory());
 }
 
-// TODO Solve dangling pointer issue
 const std::string& Explorer::shader(const std::string& fileName) { return (programRoot.string() + "/Shaders/" + std::string(fileName)); }
 
 const std::string& Explorer::asset(const std::string& fileName) { return (programRoot.string() + "/Assets/" + std::string(fileName)); }

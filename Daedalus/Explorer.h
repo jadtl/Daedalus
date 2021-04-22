@@ -30,8 +30,8 @@ public:
     const std::string& asset(const std::string& fileName);
 
 private:
-    boost::filesystem::path executable();
     boost::filesystem::path programRoot;
 
-    const std::string& currentWorkingDirectory();
+    virtual boost::filesystem::path executable();
+    virtual const std::string& currentWorkingDirectory();
 };
