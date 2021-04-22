@@ -22,9 +22,9 @@
 
 #include <string>
 
-class Shell {
+class Platform {
 public:
-    Shell(std::string pathFromExecutable);
+    Platform(std::string pathFromExecutable);
     
     std::string shader(std::string fileName);
     std::string asset(std::string fileName);

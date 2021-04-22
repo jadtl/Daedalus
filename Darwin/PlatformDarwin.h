@@ -2,7 +2,7 @@
 
 #include <MoltenVK/mvk_vulkan.h>
 
-#include "Shell.h"
+#include "Platform.h"
 
 #include <sys/time.h>
 
@@ -16,10 +16,10 @@ protected:
     double _tsPeriod;
 };
 
-class ShellDarwin : public Shell {
+class PlatformDarwin : public Platform {
 public:
-    ShellDarwin(Engine &engine, const char* root, void* caMetalLayer);
-    ~ShellDarwin();
+    PlatformDarwin(Engine &engine, const char* root, void* caMetalLayer);
+    ~PlatformDarwin();
     
     void frameStarted();
     void frameEnded();

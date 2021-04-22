@@ -1,4 +1,4 @@
-#include "ShellDarwin.h"
+#include "PlatformDarwin.h"
 
 #include "Engine.h"
 
@@ -18,7 +18,7 @@ double PosixTimer::get() {
     return (double)(mach_absolute_time() - _tsBase) * _tsPeriod / 1e9;
 }
 
-ShellDarwin::ShellDarwin(Engine& engine, const char* root, void* caMetalLayer) :
+PlatformDarwin::PlatformDarwin(Engine& engine, const char* root, void* caMetalLayer) :
     Shell(engine, root), caMetalLayer(caMetalLayer), timer(PosixTimer()), currentTime(timer.get()) {}
 
 ShellDarwin::~ShellDarwin() {
