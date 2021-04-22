@@ -1,9 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <deque>
-
 #include <glm/glm.hpp>
 
 #if defined(_WIN32)
@@ -12,9 +8,13 @@
     #include <MoltenVK/mvk_vulkan.h>
 #endif
 
-#include "Shell.h"
+#include "Platform.h"
 #include "Types.h"
 #include "Mesh.h"
+
+#include <vector>
+#include <string>
+#include <deque>
 
 struct MeshPushConstants {
     glm::vec4 data;
@@ -24,14 +24,12 @@ struct MeshPushConstants {
 struct DeletionQueue {
     std::deque<std::function<void()>> deletors;
     
-    void push_function(std::function<void()>&& function) {
-        deletors.push_back(function);
-    }
+    void push_function(std::function<void()>&& function) { deletors.push_back(function); }
 
     void flush() {
-        // reverse iterate the deletion queue to execute all the functions
+        // Reverse iterate the deletion queue to execute all the functions
         for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
-            (*it)(); //call functors
+            (*it)(); // Call functions
         }
         deletors.clear();
     }
@@ -45,7 +43,7 @@ public:
     Engine(const std::vector<std::string> &args, void *windowHandle);
     ~Engine();
     
-    Shell shell;
+    Platform shell;
 
 #if defined(_WIN32)
     static LRESULT CALLBACK window_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -88,15 +86,8 @@ public:
     VkSemaphore presentSemaphore, renderSemaphore;
     VkFence renderFence;
     
-    VkPipelineLayout pipelineLayout;
-    VkPipeline trianglePipeline;
-    VkPipeline coloredTrianglePipeline;
-    
-    VkShaderModule coloredTriangleFragShader;
-    VkShaderModule coloredTriangleVertexShader;
-    VkShaderModule triangleFragShader;
-    VkShaderModule triangleVertexShader;
     VkShaderModule meshVertexShader;
+    VkShaderModule coloredTriangleFragShader;
     
     VmaAllocator allocator;
     
