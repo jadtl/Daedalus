@@ -5,7 +5,10 @@
 #define GetCurrentDir getcwd
 
 class ExplorerDarwin : public Explorer {
+public:
+    ExplorerDarwin(std::string pathFromExecutable);
+    ~ExplorerDarwin();
 private:
     boost::filesystem::path executable();
-    const std::string& currentWorkingDirectory();
+    std::string currentWorkingDirectory();
 };

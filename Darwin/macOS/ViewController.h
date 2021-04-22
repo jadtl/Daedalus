@@ -1,14 +1,9 @@
 #import <AppKit/AppKit.h>
 
-#include "Engine.h"
-
 #pragma mark -
 #pragma mark ViewController
 
-@interface ViewController : NSViewController {
-    CVDisplayLinkRef displayLink;
-    Engine* engine;
-}
+@interface ViewController : NSViewController
 @end
 
 #pragma mark -

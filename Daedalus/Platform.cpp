@@ -1,7 +1,7 @@
 #include "Platform.h"
 
 Platform::Platform(std::string pathFromExecutable) {
-    programRoot =  boost::filesystem::relative(executable().remove_filename().append(pathFromExecutable), currentWorkingDirectory());
+    programRoot = boost::filesystem::relative(executable().remove_filename().append(pathFromExecutable), currentWorkingDirectory());
 }
 
 std::string Platform::shader(std::string fileName) { return programRoot.string() + "/Shaders/" + fileName; }

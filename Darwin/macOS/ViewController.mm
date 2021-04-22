@@ -1,13 +1,20 @@
 #import "ViewController.h"
 #import <QuartzCore/CAMetalLayer.h>
 
+#include "Engine.h"
+#include "ExplorerDarwin.h"
+
 #include <string>
 #include <vector>
 
 #pragma mark -
 #pragma mark ViewController
 
-@implementation ViewController
+@implementation ViewController {
+    CVDisplayLinkRef displayLink;
+    Engine* engine;
+    ExplorerDarwin* explorer;
+}
 
 - (void) dealloc { 
     delete engine;
@@ -24,6 +31,8 @@
     std::vector<std::string> args;
     //args.push_back("-validate");
     engine = new Engine(args, (__bridge void*)self.view.layer);
+    explorer = new ExplorerDarwin("../Daedalus");
+    engine->explorer = explorer;
     engine -> initialize();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);

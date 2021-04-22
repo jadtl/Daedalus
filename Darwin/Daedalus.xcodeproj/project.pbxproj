@@ -28,6 +28,12 @@
 		053DCD4C260A6CE000C64B1F /* MonkeySmooth.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD45260A6CE000C64B1F /* MonkeySmooth.obj */; };
 		053DCD4D260A6CE000C64B1F /* MonkeyFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */; };
 		053DCD4E260A6CE000C64B1F /* MonkeyFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */; };
+		059922F326310D8C00D0D782 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922F126310D8C00D0D782 /* Console.cpp */; };
+		059922F426310D8C00D0D782 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922F126310D8C00D0D782 /* Console.cpp */; };
+		059922F726310E3400D0D782 /* ExplorerDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922F626310E3400D0D782 /* ExplorerDarwin.cpp */; };
+		059922F826310E3400D0D782 /* ExplorerDarwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922F626310E3400D0D782 /* ExplorerDarwin.cpp */; };
+		059922F92631166D00D0D782 /* Explorer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922BD2630F8D600D0D782 /* Explorer.cpp */; };
+		059922FA2631166E00D0D782 /* Explorer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 059922BD2630F8D600D0D782 /* Explorer.cpp */; };
 		05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05B494102608E44B007B8BA1 /* Mesh.cpp */; };
 		05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D2325C8381D00529B60 /* AppDelegate.m */; };
@@ -96,6 +102,10 @@
 		059922BE2630F8D600D0D782 /* Explorer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Explorer.h; sourceTree = "<group>"; };
 		059922BF2630F8D600D0D782 /* Daedalus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Daedalus.h; sourceTree = "<group>"; };
 		059922C02630F8D600D0D782 /* Daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Daedalus.cpp; sourceTree = "<group>"; };
+		059922F126310D8C00D0D782 /* Console.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
+		059922F226310D8C00D0D782 /* Console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		059922F526310E3400D0D782 /* ExplorerDarwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplorerDarwin.h; sourceTree = "<group>"; };
+		059922F626310E3400D0D782 /* ExplorerDarwin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExplorerDarwin.cpp; sourceTree = "<group>"; };
 		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
@@ -269,6 +279,8 @@
 		05C9D0EB25C879530039E8ED /* Darwin */ = {
 			isa = PBXGroup;
 			children = (
+				059922F626310E3400D0D782 /* ExplorerDarwin.cpp */,
+				059922F526310E3400D0D782 /* ExplorerDarwin.h */,
 				05C68D3725C8382F00529B60 /* macOS */,
 				05C68D3D25C8384D00529B60 /* iOS */,
 			);
@@ -297,6 +309,8 @@
 				05B494112608E44B007B8BA1 /* Mesh.h */,
 				053DCD38260A17AC00C64B1F /* Platform.cpp */,
 				053DCD39260A17AC00C64B1F /* Platform.h */,
+				059922F126310D8C00D0D782 /* Console.cpp */,
+				059922F226310D8C00D0D782 /* Console.h */,
 			);
 			name = Daedalus;
 			path = ../Daedalus;
@@ -439,7 +453,10 @@
 				0509E1C62603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
 				05C68D2F25C8381F00529B60 /* Main.m in Sources */,
+				059922F726310E3400D0D782 /* ExplorerDarwin.cpp in Sources */,
+				059922F326310D8C00D0D782 /* Console.cpp in Sources */,
 				053DCD3A260A17AC00C64B1F /* Platform.cpp in Sources */,
+				059922F92631166D00D0D782 /* Explorer.cpp in Sources */,
 				05C68D2425C8381D00529B60 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -455,7 +472,10 @@
 				0509E1C72603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
 				05C68D4025C8384D00529B60 /* AppDelegate.m in Sources */,
+				059922F826310E3400D0D782 /* ExplorerDarwin.cpp in Sources */,
+				059922F426310D8C00D0D782 /* Console.cpp in Sources */,
 				053DCD3B260A17AC00C64B1F /* Platform.cpp in Sources */,
+				059922FA2631166E00D0D782 /* Explorer.cpp in Sources */,
 				05C68D5125C8384E00529B60 /* Main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

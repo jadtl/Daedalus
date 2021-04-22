@@ -12,6 +12,8 @@
 #include "Types.h"
 #include "Mesh.h"
 
+#include "Explorer.h"
+
 #include <vector>
 #include <string>
 #include <deque>
@@ -43,24 +45,7 @@ public:
     Engine(const std::vector<std::string> &args, void *windowHandle);
     ~Engine();
     
-    Platform shell;
-
-#if defined(_WIN32)
-    static LRESULT CALLBACK window_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-        ShellWin32* shell = reinterpret_cast<ShellWin32*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-
-        // called from constructor, CreateWindowEx specifically.  But why?
-        if (!shell) return DefWindowProc(hwnd, uMsg, wParam, lParam);
-
-        return shell->handleMessage(uMsg, wParam, lParam);
-    }
-    LRESULT handleMessage(UINT msg, WPARAM wparam, LPARAM lparam);
-
-    HINSTANCE hinstance_;
-    HWND hwnd_;
-
-    HMODULE hmodule_;
-#endif
+    Explorer *explorer;
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;

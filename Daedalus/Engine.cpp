@@ -25,7 +25,7 @@
         }                                                                \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle),  shell("../Daedalus") {
+Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle) {
     settings.selectedShader = 0;
     
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
@@ -522,12 +522,12 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    if (!loadShaderModule(shell.shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
+    if (!loadShaderModule(explorer->shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
         std::cout << "Error when building the triangle fragment shader module" << "\n";
     } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
     
     //compile mesh vertex shader
-    if (!loadShaderModule(shell.shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
+    if (!loadShaderModule(explorer->shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
     {
         std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
     }
@@ -674,7 +674,7 @@ void Engine::loadMeshes() {
     triangleMesh.vertices[1].color = { 0.f, 0.f, 1.f };
     triangleMesh.vertices[2].color = { 0.75f, 0.75f, 1.f };
     
-    monkeyMesh.loadFromObj(shell.asset("Buddha.obj").c_str());
+    monkeyMesh.loadFromObj(explorer->asset("Buddha.obj").c_str());
 
     uploadMesh(triangleMesh);
     uploadMesh(monkeyMesh);
