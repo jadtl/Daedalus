@@ -13,18 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-// We want to immediately abort when there is an error. In normal engines this would give an error message to the user, or perform a dump of state
-#define VK_CHECK(x)                                                      \
-    do                                                                   \
-    {                                                                    \
-        VkResult error = x;                                              \
-        if (error)                                                       \
-        {                                                                \
-            std::cout <<"Detected Vulkan error: " << error << std::endl; \
-            abort();                                                     \
-        }                                                                \
-    } while (0)
-
 Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle), console() {
     settings.engineName = "Daedalus [Vulkan]";
     settings.applicationName = "Unnamed Work [Vulkan]";
@@ -114,22 +102,22 @@ void Engine::update() {
 
 void Engine::render() {
     //wait until the GPU has finished rendering the last frame. Timeout of 1 second
-    VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
-    VK_CHECK(vkResetFences(device, 1, &renderFence));
+    check("Waiting for fences", vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
+    check("Fences reset", vkResetFences(device, 1, &renderFence));
     
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
 
     VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, NULL, &swapchainImageIndex);
     if (swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
+        console.log(Console::LOG_INFO, "Updating out-of-date swapchain...");
         updateSwapchain();
         return;
-    } else if (swapchainStatus != VK_SUCCESS && swapchainStatus != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("Failed to acquire swapchain image!");
-    }
+    } else if (swapchainStatus != VK_SUCCESS && swapchainStatus != VK_SUBOPTIMAL_KHR)
+        console.log(Console::LOG_FATAL, "Failure: Acquiring swapchain image");
     
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
-    VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
+    check("Command buffer reset", vkResetCommandBuffer(mainCommandBuffer, 0));
     
     //naming it cmd for shorter writing
     VkCommandBuffer cmd = mainCommandBuffer;
@@ -142,7 +130,7 @@ void Engine::render() {
     commandBufferBeginInfo.pInheritanceInfo = nullptr;
     commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    VK_CHECK(vkBeginCommandBuffer(cmd, &commandBufferBeginInfo));
+    check("Begin command buffer", vkBeginCommandBuffer(cmd, &commandBufferBeginInfo));
     
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
@@ -199,7 +187,7 @@ void Engine::render() {
     
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
-    VK_CHECK(vkEndCommandBuffer(cmd));
+    check("End command buffer", vkEndCommandBuffer(cmd));
     
     //prepare the submission to the queue.
     //we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
@@ -224,7 +212,7 @@ void Engine::render() {
 
     //submit command buffer to the queue and execute it.
     // _renderFence will now block until the graphic commands finish execution
-    VK_CHECK(vkQueueSubmit(graphicsQueue, 1, &submit, renderFence));
+    check("Queue submission", vkQueueSubmit(graphicsQueue, 1, &submit, renderFence));
     
     // this will put the image we just rendered into the visible window.
     // we want to wait on the _renderSemaphore for that,
@@ -243,14 +231,14 @@ void Engine::render() {
 
     swapchainStatus = vkQueuePresentKHR(graphicsQueue, &presentInfo);
     if (swapchainStatus == VK_SUBOPTIMAL_KHR || swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR) {
+        console.log(Console::LOG_INFO, "Updating out-of-date swapchain...");
         updateSwapchain();
         return;
     }
-    else if (swapchainStatus != VK_SUCCESS) {
+    else if (swapchainStatus != VK_SUCCESS)
         throw std::runtime_error("Failed to present swapchain image!");
-    }
 
-    //increase the number of frames drawn
+    // Increase the number of frames drawn
     frameNumber++;
 }
 
@@ -282,18 +270,29 @@ void Engine::initializeVulkan() {
     // Instance and debug messenger creation
     vkb::InstanceBuilder builder;
     
-    auto instanceBuilder = builder.set_engine_name(settings.engineName)
+    auto instanceBuilder = (settings.validate) ?
+        builder
+        .set_engine_name(settings.engineName)
         .set_engine_version(0, 1)
         .set_app_name(settings.applicationName)
         .set_app_version(0, 1)
-        .require_api_version(1, 1, 0);
+        .require_api_version(1, 1, 0)
+        .request_validation_layers()
+        .use_default_debug_messenger()
+        .build()
+        :
+        builder
+        .set_engine_name(settings.engineName)
+        .set_engine_version(0, 1)
+        .set_app_name(settings.applicationName)
+        .set_app_version(0, 1)
+        .require_api_version(1, 1, 0)
+        .build();
     
-    if (settings.validate) instanceBuilder = instanceBuilder.request_validation_layers().use_default_debug_messenger();
+    if (!instanceBuilder)
+        console.log(Console::LOG_ERROR, "Failed to create Vulkan instance: " + instanceBuilder.error().message() + "\n");
     
-    if (!instanceBuilder.build())
-        console.log(Console::LOG_ERROR, "Failed to create Vulkan instance: " + instanceBuilder.build().error().message() + "\n");
-    
-    vkb::Instance vkbInstance = instanceBuilder.build().value();
+    vkb::Instance vkbInstance = instanceBuilder.value();
     
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;
@@ -307,7 +306,7 @@ void Engine::initializeVulkan() {
     surfaceInfo.pNext = nullptr;
     surfaceInfo.flags = 0;
     surfaceInfo.pLayer = windowHandle;
-    VK_CHECK(vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, nullptr, &this->surface));
+    check("Metal surface creation", vkCreateMetalSurfaceEXT(this->instance, &surfaceInfo, nullptr, &this->surface));
 #endif
     
     // Physical device creation
@@ -316,6 +315,7 @@ void Engine::initializeVulkan() {
         .set_minimum_version(1, 1)
         .set_surface(this->surface)
         .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
+        .add_desired_extension("VK_KHR_portability_subset")
         .select();
         
     if (!physicalDevice)
@@ -379,7 +379,7 @@ void Engine::initializeSwapchain() {
     //build an image-view for the depth image to use for rendering
     VkImageViewCreateInfo dview_info = init::imageViewCreateInfo(depthFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
 
-    VK_CHECK(vkCreateImageView(device, &dview_info, nullptr, &depthImageView));
+    check("Image view creation", vkCreateImageView(device, &dview_info, nullptr, &depthImageView));
 
     //add to deletion queues
     mainDeletionQueue.push_function([=]() {
@@ -391,11 +391,11 @@ void Engine::initializeSwapchain() {
 void Engine::initializeCommands() {
     VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool));
+    check("Command pool creation", vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool));
     
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
 
-    VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
+    check("Command buffers allocation", vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
 }
 
 void Engine::initializeDefaultRenderPass() {
@@ -463,7 +463,7 @@ void Engine::initializeDefaultRenderPass() {
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
 
-    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
+    check("Render pass creation", vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
 }
 
 void Engine::initializeFramebuffers() {
@@ -490,7 +490,7 @@ void Engine::initializeFramebuffers() {
         framebufferCreateInfo.pAttachments = attachments;
         framebufferCreateInfo.attachmentCount = 2;
         
-        VK_CHECK(vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]));
+        check("Framebuffer creation", vkCreateFramebuffer(device, &framebufferCreateInfo, nullptr, &framebuffers[i]));
     }
 }
 
@@ -504,7 +504,7 @@ void Engine::initializeSyncStructures() {
     //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
     fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
+    check("Fence creation", vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
 
     //for the semaphores we don't need any flags
     VkSemaphoreCreateInfo semaphoreCreateInfo = {};
@@ -512,25 +512,31 @@ void Engine::initializeSyncStructures() {
     semaphoreCreateInfo.pNext = nullptr;
     semaphoreCreateInfo.flags = 0;
 
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentSemaphore));
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphore));
+    check("Present semaphore creation", vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentSemaphore));
+    check("Render sempahore creation", vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphore));
 }
 
 void Engine::initializePipelines() {
-    loadShaderModule(explorer->shader("ColoredTriangle.frag.spv").c_str(), &fragmentShader) ?
-    console.log(Console::LOG_INFO, "Success: Fragment shader loading") :
-    console.log(Console::LOG_ERROR, "Failure: Fragment shader loading");
+    check("Fragment shader loading", loadShaderModule(explorer->shader("ColoredTriangle.frag.spv").c_str(), &fragmentShader));
     
     //compile mesh vertex shader
-    loadShaderModule(explorer->shader("TriangleMesh.vert.spv").c_str(), &vertexShader) ?
-    console.log(Console::LOG_INFO, "Success: Vertex shader loading") :
-    console.log(Console::LOG_ERROR, "Failure: Vertex shader loading");
+    check("Vertex shader loading", loadShaderModule(explorer->shader("TriangleMesh.vert.spv").c_str(), &vertexShader));
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
-    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) ?
-    console.log(Console::LOG_INFO, "Success: Pipeline layout creation") :
-    console.log(Console::LOG_ERROR, "Failure: Pipeline layout creation");
+    //setup push constants
+    VkPushConstantRange pushConstant;
+    //this push constant range starts at the beginning
+    pushConstant.offset = 0;
+    //this push constant range takes up the size of a MeshPushConstants struct
+    pushConstant.size = sizeof(MeshPushConstants);
+    //this push constant range is accessible only in the vertex shader
+    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstant;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    
+    check("Pipeline layout creation", vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout));
     
     //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
     PipelineBuilder pipelineBuilder;
@@ -581,23 +587,6 @@ void Engine::initializePipelines() {
 
     pipelineBuilder.vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
     pipelineBuilder.vertexInputInfo.vertexBindingDescriptionCount = vertexDescription.bindings.size();
-
-    //we start from just the default empty pipeline layout info
-    VkPipelineLayoutCreateInfo info = init::pipelineLayoutCreateInfo();
-    
-    //setup push constants
-    VkPushConstantRange pushConstant;
-    //this push constant range starts at the beginning
-    pushConstant.offset = 0;
-    //this push constant range takes up the size of a MeshPushConstants struct
-    pushConstant.size = sizeof(MeshPushConstants);
-    //this push constant range is accessible only in the vertex shader
-    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    info.pPushConstantRanges = &pushConstant;
-    info.pushConstantRangeCount = 1;
-
-    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
     
     pipelineBuilder.pipelineLayout = pipelineLayout;
 
@@ -688,7 +677,7 @@ void Engine::uploadMesh(Mesh &mesh) {
     vmaallocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
     //allocate the buffer
-    VK_CHECK(vmaCreateBuffer(allocator, &bufferInfo, &vmaallocInfo,
+    check("Buffer allocation", vmaCreateBuffer(allocator, &bufferInfo, &vmaallocInfo,
         &mesh.vertexBuffer.buffer,
         &mesh.vertexBuffer.allocation,
         nullptr));
@@ -706,4 +695,22 @@ void Engine::uploadMesh(Mesh &mesh) {
     memcpy(data, mesh.vertices.data(), mesh.vertices.size() * sizeof(Vertex));
 
     vmaUnmapMemory(allocator, mesh.vertexBuffer.allocation);
+}
+
+void Engine::check(std::string action, bool result) {
+    if (result) {
+        if (settings.verbose)
+            console.log(Console::LOG_VERBOSE, "Success: " + action);
+    }
+    else
+        console.log(Console::LOG_ERROR, "Failure:" + action);
+}
+
+void Engine::check(std::string action, VkResult result) {
+    if (result == VK_SUCCESS) {
+        if (settings.verbose)
+            console.log(Console::LOG_VERBOSE, "Success: " + action);
+    }
+    else
+        console.log(Console::LOG_ERROR, "Failure:" + action);
 }

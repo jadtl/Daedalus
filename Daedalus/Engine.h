@@ -48,6 +48,8 @@ public:
     
     Explorer *explorer;
     Console console;
+    void check(std::string action, bool result);
+    void check(std::string action, VkResult result);
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;

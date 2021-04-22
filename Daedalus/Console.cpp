@@ -6,10 +6,10 @@ Console::Console() {}
 
 void Console::log(LogCategory category, std::string message) const {
     std::ostream &stream = (category == LOG_ERROR) ? std::cerr : std::cout;
-    const char* toString;
+    std::string toString;
     switch(category) {
-        case LOG_DEBUG:
-            toString = "DEBUG";
+        case LOG_VERBOSE:
+            toString = "VERBOSE";
             break;
         case LOG_INFO:
             toString = "INFO";
@@ -20,6 +20,11 @@ void Console::log(LogCategory category, std::string message) const {
         case LOG_ERROR:
             toString = "ERROR";
             break;
+        case LOG_FATAL:
+            toString = "FATAL";
     }
-    stream << "[" << toString << "] " << message << "\n";
+    if (category == LOG_FATAL)
+        throw new std::runtime_error("[" + toString + "] " + message);
+    else
+        stream << "[" << toString << "] " << message << "\n";
 }
