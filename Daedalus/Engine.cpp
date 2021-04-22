@@ -25,8 +25,9 @@
         }                                                                \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle) {
-    settings.selectedShader = 0;
+Engine::Engine(const std::vector<std::string> &args, void *windowHandle) : windowHandle(windowHandle), console() {
+    settings.engineName = "Daedalus [Vulkan]";
+    settings.applicationName = "Unnamed Work [Vulkan]";
     
     if (std::find(args.begin(), args.end(), "-validate") != args.end()) { settings.validate = true; }
     if (std::find(args.begin(), args.end(), "-verbose") != args.end()) { settings.validate = true; settings.verbose = true; }
@@ -36,13 +37,6 @@ Engine::~Engine() {
     // Destroy context
     terminate();
 }
-
-#if defined(_WIN32)
-LRESULT Engine::handleMessage(UINT msg, WPARAM wparam, LPARAM lparam)
-{
-    return LRESULT();
-}
-#endif
 
 void Engine::initialize() {
     initializeVulkan();
@@ -64,6 +58,8 @@ void Engine::initialize() {
 
 void Engine::terminate() {
     if (isInitialized) {
+        mainDeletionQueue.flush();
+        
         terminateSwapchain();
         
         // Terminate sync objects
@@ -90,9 +86,9 @@ void Engine::terminateSwapchain() {
     
     vkFreeCommandBuffers(device, commandPool, 1, &mainCommandBuffer);
     
-    vkDestroyPipeline(device, meshPipeline, nullptr);
+    vkDestroyPipeline(device, pipeline, nullptr);
     
-    vkDestroyPipelineLayout(device, meshPipelineLayout, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     
     std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView) { vkDestroyImageView(device, imageView, nullptr); });
@@ -172,7 +168,7 @@ void Engine::render() {
     vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     //drawing start
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
     
     //make a model view matrix for rendering the object
     //camera position
@@ -192,7 +188,7 @@ void Engine::render() {
     constants.renderMatrix = meshMatrix;
 
     //upload the matrix to the GPU via pushconstants
-    vkCmdPushConstants(cmd, meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+    vkCmdPushConstants(cmd, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
     
     //bind the mesh vertex buffer with offset 0
     VkDeviceSize offset = 0;
@@ -261,7 +257,6 @@ void Engine::render() {
 void Engine::onKey(Key key) {
     switch (key) {
         case KEY_A:
-            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
             break;
         case KEY_S:
             
@@ -279,7 +274,6 @@ void Engine::onKey(Key key) {
             
             break;
         case Key::KEY_SPACE:
-            settings.selectedShader = settings.selectedShader == 0 ? 1 : 0;
             break;
     }
 }
@@ -288,17 +282,18 @@ void Engine::initializeVulkan() {
     // Instance and debug messenger creation
     vkb::InstanceBuilder builder;
     
-    auto instanceBuilder = builder.set_engine_name(settings.engineName.c_str())
+    auto instanceBuilder = builder.set_engine_name(settings.engineName)
         .set_engine_version(0, 1)
-        .set_app_name(settings.applicationName.c_str())
+        .set_app_name(settings.applicationName)
         .set_app_version(0, 1)
-        .require_api_version(1, 1, 0)
-        .build();
+        .require_api_version(1, 1, 0);
     
-    if (!instanceBuilder)
-        std::cerr << "Failed to create Vulkan instance: " << instanceBuilder.error() << "\n";
+    if (settings.validate) instanceBuilder = instanceBuilder.request_validation_layers().use_default_debug_messenger();
     
-    vkb::Instance vkbInstance = instanceBuilder.value();
+    if (!instanceBuilder.build())
+        console.log(Console::LOG_ERROR, "Failed to create Vulkan instance: " + instanceBuilder.build().error().message() + "\n");
+    
+    vkb::Instance vkbInstance = instanceBuilder.build().value();
     
     this->instance = vkbInstance.instance;
     this->debugMessenger = vkbInstance.debug_messenger;
@@ -522,31 +517,29 @@ void Engine::initializeSyncStructures() {
 }
 
 void Engine::initializePipelines() {
-    if (!loadShaderModule(explorer->shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader)) {
-        std::cout << "Error when building the triangle fragment shader module" << "\n";
-    } else { std::cout << "Colored triangle fragment shader succesfully loaded" << "\n"; }
+    loadShaderModule(explorer->shader("ColoredTriangle.frag.spv").c_str(), &fragmentShader) ?
+    console.log(Console::LOG_INFO, "Success: Fragment shader loading") :
+    console.log(Console::LOG_ERROR, "Failure: Fragment shader loading");
     
     //compile mesh vertex shader
-    if (!loadShaderModule(explorer->shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
-    {
-        std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
-    }
-    else {
-        std::cout << "Triangle mesh vertex shader succesfully loaded" << std::endl;
-    }
+    loadShaderModule(explorer->shader("TriangleMesh.vert.spv").c_str(), &vertexShader) ?
+    console.log(Console::LOG_INFO, "Success: Vertex shader loading") :
+    console.log(Console::LOG_ERROR, "Failure: Vertex shader loading");
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
     
-    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &meshPipelineLayout));
+    vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) ?
+    console.log(Console::LOG_INFO, "Success: Pipeline layout creation") :
+    console.log(Console::LOG_ERROR, "Failure: Pipeline layout creation");
     
     //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
     PipelineBuilder pipelineBuilder;
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, meshVertexShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, vertexShader));
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShader));
 
     //vertex input controls how to read vertices from vertex buffers. We aren't using it yet
     pipelineBuilder.vertexInputInfo = init::vertexInputStateCreateInfo();
@@ -576,7 +569,7 @@ void Engine::initializePipelines() {
     pipelineBuilder.colorBlendAttachment = init::colorBlendAttachmentState();
 
     //use the triangle layout we created
-    pipelineBuilder.pipelineLayout = meshPipelineLayout;
+    pipelineBuilder.pipelineLayout = pipelineLayout;
     
     pipelineBuilder.depthStencil = init::depthStencilCreateInfo(true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
@@ -604,22 +597,22 @@ void Engine::initializePipelines() {
     info.pPushConstantRanges = &pushConstant;
     info.pushConstantRangeCount = 1;
 
-    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
+    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
     
-    pipelineBuilder.pipelineLayout = meshPipelineLayout;
+    pipelineBuilder.pipelineLayout = pipelineLayout;
 
     //build the mesh triangle pipeline
-    meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    pipeline = pipelineBuilder.buildPipeline(device, renderPass);
 
     //deleting all of the vulkan shaders
-    vkDestroyShaderModule(device, meshVertexShader, nullptr);
-    vkDestroyShaderModule(device, coloredTriangleFragShader, nullptr);
+    vkDestroyShaderModule(device, vertexShader, nullptr);
+    vkDestroyShaderModule(device, fragmentShader, nullptr);
 
     //adding the pipelines to the deletion queue
     mainDeletionQueue.push_function([=]() {
-        vkDestroyPipeline(device, meshPipeline, nullptr);
+        vkDestroyPipeline(device, pipeline, nullptr);
 
-        vkDestroyPipelineLayout(device, meshPipelineLayout, nullptr);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     });
 }
 

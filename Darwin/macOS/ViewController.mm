@@ -29,7 +29,7 @@
     self.view.wantsLayer = YES;
     
     std::vector<std::string> args;
-    //args.push_back("-validate");
+    args.push_back("-validate");
     engine = new Engine(args, (__bridge void*)self.view.layer);
     explorer = new ExplorerDarwin("../Daedalus");
     engine->explorer = explorer;
@@ -54,7 +54,7 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) viewDidAppear {
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName.c_str()];
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName];
 }
 
 

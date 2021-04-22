@@ -13,6 +13,7 @@
 #include "Mesh.h"
 
 #include "Explorer.h"
+#include "Console.h"
 
 #include <vector>
 #include <string>
@@ -46,6 +47,7 @@ public:
     ~Engine();
     
     Explorer *explorer;
+    Console console;
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -63,41 +65,36 @@ public:
     
     VkCommandPool commandPool;
     VkCommandBuffer mainCommandBuffer;
-    
     VkRenderPass renderPass;
-
     std::vector<VkFramebuffer> framebuffers;
     
     VkSemaphore presentSemaphore, renderSemaphore;
     VkFence renderFence;
     
-    VkShaderModule meshVertexShader;
-    VkShaderModule coloredTriangleFragShader;
+    VkShaderModule vertexShader;
+    VkShaderModule fragmentShader;
     
-    VmaAllocator allocator;
-    
-    VkPipeline meshPipeline;
-    VkPipelineLayout meshPipelineLayout;
+    VkPipeline pipeline;
+    VkPipelineLayout pipelineLayout;
     Mesh triangleMesh;
     Mesh monkeyMesh;
     
     VkImageView depthImageView;
     AllocatedImage depthImage;
-    
+
     VkFormat depthFormat;
     
-    
+    VmaAllocator allocator;
     DeletionQueue mainDeletionQueue;
     
     bool isInitialized{false};
     int frameNumber{0};
     
     struct Settings {
-        std::string engineName = "Daedalus";
-        std::string applicationName = "Daedalus";
+        const char* engineName;
+        const char* applicationName;
         
         VkExtent2D windowExtent;
-        int selectedShader;
         
         bool validate{false};
         bool verbose{false};
