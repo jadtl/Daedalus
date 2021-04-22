@@ -4,7 +4,7 @@
 
 Console::Console() {}
 
-void Console::log(LogCategory category, std::string message) const {
+void Console::log(std::string section, LogCategory category, std::string message) const {
     std::ostream &stream = (category == LOG_ERROR) ? std::cerr : std::cout;
     std::string toString;
     switch(category) {
@@ -24,7 +24,7 @@ void Console::log(LogCategory category, std::string message) const {
             toString = "FATAL";
     }
     if (category == LOG_FATAL)
-        throw new std::runtime_error("[" + toString + "] " + message);
+        throw new std::runtime_error("[" + toString + "]\n" + message);
     else
-        stream << "[" << toString << "] " << message << "\n";
+        stream << "[" << toString << ": " << section << "]\n" << message << "\n";
 }

@@ -29,7 +29,7 @@
     self.view.wantsLayer = YES;
     
     std::vector<std::string> args;
-    args.push_back("-validate");
+    args.push_back("-verbose");
     engine = new Engine(args, (__bridge void*)self.view.layer);
     explorer = new ExplorerDarwin("../Daedalus");
     engine->explorer = explorer;

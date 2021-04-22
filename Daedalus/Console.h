@@ -11,7 +11,7 @@ public:
         LOG_ERROR,
         LOG_FATAL,
     };
-    virtual void log(LogCategory category, std::string message) const;
+    virtual void log(std::string section, LogCategory category, std::string message) const;
 private:
     
 };
