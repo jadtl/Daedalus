@@ -1,7 +1,7 @@
 #import "ViewController.h"
 #import <QuartzCore/CAMetalLayer.h>
 
-#include "Engine.h"
+#include "Daedalus.h"
 #include "ExplorerDarwin.h"
 
 #include <string>
@@ -12,7 +12,7 @@
 
 @implementation ViewController {
     CVDisplayLinkRef displayLink;
-    Engine* engine;
+    Daedalus* engine;
     ExplorerDarwin* explorer;
 }
 
@@ -30,13 +30,13 @@
     
     std::vector<std::string> args;
     args.push_back("-verbose");
-    engine = new Engine(args, (__bridge void*)self.view.layer);
+    engine = new Daedalus("Daedalus [Vulkan]", args, (__bridge void*)self.view.layer);
     explorer = new ExplorerDarwin("../Daedalus");
     engine->explorer = explorer;
     engine -> initialize();
     
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
-    CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, (__bridge void *)self);
+    CVDisplayLinkSetOutputCallback(displayLink, &DisplayLinkCallback, (__bridge void *)engine);
     CVDisplayLinkStart(displayLink);
 
 }
@@ -44,9 +44,8 @@
 #pragma mark Display loop callback function
 
 /** Rendering loop callback function for use with a CVDisplayLink. */
-static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* viewController) {
-    ((ViewController*)viewController)->engine->update();
-    ((ViewController*)viewController)->engine->render();
+static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* engine) {
+    ((Daedalus*) engine)->update();
     
     return kCVReturnSuccess;
 }
@@ -54,33 +53,33 @@ static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void) viewDidAppear {
     self.view.window.initialFirstResponder = self.view;
     
-    self.view.window.title = [NSString stringWithUTF8String:engine->settings.applicationName];
+    self.view.window.title = [NSString stringWithUTF8String:engine->settings().applicationName];
 }
 
 
 -(void) keyDown:(NSEvent*) theEvent {
-    Engine::Key key;
+    Daedalus::Key key;
     switch (theEvent.keyCode) {
         case 0:
-            key = Engine::KEY_A;
+            key = Daedalus::KEY_A;
             break;
         case 1:
-            key = Engine::KEY_S;
+            key = Daedalus::KEY_S;
             break;
         case 2:
-            key = Engine::KEY_D;
+            key = Daedalus::KEY_D;
             break;
         case 12:
-            key = Engine::KEY_Q;
+            key = Daedalus::KEY_Q;
             break;
         case 13:
-            key = Engine::KEY_W;
+            key = Daedalus::KEY_W;
             break;
         case 14:
-            key = Engine::KEY_E;
+            key = Daedalus::KEY_E;
             break;
         case 49:
-            key = Engine::KEY_SPACE;
+            key = Daedalus::KEY_SPACE;
             break;
     }
     engine -> onKey(key);

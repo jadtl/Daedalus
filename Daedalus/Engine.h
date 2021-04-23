@@ -13,7 +13,8 @@ public:
         const char* applicationName;
         const char* engineName;
         
-        std::vector<int> windowExtent;
+        uint32_t width;
+        uint32_t height;
         
         bool validate;
         bool verbose;
@@ -29,7 +30,7 @@ public:
         KEY_E,
         KEY_SPACE,
     };
-    void onKey(Key key);
+    virtual void onKey(Key key) {};
     
     virtual void onTick() {}
     virtual void onFrame() {}
@@ -41,7 +42,8 @@ protected:
         settings_.applicationName = applicationName;
         settings_.engineName = "Engine";
         
-        settings_.windowExtent = { 1280, 1024 };
+        settings_.width = 1280;
+        settings_.height = 1024;
         
         settings_.validate = false;
         settings_.verbose = false;

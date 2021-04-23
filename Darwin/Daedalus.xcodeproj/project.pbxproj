@@ -45,8 +45,8 @@
 		05C68D4925C8384D00529B60 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4725C8384D00529B60 /* Main.storyboard */; };
 		05C68D4B25C8384E00529B60 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05C68D4A25C8384E00529B60 /* Assets.xcassets */; };
 		05C68D5125C8384E00529B60 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 05C68D5025C8384E00529B60 /* Main.m */; };
-		05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
-		05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Engine.cpp */; };
+		05EF4F9C2602362A00E293AD /* Daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Daedalus.cpp */; };
+		05EF4F9D2602362A00E293AD /* Daedalus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9A2602362A00E293AD /* Daedalus.cpp */; };
 		05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
 		05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4F9E2602371A00E293AD /* Initializers.cpp */; };
 		05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05EF4FA726026E4300E293AD /* Bootstrap.cpp */; };
@@ -100,12 +100,11 @@
 		053DCD46260A6CE000C64B1F /* MonkeyFlat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MonkeyFlat.obj; sourceTree = "<group>"; };
 		059922BD2630F8D600D0D782 /* Explorer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Explorer.cpp; sourceTree = "<group>"; };
 		059922BE2630F8D600D0D782 /* Explorer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Explorer.h; sourceTree = "<group>"; };
-		059922BF2630F8D600D0D782 /* Daedalus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Daedalus.h; sourceTree = "<group>"; };
-		059922C02630F8D600D0D782 /* Daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Daedalus.cpp; sourceTree = "<group>"; };
 		059922F126310D8C00D0D782 /* Console.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		059922F226310D8C00D0D782 /* Console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		059922F526310E3400D0D782 /* ExplorerDarwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplorerDarwin.h; sourceTree = "<group>"; };
 		059922F626310E3400D0D782 /* ExplorerDarwin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExplorerDarwin.cpp; sourceTree = "<group>"; };
+		059922FB2631F67D00D0D782 /* Engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
 		05A1075E2609597200FABA6A /* TriangleMesh.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = TriangleMesh.vert; sourceTree = "<group>"; };
 		05A5207B2606B6A000A3E3AC /* ColoredTriangle.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.vert; sourceTree = "<group>"; };
 		05A5207C2606B6AC00A3E3AC /* ColoredTriangle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = ColoredTriangle.frag; sourceTree = "<group>"; };
@@ -135,8 +134,8 @@
 		05E2DD6E25D1624A00C198FA /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = ../../../../../usr/local/Frameworks/vulkan.framework; sourceTree = "<group>"; };
 		05E2DD9125D1693D00C198FA /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK.xcframework; path = "../../../../../../usr/local/Caskroom/vulkan-sdk/1.2.162.1/MoltenVK/MoltenVK.xcframework"; sourceTree = "<group>"; };
 		05E2DD9525D1696800C198FA /* vulkan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.framework; path = "../../../../../../usr/local/Caskroom/vulkan-sdk/1.2.162.1/macOS/Frameworks/vulkan.framework"; sourceTree = "<group>"; };
-		05EF4F9A2602362A00E293AD /* Engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Engine.cpp; sourceTree = "<group>"; };
-		05EF4F9B2602362A00E293AD /* Engine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
+		05EF4F9A2602362A00E293AD /* Daedalus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Daedalus.cpp; sourceTree = "<group>"; };
+		05EF4F9B2602362A00E293AD /* Daedalus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Daedalus.h; sourceTree = "<group>"; };
 		05EF4F9E2602371A00E293AD /* Initializers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Initializers.cpp; sourceTree = "<group>"; };
 		05EF4F9F2602371A00E293AD /* Initializers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Initializers.h; sourceTree = "<group>"; };
 		05EF4FA32602372800E293AD /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
@@ -292,14 +291,12 @@
 			children = (
 				05B4940F2608E2F7007B8BA1 /* MemoryAllocator.h */,
 				053DCD36260A08B900C64B1F /* OBJLoader.h */,
-				059922C02630F8D600D0D782 /* Daedalus.cpp */,
-				059922BF2630F8D600D0D782 /* Daedalus.h */,
 				059922BD2630F8D600D0D782 /* Explorer.cpp */,
 				059922BE2630F8D600D0D782 /* Explorer.h */,
 				05EF4FA726026E4300E293AD /* Bootstrap.cpp */,
 				05EF4FA626026E4300E293AD /* Bootstrap.h */,
-				05EF4F9A2602362A00E293AD /* Engine.cpp */,
-				05EF4F9B2602362A00E293AD /* Engine.h */,
+				05EF4F9A2602362A00E293AD /* Daedalus.cpp */,
+				05EF4F9B2602362A00E293AD /* Daedalus.h */,
 				05EF4F9E2602371A00E293AD /* Initializers.cpp */,
 				05EF4F9F2602371A00E293AD /* Initializers.h */,
 				05EF4FA32602372800E293AD /* Types.h */,
@@ -311,6 +308,7 @@
 				053DCD39260A17AC00C64B1F /* Platform.h */,
 				059922F126310D8C00D0D782 /* Console.cpp */,
 				059922F226310D8C00D0D782 /* Console.h */,
+				059922FB2631F67D00D0D782 /* Engine.h */,
 			);
 			name = Daedalus;
 			path = ../Daedalus;
@@ -344,6 +342,7 @@
 			buildPhases = (
 				05C68D3A25C8384D00529B60 /* Resources */,
 				05C68D3825C8384D00529B60 /* Sources */,
+				059922FC263239EF00D0D782 /* Add Assets */,
 				05C68D3925C8384D00529B60 /* Frameworks */,
 				053884DE2603FFC300F9B5A8 /* Embed Frameworks */,
 			);
@@ -439,6 +438,24 @@
 			shellPath = /bin/sh;
 			shellScript = "cd ..\nShaders=Shaders/*\nAssets=Assets/*\n\nDaedalus=${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Shaders\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Assets\n\nfor shader in $Shaders\ndo\n    glslc $shader -o $Daedalus/$shader.spv\ndone\n\nfor asset in $Assets\ndo\n    cp $asset $Daedalus/Assets\ndone\n";
 		};
+		059922FC263239EF00D0D782 /* Add Assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Add Assets";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ..\nShaders=Shaders/*\nAssets=Assets/*\n\nDaedalus=${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Shaders\nmkdir ${CONFIGURATION_BUILD_DIR}/${PROJECT_NAME}.app/Contents/Daedalus/Assets\n\nfor shader in $Shaders\ndo\n    glslc $shader -o $Daedalus/$shader.spv\ndone\n\nfor asset in $Assets\ndo\n    cp $asset $Daedalus/Assets\ndone\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -448,7 +465,7 @@
 			files = (
 				05B494122608E44B007B8BA1 /* Mesh.cpp in Sources */,
 				05EF4FA826026E4400E293AD /* Bootstrap.cpp in Sources */,
-				05EF4F9C2602362A00E293AD /* Engine.cpp in Sources */,
+				05EF4F9C2602362A00E293AD /* Daedalus.cpp in Sources */,
 				05EF4FA02602371A00E293AD /* Initializers.cpp in Sources */,
 				0509E1C62603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D2725C8381D00529B60 /* ViewController.mm in Sources */,
@@ -467,7 +484,7 @@
 			files = (
 				05B494132608E44B007B8BA1 /* Mesh.cpp in Sources */,
 				05EF4FA926026E4400E293AD /* Bootstrap.cpp in Sources */,
-				05EF4F9D2602362A00E293AD /* Engine.cpp in Sources */,
+				05EF4F9D2602362A00E293AD /* Daedalus.cpp in Sources */,
 				05EF4FA12602371A00E293AD /* Initializers.cpp in Sources */,
 				0509E1C72603A20F003B4180 /* Pipeline.cpp in Sources */,
 				05C68D4625C8384D00529B60 /* ViewController.mm in Sources */,
@@ -679,6 +696,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/boost/1.75.0_2/lib,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.ios;
 				PRODUCT_NAME = Daedalus;
@@ -704,6 +725,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/boost/1.75.0_2/lib,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jadtala.daedalus.ios;
