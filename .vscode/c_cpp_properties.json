@@ -5,7 +5,8 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/engine/src/**",
-                "/usr/include/**"
+                "/usr/include",
+                "/usr/local/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -25,7 +26,7 @@
             ],
             "defines": [],
             "macFrameworkPath": [
-              "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
