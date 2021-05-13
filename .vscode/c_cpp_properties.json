@@ -5,10 +5,7 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/engine/src/**",
-                "/usr/include/vulkan",
-                "/usr/include/**",
-                "/usr/include/linux",
-                "/usr/include/c++/10.2.0/tr1"
+                "/usr/include/**"
             ],
             "defines": [
                 "_DEBUG",
