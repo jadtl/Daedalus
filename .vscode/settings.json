@@ -1,0 +1,8 @@
+{
+  "C_Cpp.errorSquiggles": "Enabled",
+  "files.associations": {
+    "stdio.h": "c",
+    "xkblib.h": "c",
+    "typeinfo": "c"
+  }
+}
