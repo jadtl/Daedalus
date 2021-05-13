@@ -25,7 +25,7 @@ b8 application_create(game* game_inst) {
   app_state.game_inst = game_inst;
 
   // initialize subsystems
-  initialize_logging;
+  initialize_logging();
 
   DDLS_FATAL("A test message: %f", 3.14f);
   DDLS_ERROR("A test message: %f", 3.14f);
