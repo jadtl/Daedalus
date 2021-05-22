@@ -4,7 +4,7 @@
 
 #include "core/logger.h"
 
-#include "include/GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include <sys/time.h>
 
 #if _POSIX_C_SOURCE >= 199309L
