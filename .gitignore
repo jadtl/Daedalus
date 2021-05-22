@@ -1,5 +1,5 @@
-Daedalus.code-workspace
-bin
-.*
-!/.gitignore
-!/.vscode
+# Hidden macOS Finder files
+**/.DS_Store
+
+# Bazel build files
+bazel-*
