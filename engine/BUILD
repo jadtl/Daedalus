@@ -6,13 +6,15 @@ package(
 
 cc_library(
   name = "Engine",
-  srcs = ["src/**/*.c"],
-  textual_hdrs = ["src/**/*.h"],
+  srcs = glob(["src/**/*.c"]),
+  hdrs = glob(["src/**/*.h"]),
+  includes = ["src"],
   deps = select ({
     "@bazel_tools//src/conditions:darwin": ["@glfw//:glfw"],
   }),
   linkopts = select ({
     "@bazel_tools//src/conditions:darwin": ["-undefined", "dynamic_lookup", "-framework Cocoa", "-framework IOKit", "-framework CoreFoundation"],
   }),
-  defines = ["-D_DEBUG", "-D_EXPORT"],
+  copts = ["-Iengine/src"],
+  defines = ["D_DEBUG", "D_EXPORT"],
 )
