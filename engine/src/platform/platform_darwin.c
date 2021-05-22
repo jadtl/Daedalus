@@ -4,7 +4,7 @@
 
 #include "core/logger.h"
 
-#include <GLFW/glfw3.h>
+#include "include/GLFW/glfw3.h"
 #include <sys/time.h>
 
 #if _POSIX_C_SOURCE >= 199309L
@@ -35,8 +35,10 @@ b8 platform_startup(
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   
-  state->window = glfwCreateWindow(width, height, app_name, nullptr, nullptr));
+  state->window = glfwCreateWindow(width, height, app_name, NULL, NULL);
   glfwSetWindowPos(state->window, x, y);
+
+  return TRUE;
 }
 
 void platform_shutdown(platform_state* plat_state) {
@@ -53,6 +55,8 @@ b8 platform_pump_messages(platform_state* plat_state) {
   while (!glfwWindowShouldClose(state->window)) {
     glfwPollEvents();
   }
+
+  return TRUE;
 }
 
 void* platform_allocate(u64 size, b8 aligned) {
