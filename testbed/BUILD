@@ -8,7 +8,7 @@ cc_library(
   name = "TestbedLibs",
   srcs = glob(["src/**/*.c"]),
   hdrs = glob(["src/**/*.h"]),
-  deps = ["//engine:Engine"],
+  deps = ["//engine:Daedalus"],
   copts = ["-Iexternal/engine"],
   includes = ["src"],
 )
@@ -16,6 +16,6 @@ cc_library(
 cc_binary(
   name = "Testbed",
   srcs = ["src/entry.c"],
-  deps = ["//engine:Engine", ":TestbedLibs"],
+  deps = ["//engine:Daedalus", ":TestbedLibs"],
   defines = ["D_DEBUG", "D_IMPORT"],
 )
