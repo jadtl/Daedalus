@@ -10,11 +10,18 @@ cc_library(
   hdrs = glob(["src/**/*.h"]),
   includes = ["src"],
   deps = select ({
-    "@bazel_tools//src/conditions:darwin": ["@glfw//:glfw"],
+    "@platforms//os:osx": ["@glfw//:glfw"],
+    "@platforms//os:linux" : [],
   }),
   linkopts = select ({
-    "@bazel_tools//src/conditions:darwin": ["-undefined", "dynamic_lookup", "-framework Cocoa", "-framework IOKit", "-framework CoreFoundation"],
+    "@platforms//os:osx": ["-undefined", "dynamic_lookup", "-framework Cocoa", "-framework IOKit", "-framework CoreFoundation"],
+        "@platforms//os:linux" : ["-lvulkan", "-lxcb", "-lX11", "-lX11-xcb", "-lxkbcommon", "-L/usr/lib", "-L/usr/X11R6/lib"],
   }),
-  copts = ["-Iengine/src"],
+  copts = ["-Iengine/src -lvulkan -lxcb -lX11 -lX11-xcb -lxkbcommon -L/usr/lib -L/usr/X11R6/lib"],
   defines = ["D_DEBUG", "D_EXPORT"],
+  target_compatible_with = select({
+        "@platforms//os:osx": [],
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
