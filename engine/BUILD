@@ -15,7 +15,7 @@ cc_library(
   }),
   linkopts = select ({
     "@platforms//os:osx": ["-undefined", "dynamic_lookup", "-framework Cocoa", "-framework IOKit", "-framework CoreFoundation"],
-        "@platforms//os:linux" : ["-lvulkan", "-lxcb", "-lX11", "-lX11-xcb", "-lxkbcommon", "-L/usr/lib", "-L/usr/X11R6/lib"],
+    "@platforms//os:linux" : ["-lvulkan", "-lxcb", "-lX11", "-lX11-xcb", "-lxkbcommon", "-L/usr/lib", "-L/usr/X11R6/lib"],
   }),
   copts = ["-Iengine/src -lvulkan -lxcb -lX11 -lX11-xcb -lxkbcommon -L/usr/lib -L/usr/X11R6/lib"],
   defines = ["D_DEBUG", "D_EXPORT"],
