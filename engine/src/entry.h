@@ -2,11 +2,14 @@
 
 #include "core/application.h"
 #include "core/logger.h"
+#include "core/ddls_memory.h"
 #include "game_types.h"
 
 extern b8 create_game(game* out_game);
 
 int main(void) {
+  initialize_memory();
+
   game game_inst;
   if (!create_game(&game_inst)) {
     DDLS_FATAL("Could not create game!");
@@ -27,6 +30,8 @@ int main(void) {
     DDLS_INFO("Application did not shutdown gracefully.");
     return 2;
   }
+
+  shutdown_memory();
 
   return 0;
 }
