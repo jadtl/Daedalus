@@ -83,7 +83,7 @@ char* get_memory_usage_str() {
   const u64 mib = 1024 * 1024;
   const u64 kib = 1024;
 
-  char buffer[0000] = "System memory use (tagged):\n";
+  char buffer[8000] = "System memory use (tagged):\n";
   u64 offset = strlen(buffer);
   for (u32 i = 0; i < MEMORY_TAG_MAX_TAGS; ++i) {
     char unit[4] = "XiB";

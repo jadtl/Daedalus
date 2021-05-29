@@ -2,19 +2,22 @@
   "version": "0.2.0",
   "configurations": [
       {
-          "name": "Run Testbed",
+          "name": "Debug Testbed",
           "preLaunchTask": "Build Testbed",
           "type": "cppdbg",
           "request": "launch",
           "program": "${workspaceRoot}/bazel-bin/testbed/Testbed",
-          "cwd": "${workspaceRoot}",
+          "cwd": "${workspaceRoot}/bazel-bin/testbed/",
           "args": [],
           "stopAtEntry": false,
           "environment": [],
-          "externalConsole": false,
           "osx": {
             "MIMode": "lldb",
           },
+          "sourceFileMap":{
+            "./../../": "${workspaceRoot}/"
+          },
+          "targetArchitecture": "x86_64"
       },
   ]
 }
