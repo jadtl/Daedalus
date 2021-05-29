@@ -6,15 +6,15 @@
           "preLaunchTask": "Build Testbed",
           "type": "cppdbg",
           "request": "launch",
-          "program": "${workspaceFolder}/bazel-out/darwin-fastbuild/bin/testbed/Testbed",
+          "program": "${workspaceRoot}/bazel-bin/testbed/Testbed",
+          "cwd": "${workspaceRoot}/bazel-bin/testbed/",
           "args": [],
           "stopAtEntry": false,
-          "osx": {
-            "cwd": "${workspaceFolder}/bazel-out/darwin-fastbuild/bin/testbed",
-          },
           "environment": [],
           "externalConsole": false,
-          "MIMode": "lldb",
+          "osx": {
+            "MIMode": "lldb",
+          },
       },
   ]
 }
