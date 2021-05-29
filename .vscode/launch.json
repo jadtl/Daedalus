@@ -1,14 +1,16 @@
 {
+  "version": "0.2.0",
   "configurations": [
-  {
-    "name": "Launch (Linux)",
-    "type": "cppdbg",
-    "request": "launch",
-    "program": "${workspaceFolder}/bin/testbed",
-    "args": [],
-    "stopAtEntry": false,
-    "cwd": "${workspaceFolder}/bin/",
-    "environment": [],
-  }
+      {
+          "name": "Run Testbed",
+          "preLaunchTask": "Build Testbed",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/bazel-out/darwin-fastbuild/bin/testbed/Testbed",
+          "args": [],
+          "stopAtEntry": false,
+          "cwd": "/Users/jad/Development/Daedalus/bazel-out/darwin-fastbuild/bin/testbed",
+          "environment": [],
+      },
   ]
 }

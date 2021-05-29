@@ -17,8 +17,8 @@ cc_library(
     "@platforms//os:osx": ["-undefined", "dynamic_lookup", "-framework Cocoa", "-framework IOKit", "-framework CoreFoundation"],
     "@platforms//os:linux": ["-lvulkan", "-lxcb", "-lX11", "-lX11-xcb", "-lxkbcommon", "-L/usr/lib", "-L/usr/X11R6/lib"],
   }),
-  copts = ["-Iengine/src"] + select ({
-    "@platforms//os:osx": [],
+  copts = select ({
+    "@platforms//os:osx": [""],
     "@platforms//os:linux": ["-g -shared -fdeclspec -fPIC"],
   }),
   defines = ["D_DEBUG", "D_EXPORT"],

@@ -1,58 +1,14 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
   "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "shell",
-      "label": "Build every component",
-      "linux": {
-        "command": "${workspaceFolder}/build-all.sh",
-      },
-      "osx": {
-        "command": "${workspaceFolder}/build-all.sh",
-      },
-      "options": {
-        "cwd": "${workspaceFolder}",
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "group": "build"
-    },
-    {
-      "type": "shell",
-      "label": "Build the engine",
-      "linux": {
-        "command": "${workspaceFolder}/engine/build.sh",
-      },
-      "osx": {
-        "command": "${workspaceFolder}/engine/build.sh",
-      },
-      "options": {
-        "cwd": "${workspaceFolder}/engine",
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "group": "build"
-    },
-    {
-      "type": "shell",
-      "label": "Build the testbed",
-      "linux": {
-        "command": "${workspaceFolder}/testbed/build-all.sh",
-      },
-      "osx": {
-        "command": "${workspaceFolder}/testbed/build-all.sh",
-      },
-      "options": {
-        "cwd": "${workspaceFolder}/testbed",
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "group": "build"
-    }
-  ]
+    "tasks": [
+        {
+            "label": "Build Testbed",
+            "type": "shell",
+            "command": "bazel build --compilation_mode=dbg //testbed:Testbed",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
 }

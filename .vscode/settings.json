@@ -3,7 +3,9 @@
   "files.associations": {
     "stdio.h": "c",
     "xkblib.h": "c",
-    "typeinfo": "c"
+    "typeinfo": "c",
+    "string.h": "c",
+    "game.h": "c"
   },
   "C_Cpp.intelliSenseEngine": "Tag Parser",
 }

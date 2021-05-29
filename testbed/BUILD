@@ -18,7 +18,7 @@ cc_binary(
   srcs = ["src/entry.c"],
   deps = ["//engine:Daedalus", ":TestbedLibs"],
   linkopts = select ({
-    "@platforms//os:osx": [],
+    "@platforms//os:osx": [""],
     "@platforms//os:linux": ["-Wl,-rpath,."],
   }),
   defines = ["D_DEBUG", "D_IMPORT"],
