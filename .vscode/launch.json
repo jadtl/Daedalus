@@ -7,7 +7,7 @@
           "type": "cppdbg",
           "request": "launch",
           "program": "${workspaceRoot}/bazel-bin/testbed/Testbed",
-          "cwd": "${workspaceRoot}/bazel-bin/testbed/",
+          "cwd": "${workspaceRoot}",
           "args": [],
           "stopAtEntry": false,
           "environment": [],
