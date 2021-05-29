@@ -5,9 +5,9 @@ package(
 )
 
 cc_library(
-  name = "TestbedLibs",
-  srcs = glob(["src/**/*.c"]),
-  hdrs = glob(["src/**/*.h"]),
+  name = "Game",
+  srcs = ["src/Game.c"],
+  hdrs = ["src/Game.h"],
   deps = ["//engine:Daedalus"],
   copts = ["-Iexternal/engine"],
   includes = ["src"],
@@ -16,7 +16,7 @@ cc_library(
 cc_binary(
   name = "Testbed",
   srcs = ["src/entry.c"],
-  deps = ["//engine:Daedalus", ":TestbedLibs"],
+  deps = ["//engine:Daedalus", ":Game"],
   linkopts = select ({
     "@platforms//os:osx": [""],
     "@platforms//os:linux": ["-Wl,-rpath,."],

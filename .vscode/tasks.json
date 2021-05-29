@@ -4,7 +4,13 @@
         {
             "label": "Build Testbed",
             "type": "shell",
-            "command": "bazel build --compilation_mode=dbg //testbed:Testbed",
+            "command": "bazel build //testbed:Testbed -c dbg",
+            "windows": {
+                "command": "bazel build //testbed:Testbed -c dbg --experimental_enable_runfiles "
+            },        
+            "osx": {
+                "command": "bazel build //testbed:Testbed -c dbg --spawn_strategy=standalone"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true

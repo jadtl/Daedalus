@@ -8,4 +8,5 @@
     "game.h": "c"
   },
   "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "bazel.queriesShareServer": true
 }

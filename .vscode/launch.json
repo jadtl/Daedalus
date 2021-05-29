@@ -9,8 +9,12 @@
           "program": "${workspaceFolder}/bazel-out/darwin-fastbuild/bin/testbed/Testbed",
           "args": [],
           "stopAtEntry": false,
-          "cwd": "/Users/jad/Development/Daedalus/bazel-out/darwin-fastbuild/bin/testbed",
+          "osx": {
+            "cwd": "${workspaceFolder}/bazel-out/darwin-fastbuild/bin/testbed",
+          },
           "environment": [],
+          "externalConsole": false,
+          "MIMode": "lldb",
       },
   ]
 }
