@@ -6,8 +6,8 @@ package(
 
 cc_library(
   name = "Game",
-  srcs = ["src/Game.c"],
-  hdrs = ["src/Game.h"],
+  srcs = ["src/game.c"],
+  hdrs = ["src/game.h"],
   deps = ["//engine:Daedalus"],
   copts = ["-Iexternal/engine"],
   includes = ["src"],

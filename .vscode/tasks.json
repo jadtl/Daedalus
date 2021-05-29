@@ -13,7 +13,7 @@
             },
             "linux": {
                 "command": "CC=clang bazel build //testbed:Testbed -c dbg"
-            }
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
