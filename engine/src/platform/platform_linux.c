@@ -221,7 +221,7 @@ b8 platform_pump_messages(platform_state* plat_state) {
 
         // Pass over to the input subsystem.
         input_process_mouse_move(move_event->event_x, move_event->event_y);
-      break;
+      } break;
       case XCB_CONFIGURE_NOTIFY: {
         // TODO: resizing.
       } break;
