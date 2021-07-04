@@ -215,7 +215,7 @@ b8 platform_pump_messages(platform_state* plat_state) {
             input_process_button(mouse_button, pressed);
         }
       } break;
-      case XCB_MOTION_NOTIFY:
+      case XCB_MOTION_NOTIFY: {
         // Mouse move
         xcb_motion_notify_event_t *move_event = (xcb_motion_notify_event_t *)event;
 
