@@ -19,7 +19,7 @@ cc_library(
   }),
   copts = select ({
     "@platforms//os:osx": [""],
-    "@platforms//os:linux": ["-g -shared -fdeclspec -fPIC"],
+    "@platforms//os:linux": ["-g -fdeclspec -fPIC"],
   }),
   defines = ["D_DEBUG", "D_EXPORT"],
   target_compatible_with = select({
