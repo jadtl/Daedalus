@@ -1,0 +1,6 @@
+[submodule "External/boost"]
+	path = External/boost
+	url = https://github.com/Orphis/boost-cmake.git
+[submodule "External/glm"]
+	path = External/glm
+	url = https://github.com/g-truc/glm
