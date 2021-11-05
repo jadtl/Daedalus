@@ -8,6 +8,7 @@ find_package(Vulkan)
 
 add_subdirectory(External/boost)
 add_subdirectory(External/glm)
+add_subdirectory(External/glfw)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DNOMINMAX -DUNICODE")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -DNOMINMAX -DUNICODE")
@@ -21,4 +22,4 @@ include_directories(Daedalus)
 
 add_executable(${ENGINE} ${HEADERS} ${SOURCES})
 
-target_link_libraries(${ENGINE} Vulkan::Vulkan glm Boost::filesystem)
+target_link_libraries(${ENGINE} Vulkan::Vulkan glm Boost::filesystem glfw)
