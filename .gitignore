@@ -1,0 +1,7 @@
+# CMake
+Build
+
+# Hidden
+.*
+!.gitignore
+!.gitsubmodules
