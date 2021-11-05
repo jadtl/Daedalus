@@ -3,15 +3,15 @@
 #include <boost/filesystem.hpp>
 
 #if defined(_WIN32)
-  #include <windows.h>
+#include <windows.h>
 #elif defined(__linux__)
-  #include <sstream>
-  #include <unistd.h>
+#include <sstream>
+#include <unistd.h>
 #elif defined(__APPLE__)
-  #include <mach-o/dyld.h>
+#include <mach-o/dyld.h>
 #endif
 
-#ifdef WINDOWS
+#if defined(_WIN32)
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #else
@@ -21,16 +21,17 @@
 
 #include <string>
 
-class Shell {
+class Shell
+{
 public:
-    Shell(std::string pathFromExecutable);
-    
-    std::string shader(std::string fileName);
-    std::string asset(std::string fileName);
-    
+  Shell(std::string pathFromExecutable);
+
+  std::string shader(std::string fileName);
+  std::string asset(std::string fileName);
+
 private:
-    boost::filesystem::path executable();
-    boost::filesystem::path programRoot;
-    
-    std::string currentWorkingDirectory();
+  boost::filesystem::path executable();
+  boost::filesystem::path programRoot;
+
+  std::string currentWorkingDirectory();
 };
