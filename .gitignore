@@ -1,8 +1,0 @@
-# Hidden macOS Finder files
-**/.DS_Store
-
-# Bazel build files
-bazel-*
-
-# VS Code stuff
-.vscode/*
