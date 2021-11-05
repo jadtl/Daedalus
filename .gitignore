@@ -4,4 +4,4 @@ Build
 # Hidden
 .*
 !.gitignore
-!.gitsubmodules
+!.gitmodules
