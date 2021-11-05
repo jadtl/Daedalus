@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
-#include <vulkan/vulkan.h>
 
 #if defined(_WIN32)
   #include <windows.h>
@@ -12,7 +11,7 @@
   #include <mach-o/dyld.h>
 #endif
 
-#if defined(_WIN32)
+#ifdef WINDOWS
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #else
@@ -22,9 +21,9 @@
 
 #include <string>
 
-class Platform {
+class Shell {
 public:
-    Platform(std::string pathFromExecutable);
+    Shell(std::string pathFromExecutable);
     
     std::string shader(std::string fileName);
     std::string asset(std::string fileName);

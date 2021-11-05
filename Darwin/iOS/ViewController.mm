@@ -1,13 +1,13 @@
 #import "ViewController.h"
 
-#include "Daedalus.h"
+#include "Engine.h"
 
 #pragma mark -
 #pragma mark ViewController
 
 @implementation ViewController {
     CADisplayLink* displayLink;
-    Daedalus* engine;
+    Engine* engine;
 }
 
 -(void) dealloc {
@@ -25,7 +25,7 @@
 
     std::vector<std::string> args;
     //args.push_back("-validate");
-    engine = new Daedalus("Daedalus [Vulkan]", args, (__bridge void*)self.view.layer);
+    engine = new Engine(args, (__bridge void*)self.view.layer);
     engine -> initialize();
 
     uint32_t fps = 60;
@@ -34,7 +34,7 @@
     [displayLink addToRunLoop: NSRunLoop.currentRunLoop forMode: NSDefaultRunLoopMode];
 }
 
--(void) renderLoop { engine -> update(); }
+-(void) renderLoop { engine -> update(); engine -> render(); }
 
 @end
 

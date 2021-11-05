@@ -1,25 +1,110 @@
-#include <string>
-#include <vector>
+#pragma once
 
-class Platform;
+#include <vector>
+#include <string>
+#include <deque>
+
+#include <MoltenVK/mvk_vulkan.h>
+#include <glm/glm.hpp>
+
+#include "Shell.h"
+#include "Types.h"
+#include "Mesh.h"
+
+struct MeshPushConstants {
+    glm::vec4 data;
+    glm::mat4 renderMatrix;
+};
+
+struct DeletionQueue {
+    std::deque<std::function<void()>> deletors;
+    
+    void push_function(std::function<void()>&& function) {
+        deletors.push_back(function);
+    }
+
+    void flush() {
+        // reverse iterate the deletion queue to execute all the functions
+        for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+            (*it)(); //call functors
+        }
+        deletors.clear();
+    }
+};
 
 class Engine {
 public:
-    Engine(const Engine& engine) = delete;
-    Engine &operator=(const Engine& engine) = delete;
-    virtual ~Engine() {}
+    Engine(const Engine &engine) = delete;
+    Engine &operator = (const Engine &engine) = delete;
+    
+    Engine(const std::vector<std::string> &args, void *caMetalLayer);
+    ~Engine();
+    
+    Shell shell;
+    
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkPhysicalDevice physicalDevice;
+    VkDevice device;
+    VkSurfaceKHR surface;
+    
+    VkSwapchainKHR swapchain;
+    VkFormat swapchainImageFormat;
+    std::vector<VkImage> swapchainImages;
+    std::vector<VkImageView> swapchainImageViews;
+    
+    VkQueue graphicsQueue;
+    uint32_t graphicsQueueFamily;
+    
+    VkCommandPool commandPool;
+    VkCommandBuffer mainCommandBuffer;
+    
+    VkRenderPass renderPass;
+
+    std::vector<VkFramebuffer> framebuffers;
+    
+    VkSemaphore presentSemaphore, renderSemaphore;
+    VkFence renderFence;
+    
+    VkPipelineLayout pipelineLayout;
+    VkPipeline trianglePipeline;
+    VkPipeline coloredTrianglePipeline;
+    
+    VkShaderModule coloredTriangleFragShader;
+    VkShaderModule coloredTriangleVertexShader;
+    VkShaderModule triangleFragShader;
+    VkShaderModule triangleVertexShader;
+    VkShaderModule meshVertexShader;
+    
+    VmaAllocator allocator;
+    
+    VkPipeline meshPipeline;
+    VkPipelineLayout meshPipelineLayout;
+    Mesh triangleMesh;
+    Mesh monkeyMesh;
+    
+    VkImageView depthImageView;
+    AllocatedImage depthImage;
+    
+    VkFormat depthFormat;
+    
+    
+    DeletionQueue mainDeletionQueue;
+    
+    bool isInitialized{false};
+    int frameNumber{0};
     
     struct Settings {
-        const char* applicationName;
-        const char* engineName;
+        std::string engineName = "Daedalus";
+        std::string applicationName = "Daedalus";
         
-        uint32_t width;
-        uint32_t height;
+        VkExtent2D windowExtent;
+        int selectedShader;
         
-        bool validate;
-        bool verbose;
+        bool validate{false};
+        bool verbose{false};
     };
-    const Settings &settings() const { return settings_; }
+    Settings settings;
     
     enum Key {
         KEY_A,
@@ -30,39 +115,31 @@ public:
         KEY_E,
         KEY_SPACE,
     };
-    virtual void onKey(Key key) {};
+    void onKey(Key key);
     
-    virtual void onTick() {}
-    virtual void onFrame() {}
+    void initialize();
     
-    virtual void update() {}
-    
-protected:
-    Engine(const char* applicationName, const std::vector<std::string>& args) : settings_(), platform_(nullptr) {
-        settings_.applicationName = applicationName;
-        settings_.engineName = "Engine";
-        
-        settings_.width = 1280;
-        settings_.height = 1024;
-        
-        settings_.validate = false;
-        settings_.verbose = false;
-        
-        parseArgs(args);
-    }
-    
-    Settings settings_;
-    Platform *platform_;
+    void update();
+    void render();
     
 private:
-    void parseArgs(const std::vector<std::string>& args) {
-        for (auto iterator = args.begin(); iterator != args.end(); ++iterator) {
-            if (*iterator == "-validate" || *iterator == "-v")
-                settings_.validate = true;
-            if (*iterator == "-verbose" || *iterator == "-vv") {
-                settings_.validate = true;
-                settings_.verbose = true;
-            }
-        }
-    }
+    void* caMetalLayer;
+    
+    void initializeVulkan();
+    void initializeSwapchain();
+    void initializeCommands();
+    void initializeDefaultRenderPass();
+    void initializeFramebuffers();
+    void initializeSyncStructures();
+    void initializePipelines();
+    
+    void terminate();
+    void terminateSwapchain();
+    
+    void updateSwapchain();
+    
+    bool loadShaderModule(const char* filePath, VkShaderModule* shaderModule);
+    void loadMeshes();
+    
+    void uploadMesh(Mesh &mesh);
 };

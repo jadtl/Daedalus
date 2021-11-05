@@ -60,7 +60,7 @@ bool Mesh::loadFromObj(const char *fileName) {
     tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fileName, nullptr);
     //make sure to output the warnings to the console, in case there are issues with the file
     if (!warn.empty()) {
-        std::cout << "[WARNING: OBJ Loader] " << warn << std::endl;
+        std::cout << "OBJ Loader Warning: " << warn << std::endl;
     }
     //if we have any error, print it to the console, and break the mesh loading.
     //This happens if the file can't be found or is malformed
