@@ -14,9 +14,8 @@
  * Copyright © 2020 Charles Giessen (charles@lunarg.com)
  */
 
-#include "Bootstrap.h"
+#include "VkBootstrap.h"
 
-#include <cstdio>
 #include <cstring>
 
 #if defined(_WIN32)
@@ -36,6 +35,19 @@
 namespace vkb {
 
 namespace detail {
+
+GenericFeaturesPNextNode::GenericFeaturesPNextNode() {
+	memset(fields, UINT8_MAX, sizeof(VkBool32) * field_capacity);
+}
+
+bool GenericFeaturesPNextNode::match(
+    GenericFeaturesPNextNode const& requested, GenericFeaturesPNextNode const& supported) noexcept {
+	assert(requested.sType == supported.sType && "Non-matching sTypes in features nodes!");
+	for (uint32_t i = 0; i < field_capacity; i++) {
+		if (requested.fields[i] && !supported.fields[i]) return false;
+	}
+	return true;
+}
 
 class VulkanFunctions {
 	private:
@@ -96,18 +108,23 @@ class VulkanFunctions {
 		}
 	}
 
-	template <typename T> void get_proc_addr(T& out_ptr, const char* func_name) {
-		out_ptr = reinterpret_cast<T>(ptr_vkGetInstanceProcAddr(instance, func_name));
-	}
-
 	void init_pre_instance_funcs() {
-		get_proc_addr(fp_vkEnumerateInstanceExtensionProperties, "vkEnumerateInstanceExtensionProperties");
-		get_proc_addr(fp_vkEnumerateInstanceLayerProperties, "vkEnumerateInstanceLayerProperties");
-		get_proc_addr(fp_vkEnumerateInstanceVersion, "vkEnumerateInstanceVersion");
-		get_proc_addr(fp_vkCreateInstance, "vkCreateInstance");
+		get_inst_proc_addr(fp_vkEnumerateInstanceExtensionProperties, "vkEnumerateInstanceExtensionProperties");
+		get_inst_proc_addr(fp_vkEnumerateInstanceLayerProperties, "vkEnumerateInstanceLayerProperties");
+		get_inst_proc_addr(fp_vkEnumerateInstanceVersion, "vkEnumerateInstanceVersion");
+		get_inst_proc_addr(fp_vkCreateInstance, "vkCreateInstance");
 	}
 
 	public:
+	template <typename T> void get_inst_proc_addr(T& out_ptr, const char* func_name) {
+		out_ptr = reinterpret_cast<T>(ptr_vkGetInstanceProcAddr(instance, func_name));
+	}
+
+	template <typename T>
+	void get_device_proc_addr(VkDevice device, T& out_ptr, const char* func_name) {
+		out_ptr = reinterpret_cast<T>(fp_vkGetDeviceProcAddr(device, func_name));
+	}
+
 	PFN_vkGetInstanceProcAddr ptr_vkGetInstanceProcAddr = nullptr;
 	VkInstance instance = nullptr;
 
@@ -120,6 +137,7 @@ class VulkanFunctions {
 	PFN_vkEnumeratePhysicalDevices fp_vkEnumeratePhysicalDevices = nullptr;
 	PFN_vkGetPhysicalDeviceFeatures fp_vkGetPhysicalDeviceFeatures = nullptr;
 	PFN_vkGetPhysicalDeviceFeatures2 fp_vkGetPhysicalDeviceFeatures2 = nullptr;
+	PFN_vkGetPhysicalDeviceFeatures2KHR fp_vkGetPhysicalDeviceFeatures2KHR = nullptr;
 	PFN_vkGetPhysicalDeviceFormatProperties fp_vkGetPhysicalDeviceFormatProperties = nullptr;
 	PFN_vkGetPhysicalDeviceImageFormatProperties fp_vkGetPhysicalDeviceImageFormatProperties = nullptr;
 	PFN_vkGetPhysicalDeviceProperties fp_vkGetPhysicalDeviceProperties = nullptr;
@@ -130,22 +148,15 @@ class VulkanFunctions {
 	PFN_vkGetPhysicalDeviceFormatProperties2 fp_vkGetPhysicalDeviceFormatProperties2 = nullptr;
 	PFN_vkGetPhysicalDeviceMemoryProperties2 fp_vkGetPhysicalDeviceMemoryProperties2 = nullptr;
 
+	PFN_vkGetDeviceProcAddr fp_vkGetDeviceProcAddr = nullptr;
 	PFN_vkCreateDevice fp_vkCreateDevice = nullptr;
-	PFN_vkDestroyDevice fp_vkDestroyDevice = nullptr;
 	PFN_vkEnumerateDeviceExtensionProperties fp_vkEnumerateDeviceExtensionProperties = nullptr;
-	PFN_vkGetDeviceQueue fp_vkGetDeviceQueue = nullptr;
-
-	PFN_vkCreateImageView fp_vkCreateImageView = nullptr;
-	PFN_vkDestroyImageView fp_vkDestroyImageView = nullptr;
 
 	PFN_vkDestroySurfaceKHR fp_vkDestroySurfaceKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceSupportKHR fp_vkGetPhysicalDeviceSurfaceSupportKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR fp_vkGetPhysicalDeviceSurfaceFormatsKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfacePresentModesKHR fp_vkGetPhysicalDeviceSurfacePresentModesKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR fp_vkGetPhysicalDeviceSurfaceCapabilitiesKHR = nullptr;
-	PFN_vkCreateSwapchainKHR fp_vkCreateSwapchainKHR = nullptr;
-	PFN_vkDestroySwapchainKHR fp_vkDestroySwapchainKHR = nullptr;
-	PFN_vkGetSwapchainImagesKHR fp_vkGetSwapchainImagesKHR = nullptr;
 
 	bool init_vulkan_funcs(PFN_vkGetInstanceProcAddr fp_vkGetInstanceProcAddr) {
 		std::lock_guard<std::mutex> lg(init_mutex);
@@ -154,45 +165,32 @@ class VulkanFunctions {
 		return true;
 	}
 
-	template <typename T> void get_inst_proc_addr(T& out_ptr, const char* func_name) {
-		std::lock_guard<std::mutex> lg(init_mutex);
-		get_proc_addr(out_ptr, func_name);
-	}
-
 	void init_instance_funcs(VkInstance inst) {
-		std::lock_guard<std::mutex> lg(init_mutex);
-
 		instance = inst;
-		get_proc_addr(fp_vkDestroyInstance, "vkDestroyInstance");
-		get_proc_addr(fp_vkEnumeratePhysicalDevices, "vkEnumeratePhysicalDevices");
-		get_proc_addr(fp_vkGetPhysicalDeviceFeatures, "vkGetPhysicalDeviceFeatures");
-		get_proc_addr(fp_vkGetPhysicalDeviceFeatures2, "vkGetPhysicalDeviceFeatures2");
-		get_proc_addr(fp_vkGetPhysicalDeviceFormatProperties, "vkGetPhysicalDeviceFormatProperties");
-		get_proc_addr(fp_vkGetPhysicalDeviceImageFormatProperties, "vkGetPhysicalDeviceImageFormatProperties");
-		get_proc_addr(fp_vkGetPhysicalDeviceProperties, "vkGetPhysicalDeviceProperties");
-		get_proc_addr(fp_vkGetPhysicalDeviceProperties2, "vkGetPhysicalDeviceProperties2");
-		get_proc_addr(fp_vkGetPhysicalDeviceQueueFamilyProperties, "vkGetPhysicalDeviceQueueFamilyProperties");
-		get_proc_addr(fp_vkGetPhysicalDeviceQueueFamilyProperties2, "vkGetPhysicalDeviceQueueFamilyProperties2");
-		get_proc_addr(fp_vkGetPhysicalDeviceMemoryProperties, "vkGetPhysicalDeviceMemoryProperties");
-		get_proc_addr(fp_vkGetPhysicalDeviceFormatProperties2, "vkGetPhysicalDeviceFormatProperties2");
-		get_proc_addr(fp_vkGetPhysicalDeviceMemoryProperties2, "vkGetPhysicalDeviceMemoryProperties2");
+		get_inst_proc_addr(fp_vkDestroyInstance, "vkDestroyInstance");
+		get_inst_proc_addr(fp_vkEnumeratePhysicalDevices, "vkEnumeratePhysicalDevices");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceFeatures, "vkGetPhysicalDeviceFeatures");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceFeatures2, "vkGetPhysicalDeviceFeatures2");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceFeatures2KHR, "vkGetPhysicalDeviceFeatures2KHR");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceFormatProperties, "vkGetPhysicalDeviceFormatProperties");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceImageFormatProperties, "vkGetPhysicalDeviceImageFormatProperties");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceProperties, "vkGetPhysicalDeviceProperties");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceProperties2, "vkGetPhysicalDeviceProperties2");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceQueueFamilyProperties, "vkGetPhysicalDeviceQueueFamilyProperties");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceQueueFamilyProperties2, "vkGetPhysicalDeviceQueueFamilyProperties2");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceMemoryProperties, "vkGetPhysicalDeviceMemoryProperties");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceFormatProperties2, "vkGetPhysicalDeviceFormatProperties2");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceMemoryProperties2, "vkGetPhysicalDeviceMemoryProperties2");
 
-		get_proc_addr(fp_vkCreateDevice, "vkCreateDevice");
-		get_proc_addr(fp_vkDestroyDevice, "vkDestroyDevice");
-		get_proc_addr(fp_vkEnumerateDeviceExtensionProperties, "vkEnumerateDeviceExtensionProperties");
-		get_proc_addr(fp_vkGetDeviceQueue, "vkGetDeviceQueue");
+		get_inst_proc_addr(fp_vkGetDeviceProcAddr, "vkGetDeviceProcAddr");
+		get_inst_proc_addr(fp_vkCreateDevice, "vkCreateDevice");
+		get_inst_proc_addr(fp_vkEnumerateDeviceExtensionProperties, "vkEnumerateDeviceExtensionProperties");
 
-		get_proc_addr(fp_vkCreateImageView, "vkCreateImageView");
-		get_proc_addr(fp_vkDestroyImageView, "vkDestroyImageView");
-
-		get_proc_addr(fp_vkDestroySurfaceKHR, "vkDestroySurfaceKHR");
-		get_proc_addr(fp_vkGetPhysicalDeviceSurfaceSupportKHR, "vkGetPhysicalDeviceSurfaceSupportKHR");
-		get_proc_addr(fp_vkGetPhysicalDeviceSurfaceFormatsKHR, "vkGetPhysicalDeviceSurfaceFormatsKHR");
-		get_proc_addr(fp_vkGetPhysicalDeviceSurfacePresentModesKHR, "vkGetPhysicalDeviceSurfacePresentModesKHR");
-		get_proc_addr(fp_vkGetPhysicalDeviceSurfaceCapabilitiesKHR, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
-		get_proc_addr(fp_vkCreateSwapchainKHR, "vkCreateSwapchainKHR");
-		get_proc_addr(fp_vkDestroySwapchainKHR, "vkDestroySwapchainKHR");
-		get_proc_addr(fp_vkGetSwapchainImagesKHR, "vkGetSwapchainImagesKHR");
+		get_inst_proc_addr(fp_vkDestroySurfaceKHR, "vkDestroySurfaceKHR");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceSurfaceSupportKHR, "vkGetPhysicalDeviceSurfaceSupportKHR");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceSurfaceFormatsKHR, "vkGetPhysicalDeviceSurfaceFormatsKHR");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceSurfacePresentModesKHR, "vkGetPhysicalDeviceSurfacePresentModesKHR");
+		get_inst_proc_addr(fp_vkGetPhysicalDeviceSurfaceCapabilitiesKHR, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
 	}
 };
 
@@ -208,7 +206,7 @@ auto get_vector(std::vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
 	VkResult err;
 	do {
 		err = f(ts..., &count, nullptr);
-		if (err) {
+		if (err != VK_SUCCESS) {
 			return err;
 		};
 		out.resize(count);
@@ -232,13 +230,13 @@ auto get_vector_noerror(F&& f, Ts&&... ts) -> std::vector<T> {
 
 const char* to_string_message_severity(VkDebugUtilsMessageSeverityFlagBitsEXT s) {
 	switch (s) {
-		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
 			return "VERBOSE";
-		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
 			return "ERROR";
-		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
 			return "WARNING";
-		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
 			return "INFO";
 		default:
 			return "UNKNOWN";
@@ -259,6 +257,7 @@ VkResult create_debug_utils_messenger(VkInstance instance,
     PFN_vkDebugUtilsMessengerCallbackEXT debug_callback,
     VkDebugUtilsMessageSeverityFlagsEXT severity,
     VkDebugUtilsMessageTypeFlagsEXT type,
+    void* user_data_pointer,
     VkDebugUtilsMessengerEXT* pDebugMessenger,
     VkAllocationCallbacks* allocation_callbacks) {
 
@@ -269,6 +268,7 @@ VkResult create_debug_utils_messenger(VkInstance instance,
 	messengerCreateInfo.messageSeverity = severity;
 	messengerCreateInfo.messageType = type;
 	messengerCreateInfo.pfnUserCallback = debug_callback;
+	messengerCreateInfo.pUserData = user_data_pointer;
 
 	PFN_vkCreateDebugUtilsMessengerEXT createMessengerFunc;
 	detail::vulkan_functions().get_inst_proc_addr(createMessengerFunc, "vkCreateDebugUtilsMessengerEXT");
@@ -289,17 +289,6 @@ void destroy_debug_utils_messenger(
 	if (deleteMessengerFunc != nullptr) {
 		deleteMessengerFunc(instance, debugMessenger, allocation_callbacks);
 	}
-}
-
-VKAPI_ATTR VkBool32 VKAPI_CALL default_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void*) {
-	auto ms = to_string_message_severity(messageSeverity);
-	auto mt = to_string_message_type(messageType);
-	printf("[%s: %s]\n%s\n", ms, mt, pCallbackData->pMessage);
-
-	return VK_FALSE;
 }
 
 namespace detail {
@@ -529,7 +518,7 @@ SystemInfo::SystemInfo() {
 		auto layer_extensions_ret = detail::get_vector<VkExtensionProperties>(layer_extensions,
 		    detail::vulkan_functions().fp_vkEnumerateInstanceExtensionProperties,
 		    layer.layerName);
-		if (layer_extensions_ret != VK_SUCCESS) {
+		if (layer_extensions_ret == VK_SUCCESS) {
 			for (auto& ext : layer_extensions)
 				if (strcmp(ext.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0)
 					debug_utils_available = true;
@@ -544,13 +533,26 @@ bool SystemInfo::is_layer_available(const char* layer_name) const {
 	if (!layer_name) return false;
 	return detail::check_layer_supported(available_layers, layer_name);
 }
-
+void destroy_surface(Instance instance, VkSurfaceKHR surface) {
+	if (instance.instance != VK_NULL_HANDLE && surface != VK_NULL_HANDLE) {
+		detail::vulkan_functions().fp_vkDestroySurfaceKHR(instance.instance, surface, instance.allocation_callbacks);
+	}
+}
+void destroy_surface(VkInstance instance, VkSurfaceKHR surface, VkAllocationCallbacks* callbacks) {
+	if (instance != VK_NULL_HANDLE && surface != VK_NULL_HANDLE) {
+		detail::vulkan_functions().fp_vkDestroySurfaceKHR(instance, surface, callbacks);
+	}
+}
 void destroy_instance(Instance instance) {
 	if (instance.instance != VK_NULL_HANDLE) {
 		if (instance.debug_messenger != VK_NULL_HANDLE)
 			destroy_debug_utils_messenger(instance.instance, instance.debug_messenger, instance.allocation_callbacks);
 		detail::vulkan_functions().fp_vkDestroyInstance(instance.instance, instance.allocation_callbacks);
 	}
+}
+
+Instance::operator VkInstance() const {
+	return this->instance;
 }
 
 InstanceBuilder::InstanceBuilder(PFN_vkGetInstanceProcAddr fp_vkGetInstanceProcAddr) {
@@ -560,7 +562,7 @@ InstanceBuilder::InstanceBuilder() {}
 
 detail::Result<Instance> InstanceBuilder::build() const {
 
-	auto sys_info_ret = SystemInfo::get_system_info();
+	auto sys_info_ret = SystemInfo::get_system_info(info.fp_vkGetInstanceProcAddr);
 	if (!sys_info_ret) return sys_info_ret.error();
 	auto system = sys_info_ret.value();
 
@@ -610,6 +612,12 @@ detail::Result<Instance> InstanceBuilder::build() const {
 		extensions.push_back(ext);
 	if (info.debug_callback != nullptr && system.debug_utils_available) {
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+	bool supports_properties2_ext = detail::check_extension_supported(
+	    system.available_extensions, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+		
+	if (supports_properties2_ext && api_version < VK_API_VERSION_1_1) {
+		extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 	}
 
 	if (!info.headless_context) {
@@ -662,6 +670,7 @@ detail::Result<Instance> InstanceBuilder::build() const {
 		messengerCreateInfo.messageSeverity = info.debug_message_severity;
 		messengerCreateInfo.messageType = info.debug_message_type;
 		messengerCreateInfo.pfnUserCallback = info.debug_callback;
+		messengerCreateInfo.pUserData = info.debug_user_data_pointer;
 		pNext_chain.push_back(reinterpret_cast<VkBaseOutStructure*>(&messengerCreateInfo));
 	}
 
@@ -690,6 +699,9 @@ detail::Result<Instance> InstanceBuilder::build() const {
 	VkInstanceCreateInfo instance_create_info = {};
 	instance_create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	detail::setup_pNext_chain(instance_create_info, pNext_chain);
+	for (auto& node : pNext_chain) {
+		assert(node->sType != VK_STRUCTURE_TYPE_APPLICATION_INFO);
+	}
 	instance_create_info.flags = info.flags;
 	instance_create_info.pApplicationInfo = &app_info;
 	instance_create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
@@ -710,6 +722,7 @@ detail::Result<Instance> InstanceBuilder::build() const {
 		    info.debug_callback,
 		    info.debug_message_severity,
 		    info.debug_message_type,
+		    info.debug_user_data_pointer,
 		    &instance.debug_messenger,
 		    info.allocation_callbacks);
 		if (res != VK_SUCCESS) {
@@ -717,12 +730,12 @@ detail::Result<Instance> InstanceBuilder::build() const {
 		}
 	}
 
-	if (info.headless_context) {
-		instance.headless = true;
-	}
+	instance.headless = info.headless_context;
+	instance.supports_properties2_ext = supports_properties2_ext;
 	instance.allocation_callbacks = info.allocation_callbacks;
 	instance.instance_version = api_version;
 	instance.fp_vkGetInstanceProcAddr = detail::vulkan_functions().ptr_vkGetInstanceProcAddr;
+	instance.fp_vkGetDeviceProcAddr = detail::vulkan_functions().fp_vkGetDeviceProcAddr;
 	return instance;
 }
 
@@ -736,16 +749,32 @@ InstanceBuilder& InstanceBuilder::set_engine_name(const char* engine_name) {
 	info.engine_name = engine_name;
 	return *this;
 }
+InstanceBuilder& InstanceBuilder::set_app_version(uint32_t app_version) {
+	info.application_version = app_version;
+	return *this;
+}
 InstanceBuilder& InstanceBuilder::set_app_version(uint32_t major, uint32_t minor, uint32_t patch) {
 	info.application_version = VK_MAKE_VERSION(major, minor, patch);
+	return *this;
+}
+InstanceBuilder& InstanceBuilder::set_engine_version(uint32_t engine_version) {
+	info.engine_version = engine_version;
 	return *this;
 }
 InstanceBuilder& InstanceBuilder::set_engine_version(uint32_t major, uint32_t minor, uint32_t patch) {
 	info.engine_version = VK_MAKE_VERSION(major, minor, patch);
 	return *this;
 }
+InstanceBuilder& InstanceBuilder::require_api_version(uint32_t required_api_version) {
+	info.required_api_version = required_api_version;
+	return *this;
+}
 InstanceBuilder& InstanceBuilder::require_api_version(uint32_t major, uint32_t minor, uint32_t patch) {
 	info.required_api_version = VK_MAKE_VERSION(major, minor, patch);
+	return *this;
+}
+InstanceBuilder& InstanceBuilder::desire_api_version(uint32_t preferred_vulkan_version) {
+	info.desired_api_version = preferred_vulkan_version;
 	return *this;
 }
 InstanceBuilder& InstanceBuilder::desire_api_version(uint32_t major, uint32_t minor, uint32_t patch) {
@@ -778,6 +807,10 @@ InstanceBuilder& InstanceBuilder::use_default_debug_messenger() {
 InstanceBuilder& InstanceBuilder::set_debug_callback(PFN_vkDebugUtilsMessengerCallbackEXT callback) {
 	info.use_debug_messenger = true;
 	info.debug_callback = callback;
+	return *this;
+}
+InstanceBuilder& InstanceBuilder::set_debug_callback_user_data_pointer(void* user_data_pointer) {
+	info.debug_user_data_pointer = user_data_pointer;
 	return *this;
 }
 InstanceBuilder& InstanceBuilder::set_headless(bool headless) {
@@ -843,8 +876,11 @@ std::vector<const char*> check_device_extension_support(
 	return extensions_to_enable;
 }
 
-bool supports_features(VkPhysicalDeviceFeatures supported, VkPhysicalDeviceFeatures requested) {
-	// clang-format off
+// clang-format off
+bool supports_features(VkPhysicalDeviceFeatures supported,
+                       VkPhysicalDeviceFeatures requested,
+                       std::vector<GenericFeaturesPNextNode> const& extension_supported,
+                       std::vector<GenericFeaturesPNextNode> const& extension_requested) {
     if (requested.robustBufferAccess && !supported.robustBufferAccess) return false;
     if (requested.fullDrawIndexUint32 && !supported.fullDrawIndexUint32) return false;
     if (requested.imageCubeArray && !supported.imageCubeArray) return false;
@@ -900,69 +936,54 @@ bool supports_features(VkPhysicalDeviceFeatures supported, VkPhysicalDeviceFeatu
     if (requested.sparseResidencyAliased && !supported.sparseResidencyAliased) return false;
     if (requested.variableMultisampleRate && !supported.variableMultisampleRate) return false;
     if (requested.inheritedQueries && !supported.inheritedQueries) return false;
-	// clang-format on
-	return true;
+
+    for(size_t i = 0; i < extension_requested.size(); ++i) {
+        auto res = GenericFeaturesPNextNode::match(extension_requested[i], extension_supported[i]);
+        if(!res) return false;
+    }
+
+    return true;
+}
+// clang-format on
+// Finds the first queue which supports the desired operations. Returns QUEUE_INDEX_MAX_VALUE if none is found
+uint32_t get_first_queue_index(std::vector<VkQueueFamilyProperties> const& families, VkQueueFlags desired_flags) {
+	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
+		if (families[i].queueFlags & desired_flags) return i;
+	}
+	return QUEUE_INDEX_MAX_VALUE;
+}
+// Finds the queue which is separate from the graphics queue and has the desired flag and not the
+// undesired flag, but will select it if no better options are available compute support. Returns
+// QUEUE_INDEX_MAX_VALUE if none is found.
+uint32_t get_separate_queue_index(std::vector<VkQueueFamilyProperties> const& families,
+    VkQueueFlags desired_flags,
+    VkQueueFlags undesired_flags) {
+	uint32_t index = QUEUE_INDEX_MAX_VALUE;
+	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
+		if ((families[i].queueFlags & desired_flags) &&
+		    ((families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0)) {
+			if ((families[i].queueFlags & undesired_flags) == 0) {
+				return i;
+			} else {
+				index = i;
+			}
+		}
+	}
+	return index;
 }
 
-// finds the first queue which supports graphics operations. returns QUEUE_INDEX_MAX_VALUE if none is found
-uint32_t get_graphics_queue_index(std::vector<VkQueueFamilyProperties> const& families) {
+// finds the first queue which supports only the desired flag (not graphics or transfer). Returns QUEUE_INDEX_MAX_VALUE if none is found.
+uint32_t get_dedicated_queue_index(std::vector<VkQueueFamilyProperties> const& families,
+    VkQueueFlags desired_flags,
+    VkQueueFlags undesired_flags) {
 	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
-		if (families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) return i;
-	}
-	return QUEUE_INDEX_MAX_VALUE;
-}
-// finds a compute queue which is separate from the graphics queue and tries to find one without
-// transfer support returns QUEUE_INDEX_MAX_VALUE if none is found
-uint32_t get_separate_compute_queue_index(std::vector<VkQueueFamilyProperties> const& families) {
-	uint32_t compute = QUEUE_INDEX_MAX_VALUE;
-	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
-		if ((families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) &&
-		    ((families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0)) {
-			if ((families[i].queueFlags & VK_QUEUE_TRANSFER_BIT) == 0) {
-				return i;
-			} else {
-				compute = i;
-			}
-		}
-	}
-	return compute;
-}
-// finds a transfer queue which is separate from the graphics queue and tries to find one without
-// compute support returns QUEUE_INDEX_MAX_VALUE if none is found
-uint32_t get_separate_transfer_queue_index(std::vector<VkQueueFamilyProperties> const& families) {
-	uint32_t transfer = QUEUE_INDEX_MAX_VALUE;
-	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
-		if ((families[i].queueFlags & VK_QUEUE_TRANSFER_BIT) &&
-		    ((families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0)) {
-			if ((families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0) {
-				return i;
-			} else {
-				transfer = i;
-			}
-		}
-	}
-	return transfer;
-}
-// finds the first queue which supports only compute (not graphics or transfer). returns QUEUE_INDEX_MAX_VALUE if none is found
-uint32_t get_dedicated_compute_queue_index(std::vector<VkQueueFamilyProperties> const& families) {
-	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
-		if ((families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) &&
-		    (families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0 &&
-		    (families[i].queueFlags & VK_QUEUE_TRANSFER_BIT) == 0)
+		if ((families[i].queueFlags & desired_flags) && (families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0 &&
+		    (families[i].queueFlags & undesired_flags) == 0)
 			return i;
 	}
 	return QUEUE_INDEX_MAX_VALUE;
 }
-// finds the first queue which supports only transfer (not graphics or compute). returns QUEUE_INDEX_MAX_VALUE if none is found
-uint32_t get_dedicated_transfer_queue_index(std::vector<VkQueueFamilyProperties> const& families) {
-	for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
-		if ((families[i].queueFlags & VK_QUEUE_TRANSFER_BIT) &&
-		    (families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) == 0 &&
-		    (families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) == 0)
-			return i;
-	}
-	return QUEUE_INDEX_MAX_VALUE;
-}
+
 // finds the first queue which supports presenting. returns QUEUE_INDEX_MAX_VALUE if none is found
 uint32_t get_present_queue_index(VkPhysicalDevice const phys_device,
     VkSurfaceKHR const surface,
@@ -982,8 +1003,8 @@ uint32_t get_present_queue_index(VkPhysicalDevice const phys_device,
 } // namespace detail
 
 
-PhysicalDeviceSelector::PhysicalDeviceDesc PhysicalDeviceSelector::populate_device_details(
-    VkPhysicalDevice phys_device) const {
+PhysicalDeviceSelector::PhysicalDeviceDesc PhysicalDeviceSelector::populate_device_details(VkPhysicalDevice phys_device,
+    std::vector<detail::GenericFeaturesPNextNode> const& src_extended_features_chain) const {
 	PhysicalDeviceSelector::PhysicalDeviceDesc desc{};
 	desc.phys_device = phys_device;
 	auto queue_families = detail::get_vector_noerror<VkQueueFamilyProperties>(
@@ -993,6 +1014,46 @@ PhysicalDeviceSelector::PhysicalDeviceDesc PhysicalDeviceSelector::populate_devi
 	detail::vulkan_functions().fp_vkGetPhysicalDeviceProperties(phys_device, &desc.device_properties);
 	detail::vulkan_functions().fp_vkGetPhysicalDeviceFeatures(phys_device, &desc.device_features);
 	detail::vulkan_functions().fp_vkGetPhysicalDeviceMemoryProperties(phys_device, &desc.mem_properties);
+
+#if defined(VK_API_VERSION_1_1)
+	desc.device_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+#else
+	desc.device_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+#endif
+
+	auto fill_chain = src_extended_features_chain;
+
+	if (!fill_chain.empty() &&
+	    (instance_info.version >= VK_API_VERSION_1_1 || instance_info.supports_properties2_ext)) {
+
+		detail::GenericFeaturesPNextNode* prev = nullptr;
+		for (auto& extension : fill_chain) {
+			if (prev != nullptr) {
+				prev->pNext = &extension;
+			}
+			prev = &extension;
+		}
+
+#if defined(VK_API_VERSION_1_1)
+		VkPhysicalDeviceFeatures2 local_features{};
+		local_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		local_features.pNext = &fill_chain.front();
+		if (instance_info.version >= VK_API_VERSION_1_1 && desc.device_properties.apiVersion >= VK_API_VERSION_1_1) {
+			detail::vulkan_functions().fp_vkGetPhysicalDeviceFeatures2(phys_device, &local_features);
+		} else if (instance_info.supports_properties2_ext) {
+			detail::vulkan_functions().fp_vkGetPhysicalDeviceFeatures2KHR(phys_device, &local_features);
+		}
+#else
+		VkPhysicalDeviceFeatures2KHR local_features{};
+		local_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		local_features.pNext = &fill_chain.front();
+		if (instance_info.supports_properties2_ext) {
+			detail::vulkan_functions().fp_vkGetPhysicalDeviceFeatures2KHR(phys_device, &local_features);
+		}
+#endif
+		desc.extended_features_chain = fill_chain;
+	}
+
 	return desc;
 }
 
@@ -1002,17 +1063,21 @@ PhysicalDeviceSelector::Suitable PhysicalDeviceSelector::is_device_suitable(Phys
 	if (criteria.required_version > pd.device_properties.apiVersion) return Suitable::no;
 	if (criteria.desired_version > pd.device_properties.apiVersion) suitable = Suitable::partial;
 
-	bool dedicated_compute =
-	    detail::get_dedicated_compute_queue_index(pd.queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
-	bool dedicated_transfer =
-	    detail::get_dedicated_transfer_queue_index(pd.queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	bool dedicated_compute = detail::get_dedicated_queue_index(pd.queue_families,
+	                             VK_QUEUE_COMPUTE_BIT,
+	                             VK_QUEUE_TRANSFER_BIT) != detail::QUEUE_INDEX_MAX_VALUE;
+	bool dedicated_transfer = detail::get_dedicated_queue_index(pd.queue_families,
+	                              VK_QUEUE_TRANSFER_BIT,
+	                              VK_QUEUE_COMPUTE_BIT) != detail::QUEUE_INDEX_MAX_VALUE;
 	bool separate_compute =
-	    detail::get_separate_compute_queue_index(pd.queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	    detail::get_separate_queue_index(pd.queue_families, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT) !=
+	    detail::QUEUE_INDEX_MAX_VALUE;
 	bool separate_transfer =
-	    detail::get_separate_transfer_queue_index(pd.queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	    detail::get_separate_queue_index(pd.queue_families, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_COMPUTE_BIT) !=
+	    detail::QUEUE_INDEX_MAX_VALUE;
 
 	bool present_queue =
-	    detail::get_present_queue_index(pd.phys_device, system_info.surface, pd.queue_families) !=
+	    detail::get_present_queue_index(pd.phys_device, instance_info.surface, pd.queue_families) !=
 	    detail::QUEUE_INDEX_MAX_VALUE;
 
 	if (criteria.require_dedicated_compute_queue && !dedicated_compute) return Suitable::no;
@@ -1032,22 +1097,21 @@ PhysicalDeviceSelector::Suitable PhysicalDeviceSelector::is_device_suitable(Phys
 	if (desired_extensions_supported.size() != criteria.desired_extensions.size())
 		suitable = Suitable::partial;
 
-
 	bool swapChainAdequate = false;
 	if (criteria.defer_surface_initialization) {
 		swapChainAdequate = true;
-	} else if (!system_info.headless) {
+	} else if (!instance_info.headless) {
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> present_modes;
 
 		auto formats_ret = detail::get_vector<VkSurfaceFormatKHR>(formats,
 		    detail::vulkan_functions().fp_vkGetPhysicalDeviceSurfaceFormatsKHR,
 		    pd.phys_device,
-		    system_info.surface);
+		    instance_info.surface);
 		auto present_modes_ret = detail::get_vector<VkPresentModeKHR>(present_modes,
 		    detail::vulkan_functions().fp_vkGetPhysicalDeviceSurfacePresentModesKHR,
 		    pd.phys_device,
-		    system_info.surface);
+		    instance_info.surface);
 
 		if (formats_ret == VK_SUCCESS && present_modes_ret == VK_SUCCESS) {
 			swapChainAdequate = !formats.empty() && !present_modes.empty();
@@ -1062,13 +1126,14 @@ PhysicalDeviceSelector::Suitable PhysicalDeviceSelector::is_device_suitable(Phys
 			return Suitable::no;
 	}
 
-	bool required_features_supported = detail::supports_features(pd.device_features, criteria.required_features);
+	bool required_features_supported = detail::supports_features(
+	    pd.device_features, criteria.required_features, pd.extended_features_chain, criteria.extended_features_chain);
 	if (!required_features_supported) return Suitable::no;
 
 	bool has_required_memory = false;
 	bool has_preferred_memory = false;
 	for (uint32_t i = 0; i < pd.mem_properties.memoryHeapCount; i++) {
-		if (pd.mem_properties.memoryHeaps[i].flags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
+		if (pd.mem_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
 			if (pd.mem_properties.memoryHeaps[i].size > criteria.required_mem_size) {
 				has_required_memory = true;
 			}
@@ -1084,24 +1149,39 @@ PhysicalDeviceSelector::Suitable PhysicalDeviceSelector::is_device_suitable(Phys
 }
 
 PhysicalDeviceSelector::PhysicalDeviceSelector(Instance const& instance) {
-	system_info.instance = instance.instance;
-	system_info.headless = instance.headless;
+	instance_info.instance = instance.instance;
+	instance_info.headless = instance.headless;
+	instance_info.version = instance.instance_version;
+	instance_info.supports_properties2_ext = instance.supports_properties2_ext;
 	criteria.require_present = !instance.headless;
 	criteria.required_version = instance.instance_version;
 	criteria.desired_version = instance.instance_version;
 }
 
 detail::Result<PhysicalDevice> PhysicalDeviceSelector::select() const {
-	if (!system_info.headless && !criteria.defer_surface_initialization) {
-		if (system_info.surface == VK_NULL_HANDLE)
+
+#if !defined(NDEBUG)
+	// Validation
+	for (const auto& node : criteria.extended_features_chain) {
+		assert(node.sType != static_cast<VkStructureType>(0) &&
+		       "Features struct sType must be filled with the struct's "
+		       "corresponding VkStructureType enum");
+		assert(
+		    node.sType != VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 &&
+		    "Do not pass VkPhysicalDeviceFeatures2 as a required extension feature structure. An "
+		    "instance of this is managed internally for selection criteria and device creation.");
+	}
+#endif
+
+	if (!instance_info.headless && !criteria.defer_surface_initialization) {
+		if (instance_info.surface == VK_NULL_HANDLE)
 			return detail::Result<PhysicalDevice>{ PhysicalDeviceError::no_surface_provided };
 	}
-
 
 	std::vector<VkPhysicalDevice> physical_devices;
 
 	auto physical_devices_ret = detail::get_vector<VkPhysicalDevice>(
-	    physical_devices, detail::vulkan_functions().fp_vkEnumeratePhysicalDevices, system_info.instance);
+	    physical_devices, detail::vulkan_functions().fp_vkEnumeratePhysicalDevices, instance_info.instance);
 	if (physical_devices_ret != VK_SUCCESS) {
 		return detail::Result<PhysicalDevice>{ PhysicalDeviceError::failed_enumerate_physical_devices,
 			physical_devices_ret };
@@ -1112,7 +1192,7 @@ detail::Result<PhysicalDevice> PhysicalDeviceSelector::select() const {
 
 	std::vector<PhysicalDeviceDesc> phys_device_descriptions;
 	for (auto& phys_device : physical_devices) {
-		phys_device_descriptions.push_back(populate_device_details(phys_device));
+		phys_device_descriptions.push_back(populate_device_details(phys_device, criteria.extended_features_chain));
 	}
 
 	PhysicalDeviceDesc selected_device{};
@@ -1136,12 +1216,14 @@ detail::Result<PhysicalDevice> PhysicalDeviceSelector::select() const {
 	}
 	PhysicalDevice out_device{};
 	out_device.physical_device = selected_device.phys_device;
-	out_device.surface = system_info.surface;
+	out_device.surface = instance_info.surface;
 	out_device.features = criteria.required_features;
+	out_device.extended_features_chain = criteria.extended_features_chain;
 	out_device.properties = selected_device.device_properties;
 	out_device.memory_properties = selected_device.mem_properties;
 	out_device.queue_families = selected_device.queue_families;
 	out_device.defer_surface_initialization = criteria.defer_surface_initialization;
+	out_device.instance_version = instance_info.version;
 
 	out_device.extensions_to_enable.insert(out_device.extensions_to_enable.end(),
 	    criteria.required_extensions.begin(),
@@ -1155,8 +1237,8 @@ detail::Result<PhysicalDevice> PhysicalDeviceSelector::select() const {
 }
 
 PhysicalDeviceSelector& PhysicalDeviceSelector::set_surface(VkSurfaceKHR surface) {
-	system_info.surface = surface;
-	system_info.headless = false;
+	instance_info.surface = surface;
+	instance_info.headless = false;
 	return *this;
 }
 PhysicalDeviceSelector& PhysicalDeviceSelector::prefer_gpu_device_type(PreferredDeviceType type) {
@@ -1221,10 +1303,25 @@ PhysicalDeviceSelector& PhysicalDeviceSelector::set_desired_version(uint32_t maj
 	criteria.desired_version = VK_MAKE_VERSION(major, minor, 0);
 	return *this;
 }
-PhysicalDeviceSelector& PhysicalDeviceSelector::set_required_features(VkPhysicalDeviceFeatures features) {
+PhysicalDeviceSelector& PhysicalDeviceSelector::set_required_features(VkPhysicalDeviceFeatures const& features) {
 	criteria.required_features = features;
 	return *this;
 }
+#if defined(VK_API_VERSION_1_2)
+// Just calls add_required_features
+PhysicalDeviceSelector& PhysicalDeviceSelector::set_required_features_11(
+    VkPhysicalDeviceVulkan11Features features_11) {
+	features_11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+	add_required_extension_features(features_11);
+	return *this;
+}
+PhysicalDeviceSelector& PhysicalDeviceSelector::set_required_features_12(
+    VkPhysicalDeviceVulkan12Features features_12) {
+	features_12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+	add_required_extension_features(features_12);
+	return *this;
+}
+#endif
 PhysicalDeviceSelector& PhysicalDeviceSelector::defer_surface_initialization() {
 	criteria.defer_surface_initialization = true;
 	return *this;
@@ -1235,19 +1332,27 @@ PhysicalDeviceSelector& PhysicalDeviceSelector::select_first_device_unconditiona
 }
 
 bool PhysicalDevice::has_dedicated_compute_queue() const {
-	return detail::get_dedicated_compute_queue_index(queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	return detail::get_dedicated_queue_index(queue_families, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT) !=
+	       detail::QUEUE_INDEX_MAX_VALUE;
 }
 bool PhysicalDevice::has_separate_compute_queue() const {
-	return detail::get_separate_compute_queue_index(queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	return detail::get_separate_queue_index(queue_families, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT) !=
+	       detail::QUEUE_INDEX_MAX_VALUE;
 }
 bool PhysicalDevice::has_dedicated_transfer_queue() const {
-	return detail::get_dedicated_transfer_queue_index(queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	return detail::get_dedicated_queue_index(queue_families, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_COMPUTE_BIT) !=
+	       detail::QUEUE_INDEX_MAX_VALUE;
 }
 bool PhysicalDevice::has_separate_transfer_queue() const {
-	return detail::get_separate_transfer_queue_index(queue_families) != detail::QUEUE_INDEX_MAX_VALUE;
+	return detail::get_separate_queue_index(queue_families, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_COMPUTE_BIT) !=
+	       detail::QUEUE_INDEX_MAX_VALUE;
 }
 std::vector<VkQueueFamilyProperties> PhysicalDevice::get_queue_families() const {
 	return queue_families;
+}
+
+PhysicalDevice::operator VkPhysicalDevice() const {
+	return this->physical_device;
 }
 
 // ---- Queues ---- //
@@ -1261,17 +1366,17 @@ detail::Result<uint32_t> Device::get_queue_index(QueueType type) const {
 				return detail::Result<uint32_t>{ QueueError::present_unavailable };
 			break;
 		case QueueType::graphics:
-			index = detail::get_graphics_queue_index(queue_families);
+			index = detail::get_first_queue_index(queue_families, VK_QUEUE_GRAPHICS_BIT);
 			if (index == detail::QUEUE_INDEX_MAX_VALUE)
 				return detail::Result<uint32_t>{ QueueError::graphics_unavailable };
 			break;
 		case QueueType::compute:
-			index = detail::get_separate_compute_queue_index(queue_families);
+			index = detail::get_separate_queue_index(queue_families, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT);
 			if (index == detail::QUEUE_INDEX_MAX_VALUE)
 				return detail::Result<uint32_t>{ QueueError::compute_unavailable };
 			break;
 		case QueueType::transfer:
-			index = detail::get_separate_transfer_queue_index(queue_families);
+			index = detail::get_separate_queue_index(queue_families, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_COMPUTE_BIT);
 			if (index == detail::QUEUE_INDEX_MAX_VALUE)
 				return detail::Result<uint32_t>{ QueueError::transfer_unavailable };
 			break;
@@ -1284,12 +1389,12 @@ detail::Result<uint32_t> Device::get_dedicated_queue_index(QueueType type) const
 	uint32_t index = detail::QUEUE_INDEX_MAX_VALUE;
 	switch (type) {
 		case QueueType::compute:
-			index = detail::get_dedicated_compute_queue_index(queue_families);
+			index = detail::get_dedicated_queue_index(queue_families, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT);
 			if (index == detail::QUEUE_INDEX_MAX_VALUE)
 				return detail::Result<uint32_t>{ QueueError::compute_unavailable };
 			break;
 		case QueueType::transfer:
-			index = detail::get_dedicated_transfer_queue_index(queue_families);
+			index = detail::get_dedicated_queue_index(queue_families, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_COMPUTE_BIT);
 			if (index == detail::QUEUE_INDEX_MAX_VALUE)
 				return detail::Result<uint32_t>{ QueueError::transfer_unavailable };
 			break;
@@ -1298,25 +1403,31 @@ detail::Result<uint32_t> Device::get_dedicated_queue_index(QueueType type) const
 	}
 	return index;
 }
-namespace detail {
-VkQueue get_queue(VkDevice device, uint32_t family) {
-	VkQueue out_queue;
-	detail::vulkan_functions().fp_vkGetDeviceQueue(device, family, 0, &out_queue);
-	return out_queue;
-}
-} // namespace detail
+
 detail::Result<VkQueue> Device::get_queue(QueueType type) const {
 	auto index = get_queue_index(type);
 	if (!index.has_value()) return { index.error() };
-	return detail::get_queue(device, index.value());
+	VkQueue out_queue;
+	internal_table.fp_vkGetDeviceQueue(device, index.value(), 0, &out_queue);
+	return out_queue;
 }
 detail::Result<VkQueue> Device::get_dedicated_queue(QueueType type) const {
 	auto index = get_dedicated_queue_index(type);
 	if (!index.has_value()) return { index.error() };
-	return detail::get_queue(device, index.value());
+	VkQueue out_queue;
+	internal_table.fp_vkGetDeviceQueue(device, index.value(), 0, &out_queue);
+	return out_queue;
 }
 
+// ---- Dispatch ---- //
+
+DispatchTable Device::make_table() const { return { device, fp_vkGetDeviceProcAddr }; }
+
 // ---- Device ---- //
+
+Device::operator VkDevice() const {
+	return this->device;
+}
 
 CustomQueueDescription::CustomQueueDescription(uint32_t index, uint32_t count, std::vector<float> priorities)
 : index(index), count(count), priorities(priorities) {
@@ -1324,17 +1435,10 @@ CustomQueueDescription::CustomQueueDescription(uint32_t index, uint32_t count, s
 }
 
 void destroy_device(Device device) {
-	detail::vulkan_functions().fp_vkDestroyDevice(device.device, device.allocation_callbacks);
+	device.internal_table.fp_vkDestroyDevice(device.device, device.allocation_callbacks);
 }
 
-DeviceBuilder::DeviceBuilder(PhysicalDevice phys_device) {
-	info.physical_device = phys_device;
-	info.surface = phys_device.surface;
-	info.queue_families = phys_device.queue_families;
-	info.features = phys_device.features;
-	info.extensions_to_enable = phys_device.extensions_to_enable;
-	info.defer_surface_initialization = phys_device.defer_surface_initialization;
-}
+DeviceBuilder::DeviceBuilder(PhysicalDevice phys_device) { physical_device = phys_device; }
 
 detail::Result<Device> DeviceBuilder::build() const {
 
@@ -1343,7 +1447,7 @@ detail::Result<Device> DeviceBuilder::build() const {
 	    queue_descriptions.end(), info.queue_descriptions.begin(), info.queue_descriptions.end());
 
 	if (queue_descriptions.size() == 0) {
-		for (uint32_t i = 0; i < info.queue_families.size(); i++) {
+		for (uint32_t i = 0; i < physical_device.queue_families.size(); i++) {
 			queue_descriptions.push_back(CustomQueueDescription{ i, 1, std::vector<float>{ 1.0f } });
 		}
 	}
@@ -1358,42 +1462,79 @@ detail::Result<Device> DeviceBuilder::build() const {
 		queueCreateInfos.push_back(queue_create_info);
 	}
 
-	std::vector<const char*> extensions = info.extensions_to_enable;
-	if (info.surface != VK_NULL_HANDLE || info.defer_surface_initialization)
+	std::vector<const char*> extensions = physical_device.extensions_to_enable;
+	if (physical_device.surface != VK_NULL_HANDLE || physical_device.defer_surface_initialization)
 		extensions.push_back({ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 
-	// VUID-VkDeviceCreateInfo-pNext-00373 - don't add pEnabledFeatures if the phys_dev_features_2 is present
 	bool has_phys_dev_features_2 = false;
-	for (auto& pNext_struct : info.pNext_chain) {
-		if (pNext_struct->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2) {
-			has_phys_dev_features_2 = true;
+	bool user_defined_phys_dev_features_2 = false;
+	std::vector<VkBaseOutStructure*> final_pnext_chain;
+	VkDeviceCreateInfo device_create_info = {};
+
+#if defined(VK_API_VERSION_1_1)
+	for (auto& pnext : info.pNext_chain) {
+		if (pnext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2) {
+			user_defined_phys_dev_features_2 = true;
+			break;
 		}
 	}
 
-	VkDeviceCreateInfo device_create_info = {};
+	auto physical_device_extension_features_copy = physical_device.extended_features_chain;
+	VkPhysicalDeviceFeatures2 local_features2{};
+	local_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+
+	if (!user_defined_phys_dev_features_2) {
+		if (physical_device.instance_version >= VK_MAKE_VERSION(1, 1, 0)) {
+			local_features2.features = physical_device.features;
+			final_pnext_chain.push_back(reinterpret_cast<VkBaseOutStructure*>(&local_features2));
+			has_phys_dev_features_2 = true;
+			for (auto& features_node : physical_device_extension_features_copy) {
+				final_pnext_chain.push_back(reinterpret_cast<VkBaseOutStructure*>(&features_node));
+			}
+		}
+	} else {
+		printf("User provided VkPhysicalDeviceFeatures2 instance found in pNext chain. All "
+		       "requirements added via 'add_required_extension_features' will be ignored.");
+	}
+
+	if (!user_defined_phys_dev_features_2 && !has_phys_dev_features_2) {
+		device_create_info.pEnabledFeatures = &physical_device.features;
+	}
+#endif
+
+	for (auto& pnext : info.pNext_chain) {
+		final_pnext_chain.push_back(pnext);
+	}
+
+	detail::setup_pNext_chain(device_create_info, final_pnext_chain);
+	for (auto& node : final_pnext_chain) {
+		assert(node->sType != VK_STRUCTURE_TYPE_APPLICATION_INFO);
+	}
+
 	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	detail::setup_pNext_chain(device_create_info, info.pNext_chain);
 	device_create_info.flags = info.flags;
 	device_create_info.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	device_create_info.pQueueCreateInfos = queueCreateInfos.data();
 	device_create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	device_create_info.ppEnabledExtensionNames = extensions.data();
-	if (!has_phys_dev_features_2) {
-		device_create_info.pEnabledFeatures = &info.features;
-	}
 
 	Device device;
-	VkResult res = detail::vulkan_functions().fp_vkCreateDevice(info.physical_device.physical_device,
-	    &device_create_info,
-	    info.allocation_callbacks,
-	    &device.device);
+
+	VkResult res = detail::vulkan_functions().fp_vkCreateDevice(
+	    physical_device.physical_device, &device_create_info, info.allocation_callbacks, &device.device);
 	if (res != VK_SUCCESS) {
 		return { DeviceError::failed_create_device, res };
 	}
-	device.physical_device = info.physical_device;
-	device.surface = info.surface;
-	device.queue_families = info.queue_families;
+
+	device.physical_device = physical_device;
+	device.surface = physical_device.surface;
+	device.queue_families = physical_device.queue_families;
 	device.allocation_callbacks = info.allocation_callbacks;
+	device.fp_vkGetDeviceProcAddr = detail::vulkan_functions().fp_vkGetDeviceProcAddr;
+	detail::vulkan_functions().get_device_proc_addr(
+	    device.device, device.internal_table.fp_vkGetDeviceQueue, "vkGetDeviceQueue");
+	detail::vulkan_functions().get_device_proc_addr(
+	    device.device, device.internal_table.fp_vkDestroyDevice, "vkDestroyDevice");
 	return device;
 }
 DeviceBuilder& DeviceBuilder::custom_queue_setup(std::vector<CustomQueueDescription> queue_descriptions) {
@@ -1469,14 +1610,20 @@ Result<SurfaceSupportDetails> query_surface_support_details(VkPhysicalDevice phy
 	return SurfaceSupportDetails{ capabilities, formats, present_modes };
 }
 
-VkSurfaceFormatKHR find_surface_format(std::vector<VkSurfaceFormatKHR> const& available_formats,
-    std::vector<VkSurfaceFormatKHR> const& desired_formats) {
+VkSurfaceFormatKHR find_surface_format(VkPhysicalDevice phys_device,
+    std::vector<VkSurfaceFormatKHR> const& available_formats,
+    std::vector<VkSurfaceFormatKHR> const& desired_formats,
+    VkFormatFeatureFlags feature_flags) {
 	for (auto const& desired_format : desired_formats) {
 		for (auto const& available_format : available_formats) {
 			// finds the first format that is desired and available
 			if (desired_format.format == available_format.format &&
 			    desired_format.colorSpace == available_format.colorSpace) {
-				return desired_format;
+				VkFormatProperties properties;
+				detail::vulkan_functions().fp_vkGetPhysicalDeviceFormatProperties(
+				    phys_device, desired_format.format, &properties);
+				if ((properties.optimalTilingFeatures & feature_flags) == feature_flags)
+					return desired_format;
 			}
 		}
 	}
@@ -1518,7 +1665,7 @@ VkExtent2D find_extent(VkSurfaceCapabilitiesKHR const& capabilities, uint32_t de
 
 void destroy_swapchain(Swapchain const& swapchain) {
 	if (swapchain.device != VK_NULL_HANDLE && swapchain.swapchain != VK_NULL_HANDLE) {
-		detail::vulkan_functions().fp_vkDestroySwapchainKHR(
+		swapchain.internal_table.fp_vkDestroySwapchainKHR(
 		    swapchain.device, swapchain.swapchain, swapchain.allocation_callbacks);
 	}
 }
@@ -1529,7 +1676,7 @@ SwapchainBuilder::SwapchainBuilder(Device const& device) {
 	info.surface = device.surface;
 	auto present = device.get_queue_index(QueueType::present);
 	auto graphics = device.get_queue_index(QueueType::graphics);
-	// TODO: handle error of queue's not available
+	assert(graphics.has_value() && present.has_value() && "Graphics and Present queue indexes must be valid");
 	info.graphics_queue_index = present.value();
 	info.present_queue_index = graphics.value();
 	info.allocation_callbacks = device.allocation_callbacks;
@@ -1542,7 +1689,7 @@ SwapchainBuilder::SwapchainBuilder(Device const& device, VkSurfaceKHR const surf
 	temp_device.surface = surface;
 	auto present = temp_device.get_queue_index(QueueType::present);
 	auto graphics = temp_device.get_queue_index(QueueType::graphics);
-	// TODO: handle error of queue's not available
+	assert(graphics.has_value() && present.has_value() && "Graphics and Present queue indexes must be valid");
 	info.graphics_queue_index = present.value();
 	info.present_queue_index = graphics.value();
 	info.allocation_callbacks = device.allocation_callbacks;
@@ -1561,7 +1708,7 @@ SwapchainBuilder::SwapchainBuilder(VkPhysicalDevice const physical_device,
 		auto queue_families = detail::get_vector_noerror<VkQueueFamilyProperties>(
 		    detail::vulkan_functions().fp_vkGetPhysicalDeviceQueueFamilyProperties, physical_device);
 		if (graphics_queue_index == detail::QUEUE_INDEX_MAX_VALUE)
-			info.graphics_queue_index = detail::get_graphics_queue_index(queue_families);
+			info.graphics_queue_index = detail::get_first_queue_index(queue_families, VK_QUEUE_GRAPHICS_BIT);
 		if (present_queue_index == detail::QUEUE_INDEX_MAX_VALUE)
 			info.present_queue_index = detail::get_present_queue_index(physical_device, surface, queue_families);
 	}
@@ -1586,7 +1733,8 @@ detail::Result<Swapchain> SwapchainBuilder::build() const {
 	if (surface_support.capabilities.maxImageCount > 0 && image_count > surface_support.capabilities.maxImageCount) {
 		image_count = surface_support.capabilities.maxImageCount;
 	}
-	VkSurfaceFormatKHR surface_format = detail::find_surface_format(surface_support.formats, desired_formats);
+	VkSurfaceFormatKHR surface_format = detail::find_surface_format(
+	    info.physical_device, surface_support.formats, desired_formats, info.format_feature_flags);
 
 	VkExtent2D extent =
 	    detail::find_extent(surface_support.capabilities, info.desired_width, info.desired_height);
@@ -1609,6 +1757,9 @@ detail::Result<Swapchain> SwapchainBuilder::build() const {
 	VkSwapchainCreateInfoKHR swapchain_create_info = {};
 	swapchain_create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	detail::setup_pNext_chain(swapchain_create_info, info.pNext_chain);
+	for (auto& node : info.pNext_chain) {
+		assert(node->sType != VK_STRUCTURE_TYPE_APPLICATION_INFO);
+	}
 	swapchain_create_info.flags = info.create_flags;
 	swapchain_create_info.surface = info.surface;
 	swapchain_create_info.minImageCount = image_count;
@@ -1632,14 +1783,25 @@ detail::Result<Swapchain> SwapchainBuilder::build() const {
 	swapchain_create_info.clipped = info.clipped;
 	swapchain_create_info.oldSwapchain = info.old_swapchain;
 	Swapchain swapchain{};
-	VkResult res = detail::vulkan_functions().fp_vkCreateSwapchainKHR(
+	PFN_vkCreateSwapchainKHR swapchain_create_proc;
+	detail::vulkan_functions().get_device_proc_addr(info.device, swapchain_create_proc, "vkCreateSwapchainKHR");
+	auto res = swapchain_create_proc(
 	    info.device, &swapchain_create_info, info.allocation_callbacks, &swapchain.swapchain);
+
 	if (res != VK_SUCCESS) {
 		return detail::Error{ SwapchainError::failed_create_swapchain, res };
 	}
 	swapchain.device = info.device;
 	swapchain.image_format = surface_format.format;
 	swapchain.extent = extent;
+	detail::vulkan_functions().get_device_proc_addr(
+	    info.device, swapchain.internal_table.fp_vkGetSwapchainImagesKHR, "vkGetSwapchainImagesKHR");
+	detail::vulkan_functions().get_device_proc_addr(
+	    info.device, swapchain.internal_table.fp_vkCreateImageView, "vkCreateImageView");
+	detail::vulkan_functions().get_device_proc_addr(
+	    info.device, swapchain.internal_table.fp_vkDestroyImageView, "vkDestroyImageView");
+	detail::vulkan_functions().get_device_proc_addr(
+	    info.device, swapchain.internal_table.fp_vkDestroySwapchainKHR, "vkDestroySwapchainKHR");
 	auto images = swapchain.get_images();
 	if (!images) {
 		return detail::Error{ SwapchainError::failed_get_swapchain_images };
@@ -1652,7 +1814,7 @@ detail::Result<std::vector<VkImage>> Swapchain::get_images() {
 	std::vector<VkImage> swapchain_images;
 
 	auto swapchain_images_ret = detail::get_vector<VkImage>(
-	    swapchain_images, detail::vulkan_functions().fp_vkGetSwapchainImagesKHR, device, swapchain);
+	    swapchain_images, internal_table.fp_vkGetSwapchainImagesKHR, device, swapchain);
 	if (swapchain_images_ret != VK_SUCCESS) {
 		return detail::Error{ SwapchainError::failed_get_swapchain_images, swapchain_images_ret };
 	}
@@ -1682,8 +1844,8 @@ detail::Result<std::vector<VkImageView>> Swapchain::get_image_views() {
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		VkResult res = detail::vulkan_functions().fp_vkCreateImageView(
-		    device, &createInfo, allocation_callbacks, &views[i]);
+		VkResult res =
+		    internal_table.fp_vkCreateImageView(device, &createInfo, allocation_callbacks, &views[i]);
 		if (res != VK_SUCCESS)
 			return detail::Error{ SwapchainError::failed_create_swapchain_image_views, res };
 	}
@@ -1691,8 +1853,11 @@ detail::Result<std::vector<VkImageView>> Swapchain::get_image_views() {
 }
 void Swapchain::destroy_image_views(std::vector<VkImageView> const& image_views) {
 	for (auto& image_view : image_views) {
-		detail::vulkan_functions().fp_vkDestroyImageView(device, image_view, allocation_callbacks);
+		internal_table.fp_vkDestroyImageView(device, image_view, allocation_callbacks);
 	}
+}
+Swapchain::operator VkSwapchainKHR() const {
+	return this->swapchain;
 }
 SwapchainBuilder& SwapchainBuilder::set_old_swapchain(VkSwapchainKHR old_swapchain) {
 	info.old_swapchain = old_swapchain;
@@ -1748,6 +1913,18 @@ SwapchainBuilder& SwapchainBuilder::add_image_usage_flags(VkImageUsageFlags usag
 }
 SwapchainBuilder& SwapchainBuilder::use_default_image_usage_flags() {
 	info.image_usage_flags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	return *this;
+}
+SwapchainBuilder& SwapchainBuilder::set_format_feature_flags(VkFormatFeatureFlags feature_flags) {
+	info.format_feature_flags = feature_flags;
+	return *this;
+}
+SwapchainBuilder& SwapchainBuilder::add_format_feature_flags(VkFormatFeatureFlags feature_flags) {
+	info.format_feature_flags = info.format_feature_flags | feature_flags;
+	return *this;
+}
+SwapchainBuilder& SwapchainBuilder::use_default_format_feature_flags() {
+	info.format_feature_flags = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 	return *this;
 }
 SwapchainBuilder& SwapchainBuilder::set_image_array_layer_count(uint32_t array_layer_count) {
