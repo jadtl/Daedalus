@@ -62,6 +62,10 @@ void Engine::initialize()
 
     initializePipelines();
 
+    loadMeshes();
+
+    init_scene();
+
     isInitialized = true;
 }
 
@@ -166,7 +170,7 @@ void Engine::render()
     //make a clear-color from frame number. This will flash with a 120*pi frame period.
     VkClearValue clearValue;
 
-    float fadeBlue = abs(sin(frameNumber / 25.f)) / 7.5f;
+    float fadeBlue = abs(sin(frameNumber / 50.f)) / 7.5f;
     clearValue.color = {{0.f, 0.f, fadeBlue, 1.0f}};
 
     //clear depth at 1
@@ -186,35 +190,7 @@ void Engine::render()
 
     vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    //drawing start
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline);
-
-    //make a model view matrix for rendering the object
-    //camera position
-    glm::vec3 cameraPosition = {0.f, -2.f, -15.f};
-
-    glm::mat4 view = glm::translate(glm::mat4(1.f), cameraPosition);
-    //camera projection
-    glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)(settings.windowExtent.width / settings.windowExtent.height), 0.1f, 100.0f);
-    projection[1][1] *= -1;
-    //model rotation
-    glm::mat4 model = glm::rotate(glm::mat4{1.0f}, glm::radians(frameNumber * 1.f), glm::vec3(0, 1, 0));
-
-    //calculate final mesh matrix
-    glm::mat4 meshMatrix = projection * view * model;
-
-    MeshPushConstants constants;
-    constants.renderMatrix = meshMatrix;
-
-    //upload the matrix to the GPU via pushconstants
-    vkCmdPushConstants(cmd, meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
-
-    //bind the mesh vertex buffer with offset 0
-    VkDeviceSize offset = 0;
-    vkCmdBindVertexBuffers(cmd, 0, 1, &monkeyMesh.vertexBuffer.buffer, &offset);
-
-    //we can now draw the mesh
-    vkCmdDraw(cmd, monkeyMesh.vertices.size(), 1, 0, 0);
+    draw_objects(cmd, renderables.data(), renderables.size());
 
     vkCmdEndRenderPass(cmd);
     //finalize the command buffer (we can no longer add commands, but it can now be executed)
@@ -703,8 +679,10 @@ void Engine::initializePipelines()
 
     pipelineBuilder.pipelineLayout = meshPipelineLayout;
 
-    //build the mesh triangle pipeline
+    //build the mesh pipeline
     meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
+
+    create_material(meshPipeline, meshPipelineLayout, "defaultmesh");
 
     //deleting all of the vulkan shaders
     vkDestroyShaderModule(device, meshVertexShader, nullptr);
@@ -784,10 +762,13 @@ void Engine::loadMeshes()
     triangleMesh.vertices[1].color = {0.f, 0.f, 1.f};
     triangleMesh.vertices[2].color = {0.75f, 0.75f, 1.f};
 
-    monkeyMesh.loadFromObj(shell.asset("Buddha.obj").c_str());
+    monkeyMesh.loadFromObj(shell.asset("MonkeySmooth.obj").c_str());
 
     uploadMesh(triangleMesh);
     uploadMesh(monkeyMesh);
+
+    this->meshes["triangle"] = triangleMesh;
+    this->meshes["monkey"] = monkeyMesh;
 }
 
 void Engine::uploadMesh(Mesh &mesh)
@@ -821,4 +802,113 @@ void Engine::uploadMesh(Mesh &mesh)
     memcpy(data, mesh.vertices.data(), mesh.vertices.size() * sizeof(Vertex));
 
     vmaUnmapMemory(allocator, mesh.vertexBuffer.allocation);
+}
+
+Material *Engine::create_material(VkPipeline pipeline, VkPipelineLayout layout, const std::string &name)
+{
+    Material mat;
+    mat.pipeline = pipeline;
+    mat.pipelineLayout = layout;
+    this->materials[name] = mat;
+    return &this->materials[name];
+}
+
+Material *Engine::get_material(const std::string &name)
+{
+    //search for the object, and return nullptr if not found
+    auto it = this->materials.find(name);
+    if (it == this->materials.end())
+    {
+        return nullptr;
+    }
+    else
+    {
+        return &(*it).second;
+    }
+}
+
+Mesh *Engine::get_mesh(const std::string &name)
+{
+    auto it = this->meshes.find(name);
+    if (it == this->meshes.end())
+    {
+        return nullptr;
+    }
+    else
+    {
+        return &(*it).second;
+    }
+}
+
+void Engine::draw_objects(VkCommandBuffer cmd, RenderObject *first, int count)
+{
+    //make a model view matrix for rendering the object
+    //camera view
+    glm::vec3 camPos = {0.f, -6.f, -10.f};
+
+    glm::mat4 view = glm::translate(glm::mat4(1.f), camPos);
+    //camera projection
+    glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
+    projection[1][1] *= -1;
+
+    Mesh *lastMesh = nullptr;
+    Material *lastMaterial = nullptr;
+    for (int i = 0; i < count; i++)
+    {
+        RenderObject &object = first[i];
+
+        //only bind the pipeline if it doesn't match with the already bound one
+        if (object.material != lastMaterial)
+        {
+
+            vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, object.material->pipeline);
+            lastMaterial = object.material;
+        }
+
+        glm::mat4 model = object.transformMatrix;
+        //final render matrix, that we are calculating on the cpu
+        glm::mat4 mesh_matrix = projection * view * model;
+
+        MeshPushConstants constants;
+        constants.renderMatrix = mesh_matrix;
+
+        //upload the mesh to the GPU via push constants
+        vkCmdPushConstants(cmd, object.material->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+
+        //only bind the mesh if it's a different one from last bind
+        if (object.mesh != lastMesh)
+        {
+            //bind the mesh vertex buffer with offset 0
+            VkDeviceSize offset = 0;
+            vkCmdBindVertexBuffers(cmd, 0, 1, &object.mesh->vertexBuffer.buffer, &offset);
+            lastMesh = object.mesh;
+        }
+        //we can now draw
+        vkCmdDraw(cmd, object.mesh->vertices.size(), 1, 0, 0);
+    }
+}
+
+void Engine::init_scene()
+{
+    RenderObject monkey;
+    monkey.mesh = get_mesh("monkey");
+    monkey.material = get_material("defaultmesh");
+    monkey.transformMatrix = glm::mat4{1.0f};
+
+    this->renderables.push_back(monkey);
+
+    for (int x = -20; x <= 20; x++)
+    {
+        for (int y = -20; y <= 20; y++)
+        {
+            RenderObject tri;
+            tri.mesh = get_mesh("triangle");
+            tri.material = get_material("defaultmesh");
+            glm::mat4 translation = glm::translate(glm::mat4{1.0}, glm::vec3(x, 0, y));
+            glm::mat4 scale = glm::scale(glm::mat4{1.0}, glm::vec3(0.2, 0.2, 0.2));
+            tri.transformMatrix = translation * scale;
+
+            this->renderables.push_back(tri);
+        }
+    }
 }

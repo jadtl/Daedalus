@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <unordered_map>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -13,6 +14,21 @@
 #include "Shell.h"
 #include "Types.h"
 #include "Mesh.h"
+
+struct Material
+{
+    VkPipeline pipeline;
+    VkPipelineLayout pipelineLayout;
+};
+
+struct RenderObject
+{
+    Mesh *mesh;
+
+    Material *material;
+
+    glm::mat4 transformMatrix;
+};
 
 struct MeshPushConstants
 {
@@ -101,7 +117,21 @@ public:
 
     DeletionQueue mainDeletionQueue;
 
+    std::vector<RenderObject> renderables;
+
+    std::unordered_map<std::string, Material> materials;
+    std::unordered_map<std::string, Mesh> meshes;
+
+    Material *create_material(VkPipeline pipeline, VkPipelineLayout layout, const std::string &name);
+
+    Material *get_material(const std::string &name);
+
+    Mesh *get_mesh(const std::string &name);
+
+    void draw_objects(VkCommandBuffer cmd, RenderObject *first, int count);
+
     bool isInitialized{false};
+
     int frameNumber{0};
 
     struct Settings
@@ -154,6 +184,7 @@ private:
 
     bool loadShaderModule(const char *filePath, VkShaderModule *shaderModule);
     void loadMeshes();
+    void init_scene();
 
     void uploadMesh(Mesh &mesh);
 };
