@@ -11,7 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "shell.h"
+#include "core/shell.h"
+
 #include "renderer/types.h"
 #include "renderer/mesh.h"
 

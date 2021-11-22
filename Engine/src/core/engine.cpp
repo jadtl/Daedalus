@@ -2,6 +2,7 @@
 
 #define VMA_IMPLEMENTATION
 #include "memory/allocator.h"
+
 #include "renderer/types.h"
 #include "renderer/init.h"
 #include "renderer/bootstrap.h"

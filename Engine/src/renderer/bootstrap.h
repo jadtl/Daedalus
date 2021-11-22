@@ -25,7 +25,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "bootstrap_dispatch.h"
+#include "renderer/bootstrap_dispatch.h"
 
 namespace vkb
 {

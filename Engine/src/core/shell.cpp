@@ -1,4 +1,4 @@
-#include "Shell.h"
+#include "core/shell.h"
 
 Shell::Shell(std::string pathFromExecutable)
 {
