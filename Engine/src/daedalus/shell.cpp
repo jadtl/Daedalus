@@ -1,4 +1,4 @@
-#include "core/shell.h"
+#include "daedalus/shell.h"
 
 Shell::Shell(std::string pathFromExecutable)
 {

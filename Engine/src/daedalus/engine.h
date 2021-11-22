@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "core/shell.h"
+#include "daedalus/shell.h"
 
 #include "renderer/types.h"
 #include "renderer/mesh.h"
