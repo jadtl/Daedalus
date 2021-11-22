@@ -1,11 +1,11 @@
-#include "Engine.h"
+#include "engine.h"
 
 #define VMA_IMPLEMENTATION
-#include "MemoryAllocator.h"
-#include "Types.h"
-#include "Initializers.h"
-#include "VkBootstrap.h"
-#include "Pipeline.h"
+#include "memory/allocator.h"
+#include "renderer/types.h"
+#include "renderer/init.h"
+#include "renderer/bootstrap.h"
+#include "renderer/pipeline.h"
 
 #include <algorithm>
 #include <iostream>
@@ -23,7 +23,7 @@
         }                                                                 \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args) : shell("../")
+Engine::Engine(const std::vector<std::string> &args) : shell("../../")
 {
     settings.selectedShader = 0;
 

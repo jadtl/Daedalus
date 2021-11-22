@@ -1,11 +1,12 @@
-#include "Mesh.h"
+#include "renderer/mesh.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "OBJLoader.h"
+#include "renderer/tiny_obj_loader.h"
 
 #include <iostream>
 
-VertexInputDescription Vertex::getVertexDescription() {
+VertexInputDescription Vertex::getVertexDescription()
+{
     VertexInputDescription description;
 
     //we will have just 1 vertex buffer binding, with a per-vertex rate
@@ -23,7 +24,7 @@ VertexInputDescription Vertex::getVertexDescription() {
     positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
     positionAttribute.offset = offsetof(Vertex, position);
 
-     //Normal will be stored at Location 1
+    //Normal will be stored at Location 1
     VkVertexInputAttributeDescription normalAttribute = {};
     normalAttribute.binding = 0;
     normalAttribute.location = 1;
@@ -40,11 +41,12 @@ VertexInputDescription Vertex::getVertexDescription() {
     description.attributes.push_back(positionAttribute);
     description.attributes.push_back(normalAttribute);
     description.attributes.push_back(colorAttribute);
-    
+
     return description;
 }
 
-bool Mesh::loadFromObj(const char *fileName) {
+bool Mesh::loadFromObj(const char *fileName)
+{
     //attrib will contain the vertex arrays of the file
     tinyobj::attrib_t attrib;
     //shapes contains the info for each separate object in the file
@@ -59,27 +61,32 @@ bool Mesh::loadFromObj(const char *fileName) {
     //load the OBJ file
     tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fileName, nullptr);
     //make sure to output the warnings to the console, in case there are issues with the file
-    if (!warn.empty()) {
+    if (!warn.empty())
+    {
         std::cout << "OBJ Loader Warning: " << warn << std::endl;
     }
     //if we have any error, print it to the console, and break the mesh loading.
     //This happens if the file can't be found or is malformed
-    if (!err.empty()) {
+    if (!err.empty())
+    {
         std::cerr << err << std::endl;
         return false;
     }
-    
+
     // Loop over shapes
-    for (size_t s = 0; s < shapes.size(); s++) {
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
         // Loop over faces(polygon)
         size_t index_offset = 0;
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        {
 
             //hardcode loading to triangles
             int fv = 3;
 
             // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++) {
+            for (size_t v = 0; v < fv; v++)
+            {
                 // access to vertex
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
@@ -91,7 +98,7 @@ bool Mesh::loadFromObj(const char *fileName) {
                 tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
                 tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
                 tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
-                
+
                 //copy it into our vertex
                 Vertex new_vert;
                 new_vert.position.x = vx;
@@ -105,7 +112,6 @@ bool Mesh::loadFromObj(const char *fileName) {
                 //we are setting the vertex color as the vertex normal. This is just for display purposes
                 new_vert.color = new_vert.normal;
 
-                
                 vertices.push_back(new_vert);
             }
             index_offset += fv;

@@ -1,6 +1,7 @@
-#include "Initializers.h"
+#include "renderer/init.h"
 
-VkCommandPoolCreateInfo init::commandPoolCreateInfo(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags) {
+VkCommandPoolCreateInfo init::commandPoolCreateInfo(uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags)
+{
     VkCommandPoolCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     info.pNext = nullptr;
@@ -10,7 +11,8 @@ VkCommandPoolCreateInfo init::commandPoolCreateInfo(uint32_t queueFamilyIndex, V
     return info;
 }
 
-VkCommandBufferAllocateInfo init::commandBufferAllocateInfo(VkCommandPool pool, uint32_t count, VkCommandBufferLevel level) {
+VkCommandBufferAllocateInfo init::commandBufferAllocateInfo(VkCommandPool pool, uint32_t count, VkCommandBufferLevel level)
+{
     VkCommandBufferAllocateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     info.pNext = nullptr;
@@ -21,7 +23,8 @@ VkCommandBufferAllocateInfo init::commandBufferAllocateInfo(VkCommandPool pool, 
     return info;
 }
 
-VkPipelineShaderStageCreateInfo init::pipelineShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule) {
+VkPipelineShaderStageCreateInfo init::pipelineShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule)
+{
     VkPipelineShaderStageCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     info.pNext = nullptr;
@@ -35,7 +38,8 @@ VkPipelineShaderStageCreateInfo init::pipelineShaderStageCreateInfo(VkShaderStag
     return info;
 }
 
-VkPipelineVertexInputStateCreateInfo init::vertexInputStateCreateInfo() {
+VkPipelineVertexInputStateCreateInfo init::vertexInputStateCreateInfo()
+{
     VkPipelineVertexInputStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     info.pNext = nullptr;
@@ -46,7 +50,8 @@ VkPipelineVertexInputStateCreateInfo init::vertexInputStateCreateInfo() {
     return info;
 }
 
-VkPipelineInputAssemblyStateCreateInfo init::inputAssemblyCreateInfo(VkPrimitiveTopology topology) {
+VkPipelineInputAssemblyStateCreateInfo init::inputAssemblyCreateInfo(VkPrimitiveTopology topology)
+{
     VkPipelineInputAssemblyStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     info.pNext = nullptr;
@@ -57,7 +62,8 @@ VkPipelineInputAssemblyStateCreateInfo init::inputAssemblyCreateInfo(VkPrimitive
     return info;
 }
 
-VkPipelineRasterizationStateCreateInfo init::rasterizationStateCreateInfo(VkPolygonMode polygonMode) {
+VkPipelineRasterizationStateCreateInfo init::rasterizationStateCreateInfo(VkPolygonMode polygonMode)
+{
     VkPipelineRasterizationStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     info.pNext = nullptr;
@@ -80,7 +86,8 @@ VkPipelineRasterizationStateCreateInfo init::rasterizationStateCreateInfo(VkPoly
     return info;
 }
 
-VkPipelineMultisampleStateCreateInfo init::multisamplingStateCreateInfo() {
+VkPipelineMultisampleStateCreateInfo init::multisamplingStateCreateInfo()
+{
     VkPipelineMultisampleStateCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     info.pNext = nullptr;
@@ -95,15 +102,17 @@ VkPipelineMultisampleStateCreateInfo init::multisamplingStateCreateInfo() {
     return info;
 }
 
-VkPipelineColorBlendAttachmentState init::colorBlendAttachmentState() {
+VkPipelineColorBlendAttachmentState init::colorBlendAttachmentState()
+{
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+                                          VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
     return colorBlendAttachment;
 }
 
-VkPipelineLayoutCreateInfo init::pipelineLayoutCreateInfo() {
+VkPipelineLayoutCreateInfo init::pipelineLayoutCreateInfo()
+{
     VkPipelineLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     info.pNext = nullptr;
@@ -117,7 +126,8 @@ VkPipelineLayoutCreateInfo init::pipelineLayoutCreateInfo() {
     return info;
 }
 
-VkImageCreateInfo init::imageCreateInfo(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent) {
+VkImageCreateInfo init::imageCreateInfo(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent)
+{
     VkImageCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     info.pNext = nullptr;
@@ -136,7 +146,8 @@ VkImageCreateInfo init::imageCreateInfo(VkFormat format, VkImageUsageFlags usage
     return info;
 }
 
-VkImageViewCreateInfo init::imageViewCreateInfo(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags) {
+VkImageViewCreateInfo init::imageViewCreateInfo(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags)
+{
     //build a image-view for the depth image to use for rendering
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -154,7 +165,8 @@ VkImageViewCreateInfo init::imageViewCreateInfo(VkFormat format, VkImage image, 
     return info;
 }
 
-VkPipelineDepthStencilStateCreateInfo init::depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp) {
+VkPipelineDepthStencilStateCreateInfo init::depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp)
+{
     VkPipelineDepthStencilStateCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     info.pNext = nullptr;
@@ -170,7 +182,8 @@ VkPipelineDepthStencilStateCreateInfo init::depthStencilCreateInfo(bool bDepthTe
     return info;
 }
 
-VkSubmitInfo init::submitInfo(VkCommandBuffer* cmd) {
+VkSubmitInfo init::submitInfo(VkCommandBuffer *cmd)
+{
     VkSubmitInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     info.pNext = nullptr;
@@ -186,7 +199,8 @@ VkSubmitInfo init::submitInfo(VkCommandBuffer* cmd) {
     return info;
 }
 
-VkPresentInfoKHR init::presentInfo() {
+VkPresentInfoKHR init::presentInfo()
+{
     VkPresentInfoKHR info = {};
     info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     info.pNext = nullptr;
@@ -200,7 +214,8 @@ VkPresentInfoKHR init::presentInfo() {
     return info;
 }
 
-VkRenderPassBeginInfo init::renderPassBeginInfo(VkRenderPass renderPass, VkExtent2D windowExtent, VkFramebuffer framebuffer) {
+VkRenderPassBeginInfo init::renderPassBeginInfo(VkRenderPass renderPass, VkExtent2D windowExtent, VkFramebuffer framebuffer)
+{
     VkRenderPassBeginInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     info.pNext = nullptr;

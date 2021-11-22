@@ -11,9 +11,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "Shell.h"
-#include "Types.h"
-#include "Mesh.h"
+#include "shell.h"
+#include "renderer/types.h"
+#include "renderer/mesh.h"
 
 struct Material
 {

@@ -2,14 +2,16 @@
 
 #include <vulkan/vulkan.h>
 
-#include "MemoryAllocator.h"
+#include "memory/allocator.h"
 
-struct AllocatedBuffer {
+struct AllocatedBuffer
+{
     VkBuffer buffer;
     VmaAllocation allocation;
 };
 
-struct AllocatedImage {
+struct AllocatedImage
+{
     VkImage image;
     VmaAllocation allocation;
 };
