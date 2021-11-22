@@ -42,3 +42,9 @@ add_custom_target(
 )
 
 add_dependencies(${TESTBED} Shaders)
+
+add_custom_command(TARGET ${TESTBED} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_BINARY_DIR}/Shaders"
+        "${PROJECT_BINARY_DIR}/../Shaders"
+)
