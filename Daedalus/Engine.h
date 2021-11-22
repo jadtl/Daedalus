@@ -18,7 +18,7 @@
 struct Material
 {
     VkPipeline pipeline;
-    VkPipelineLayout pipelineLayout;
+    VkPipelineLayout pipeline_layout;
 };
 
 struct RenderObject
@@ -27,13 +27,13 @@ struct RenderObject
 
     Material *material;
 
-    glm::mat4 transformMatrix;
+    glm::mat4 transform_matrix;
 };
 
 struct MeshPushConstants
 {
     glm::vec4 data;
-    glm::mat4 renderMatrix;
+    glm::mat4 render_matrix;
 };
 
 struct DeletionQueue
@@ -62,7 +62,7 @@ public:
     Engine(const Engine &engine) = delete;
     Engine &operator=(const Engine &engine) = delete;
 
-    Engine(const std::vector<std::string> &args, void *caMetalLayer);
+    Engine(const std::vector<std::string> &args);
     ~Engine();
 
     GLFWwindow *window;
@@ -70,52 +70,52 @@ public:
     Shell shell;
 
     VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkPhysicalDevice physicalDevice;
+    VkDebugUtilsMessengerEXT debug_messenger;
+    VkPhysicalDevice physical_device;
     VkDevice device;
     VkSurfaceKHR surface;
 
     VkSwapchainKHR swapchain;
-    VkFormat swapchainImageFormat;
-    std::vector<VkImage> swapchainImages;
-    std::vector<VkImageView> swapchainImageViews;
+    VkFormat swapchain_image_format;
+    std::vector<VkImage> swapchain_images;
+    std::vector<VkImageView> swapchain_image_views;
 
-    VkQueue graphicsQueue;
-    uint32_t graphicsQueueFamily;
+    VkQueue graphics_queue;
+    uint32_t graphics_queue_family;
 
-    VkCommandPool commandPool;
-    VkCommandBuffer mainCommandBuffer;
+    VkCommandPool command_pool;
+    VkCommandBuffer main_command_buffer;
 
-    VkRenderPass renderPass;
+    VkRenderPass render_pass;
 
     std::vector<VkFramebuffer> framebuffers;
 
-    VkSemaphore presentSemaphore, renderSemaphore;
-    VkFence renderFence;
+    VkSemaphore present_semaphore, render_semaphore;
+    VkFence render_fence;
 
-    VkPipelineLayout pipelineLayout;
-    VkPipeline trianglePipeline;
-    VkPipeline coloredTrianglePipeline;
+    VkPipelineLayout pipeline_layout;
+    VkPipeline triangle_pipeline;
+    VkPipeline colored_triangle_pipeline;
 
-    VkShaderModule coloredTriangleFragShader;
-    VkShaderModule coloredTriangleVertexShader;
-    VkShaderModule triangleFragShader;
-    VkShaderModule triangleVertexShader;
-    VkShaderModule meshVertexShader;
+    VkShaderModule colored_triangle_frag_shader;
+    VkShaderModule colored_triangle_vertex_shader;
+    VkShaderModule triangle_frag_shader;
+    VkShaderModule triangle_vertex_shader;
+    VkShaderModule mesh_vertex_shader;
 
     VmaAllocator allocator;
 
-    VkPipeline meshPipeline;
-    VkPipelineLayout meshPipelineLayout;
-    Mesh triangleMesh;
-    Mesh monkeyMesh;
+    VkPipeline mesh_pipeline;
+    VkPipelineLayout mesh_pipeline_layout;
+    Mesh triangle_mesh;
+    Mesh monkey_mesh;
 
-    VkImageView depthImageView;
-    AllocatedImage depthImage;
+    VkImageView depth_image_view;
+    AllocatedImage depth_image;
 
-    VkFormat depthFormat;
+    VkFormat depth_format;
 
-    DeletionQueue mainDeletionQueue;
+    DeletionQueue main_deletion_queue;
 
     std::vector<RenderObject> renderables;
 
@@ -165,8 +165,6 @@ public:
     void render();
 
 private:
-    void *caMetalLayer;
-
     void initializeWindow();
 
     void initializeVulkan();

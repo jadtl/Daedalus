@@ -23,7 +23,7 @@
         }                                                                 \
     } while (0)
 
-Engine::Engine(const std::vector<std::string> &args, void *caMetalLayer) : caMetalLayer(caMetalLayer), shell("../")
+Engine::Engine(const std::vector<std::string> &args) : shell("../")
 {
     settings.selectedShader = 0;
 
@@ -76,16 +76,16 @@ void Engine::terminate()
         terminateSwapchain();
 
         // Terminate sync objects
-        vkDestroySemaphore(device, presentSemaphore, nullptr);
-        vkDestroySemaphore(device, renderSemaphore, nullptr);
-        vkDestroyFence(device, renderFence, nullptr);
+        vkDestroySemaphore(device, present_semaphore, nullptr);
+        vkDestroySemaphore(device, render_semaphore, nullptr);
+        vkDestroyFence(device, render_fence, nullptr);
 
-        vkDestroyCommandPool(device, commandPool, nullptr);
+        vkDestroyCommandPool(device, command_pool, nullptr);
 
         vkDestroyDevice(device, nullptr);
 
         if (settings.validate)
-            vkb::destroy_debug_utils_messenger(instance, debugMessenger);
+            vkb::destroy_debug_utils_messenger(instance, debug_messenger);
 
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
@@ -99,16 +99,16 @@ void Engine::terminateSwapchain()
     std::for_each(framebuffers.begin(), framebuffers.end(), [device = device](VkFramebuffer framebuffer)
                   { vkDestroyFramebuffer(device, framebuffer, nullptr); });
 
-    vkFreeCommandBuffers(device, commandPool, 1, &mainCommandBuffer);
+    vkFreeCommandBuffers(device, command_pool, 1, &main_command_buffer);
 
-    vkDestroyPipeline(device, trianglePipeline, nullptr);
-    vkDestroyPipeline(device, coloredTrianglePipeline, nullptr);
-    vkDestroyPipeline(device, meshPipeline, nullptr);
+    vkDestroyPipeline(device, triangle_pipeline, nullptr);
+    vkDestroyPipeline(device, colored_triangle_pipeline, nullptr);
+    vkDestroyPipeline(device, mesh_pipeline, nullptr);
 
-    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(device, renderPass, nullptr);
+    vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
+    vkDestroyRenderPass(device, render_pass, nullptr);
 
-    std::for_each(swapchainImageViews.begin(), swapchainImageViews.end(), [device = device](VkImageView imageView)
+    std::for_each(swapchain_image_views.begin(), swapchain_image_views.end(), [device = device](VkImageView imageView)
                   { vkDestroyImageView(device, imageView, nullptr); });
 
     vkDestroySwapchainKHR(device, swapchain, nullptr);
@@ -135,12 +135,12 @@ void Engine::update()
 void Engine::render()
 {
     //wait until the GPU has finished rendering the last frame. Timeout of 1 second
-    VK_CHECK(vkWaitForFences(device, 1, &renderFence, VK_TRUE, 1000000000));
-    VK_CHECK(vkResetFences(device, 1, &renderFence));
+    VK_CHECK(vkWaitForFences(device, 1, &render_fence, VK_TRUE, 1000000000));
+    VK_CHECK(vkResetFences(device, 1, &render_fence));
 
     //request image from the swapchain, one second timeout
     uint32_t swapchainImageIndex;
-    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, presentSemaphore, nullptr, &swapchainImageIndex);
+    VkResult swapchainStatus = vkAcquireNextImageKHR(device, swapchain, 1000000000, present_semaphore, nullptr, &swapchainImageIndex);
     if (swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR)
     {
         updateSwapchain();
@@ -152,10 +152,10 @@ void Engine::render()
     }
 
     //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
-    VK_CHECK(vkResetCommandBuffer(mainCommandBuffer, 0));
+    VK_CHECK(vkResetCommandBuffer(main_command_buffer, 0));
 
     //naming it cmd for shorter writing
-    VkCommandBuffer cmd = mainCommandBuffer;
+    VkCommandBuffer cmd = main_command_buffer;
 
     //begin the command buffer recording. We will use this command buffer exactly once, so we want to let Vulkan know that
     VkCommandBufferBeginInfo commandBufferBeginInfo = {};
@@ -179,7 +179,7 @@ void Engine::render()
 
     //start the main renderpass.
     //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
-    VkRenderPassBeginInfo renderPassInfo = init::renderPassBeginInfo(renderPass, settings.windowExtent, framebuffers[swapchainImageIndex]);
+    VkRenderPassBeginInfo renderPassInfo = init::renderPassBeginInfo(render_pass, settings.windowExtent, framebuffers[swapchainImageIndex]);
 
     //connect clear values
     renderPassInfo.clearValueCount = 2;
@@ -209,17 +209,17 @@ void Engine::render()
     submit.pWaitDstStageMask = &waitStage;
 
     submit.waitSemaphoreCount = 1;
-    submit.pWaitSemaphores = &presentSemaphore;
+    submit.pWaitSemaphores = &present_semaphore;
 
     submit.signalSemaphoreCount = 1;
-    submit.pSignalSemaphores = &renderSemaphore;
+    submit.pSignalSemaphores = &render_semaphore;
 
     submit.commandBufferCount = 1;
     submit.pCommandBuffers = &cmd;
 
     //submit command buffer to the queue and execute it.
     // _renderFence will now block until the graphic commands finish execution
-    VK_CHECK(vkQueueSubmit(graphicsQueue, 1, &submit, renderFence));
+    VK_CHECK(vkQueueSubmit(graphics_queue, 1, &submit, render_fence));
 
     // this will put the image we just rendered into the visible window.
     // we want to wait on the _renderSemaphore for that,
@@ -231,12 +231,12 @@ void Engine::render()
     presentInfo.pSwapchains = &swapchain;
     presentInfo.swapchainCount = 1;
 
-    presentInfo.pWaitSemaphores = &renderSemaphore;
+    presentInfo.pWaitSemaphores = &render_semaphore;
     presentInfo.waitSemaphoreCount = 1;
 
     presentInfo.pImageIndices = &swapchainImageIndex;
 
-    swapchainStatus = vkQueuePresentKHR(graphicsQueue, &presentInfo);
+    swapchainStatus = vkQueuePresentKHR(graphics_queue, &presentInfo);
     if (swapchainStatus == VK_SUBOPTIMAL_KHR || swapchainStatus == VK_ERROR_OUT_OF_DATE_KHR)
     {
         updateSwapchain();
@@ -306,7 +306,7 @@ void Engine::initializeVulkan()
     vkb::Instance vkbInstance = instanceBuilder.value();
 
     this->instance = vkbInstance.instance;
-    this->debugMessenger = vkbInstance.debug_messenger;
+    this->debug_messenger = vkbInstance.debug_messenger;
 
     // Surface creation
     if (glfwCreateWindowSurface(this->instance, this->window, nullptr, &this->surface))
@@ -330,13 +330,13 @@ void Engine::initializeVulkan()
     vkb::Device vkbDevice = deviceBuilder.build().value();
 
     this->device = vkbDevice.device;
-    this->physicalDevice = physicalDevice.value().physical_device;
+    this->physical_device = physicalDevice.value().physical_device;
 
-    graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
-    graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
+    graphics_queue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+    graphics_queue_family = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
 
     VmaAllocatorCreateInfo info{};
-    info.physicalDevice = this->physicalDevice;
+    info.physicalDevice = this->physical_device;
     info.device = this->device;
     info.instance = this->instance;
     vmaCreateAllocator(&info, &this->allocator);
@@ -346,7 +346,7 @@ void Engine::initializeVulkan()
 
 void Engine::initializeSwapchain()
 {
-    vkb::SwapchainBuilder swapchainBuilder{physicalDevice, device, surface};
+    vkb::SwapchainBuilder swapchainBuilder{physical_device, device, surface};
 
     vkb::Swapchain vkbSwapchain = swapchainBuilder
                                       .use_default_format_selection()
@@ -355,10 +355,10 @@ void Engine::initializeSwapchain()
                                       .value();
 
     swapchain = vkbSwapchain.swapchain;
-    swapchainImages = vkbSwapchain.get_images().value();
-    swapchainImageViews = vkbSwapchain.get_image_views().value();
+    swapchain_images = vkbSwapchain.get_images().value();
+    swapchain_image_views = vkbSwapchain.get_image_views().value();
     settings.windowExtent = vkbSwapchain.extent;
-    swapchainImageFormat = vkbSwapchain.image_format;
+    swapchain_image_format = vkbSwapchain.image_format;
 
     //depth image size will match the window
     VkExtent3D depthImageExtent = {
@@ -367,10 +367,10 @@ void Engine::initializeSwapchain()
         1};
 
     //hardcoding the depth format to 32 bit float
-    depthFormat = VK_FORMAT_D32_SFLOAT;
+    depth_format = VK_FORMAT_D32_SFLOAT;
 
     //the depth image will be an image with the format we selected and Depth Attachment usage flag
-    VkImageCreateInfo dimg_info = init::imageCreateInfo(depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
+    VkImageCreateInfo dimg_info = init::imageCreateInfo(depth_format, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depthImageExtent);
 
     //for the depth image, we want to allocate it from GPU local memory
     VmaAllocationCreateInfo dimg_allocinfo = {};
@@ -378,30 +378,30 @@ void Engine::initializeSwapchain()
     dimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     //allocate and create the image
-    vmaCreateImage(allocator, &dimg_info, &dimg_allocinfo, &depthImage.image, &depthImage.allocation, nullptr);
+    vmaCreateImage(allocator, &dimg_info, &dimg_allocinfo, &depth_image.image, &depth_image.allocation, nullptr);
 
     //build an image-view for the depth image to use for rendering
-    VkImageViewCreateInfo dview_info = init::imageViewCreateInfo(depthFormat, depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
+    VkImageViewCreateInfo dview_info = init::imageViewCreateInfo(depth_format, depth_image.image, VK_IMAGE_ASPECT_DEPTH_BIT);
 
-    VK_CHECK(vkCreateImageView(device, &dview_info, nullptr, &depthImageView));
+    VK_CHECK(vkCreateImageView(device, &dview_info, nullptr, &depth_image_view));
 
     //add to deletion queues
-    mainDeletionQueue.push_function([=]()
-                                    {
-                                        vkDestroyImageView(device, depthImageView, nullptr);
-                                        vmaDestroyImage(allocator, depthImage.image, depthImage.allocation);
-                                    });
+    main_deletion_queue.push_function([=]()
+                                      {
+                                          vkDestroyImageView(device, depth_image_view, nullptr);
+                                          vmaDestroyImage(allocator, depth_image.image, depth_image.allocation);
+                                      });
 }
 
 void Engine::initializeCommands()
 {
-    VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphicsQueueFamily, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    VkCommandPoolCreateInfo commandPoolInfo = init::commandPoolCreateInfo(graphics_queue_family, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &commandPool));
+    VK_CHECK(vkCreateCommandPool(device, &commandPoolInfo, nullptr, &command_pool));
 
-    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(commandPool, 1);
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = init::commandBufferAllocateInfo(command_pool, 1);
 
-    VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &mainCommandBuffer));
+    VK_CHECK(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &main_command_buffer));
 }
 
 void Engine::initializeDefaultRenderPass()
@@ -409,7 +409,7 @@ void Engine::initializeDefaultRenderPass()
     // the renderpass will use this color attachment.
     VkAttachmentDescription colorAttachment = {};
     //the attachment will have the format needed by the swapchain
-    colorAttachment.format = swapchainImageFormat;
+    colorAttachment.format = swapchain_image_format;
     //1 sample, we won't be doing MSAA
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     // we Clear when this attachment is loaded
@@ -434,7 +434,7 @@ void Engine::initializeDefaultRenderPass()
     VkAttachmentDescription depthAttachment = {};
     // Depth attachment
     depthAttachment.flags = 0;
-    depthAttachment.format = depthFormat;
+    depthAttachment.format = depth_format;
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -468,7 +468,7 @@ void Engine::initializeDefaultRenderPass()
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
 
-    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
+    VK_CHECK(vkCreateRenderPass(device, &renderPassInfo, nullptr, &render_pass));
 }
 
 void Engine::initializeFramebuffers()
@@ -478,21 +478,21 @@ void Engine::initializeFramebuffers()
     framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferCreateInfo.pNext = nullptr;
 
-    framebufferCreateInfo.renderPass = renderPass;
+    framebufferCreateInfo.renderPass = render_pass;
     framebufferCreateInfo.width = settings.windowExtent.width;
     framebufferCreateInfo.height = settings.windowExtent.height;
     framebufferCreateInfo.layers = 1;
 
     //grab how many images we have in the swapchain
-    const uint32_t swapchainImagecount = swapchainImages.size();
+    const uint32_t swapchainImagecount = swapchain_images.size();
     framebuffers = std::vector<VkFramebuffer>(swapchainImagecount);
 
     //create framebuffers for each of the swapchain image views
     for (int i = 0; i < swapchainImagecount; i++)
     {
         VkImageView attachments[2];
-        attachments[0] = swapchainImageViews[i];
-        attachments[1] = depthImageView;
+        attachments[0] = swapchain_image_views[i];
+        attachments[1] = depth_image_view;
 
         framebufferCreateInfo.pAttachments = attachments;
         framebufferCreateInfo.attachmentCount = 2;
@@ -512,7 +512,7 @@ void Engine::initializeSyncStructures()
     //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
     fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &renderFence));
+    VK_CHECK(vkCreateFence(device, &fenceCreateInfo, nullptr, &render_fence));
 
     //for the semaphores we don't need any flags
     VkSemaphoreCreateInfo semaphoreCreateInfo = {};
@@ -520,13 +520,13 @@ void Engine::initializeSyncStructures()
     semaphoreCreateInfo.pNext = nullptr;
     semaphoreCreateInfo.flags = 0;
 
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentSemaphore));
-    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &renderSemaphore));
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &present_semaphore));
+    VK_CHECK(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &render_semaphore));
 }
 
 void Engine::initializePipelines()
 {
-    if (!loadShaderModule(shell.shader("ColoredTriangle.frag.spv").c_str(), &coloredTriangleFragShader))
+    if (!loadShaderModule(shell.shader("ColoredTriangle.frag.spv").c_str(), &colored_triangle_frag_shader))
     {
         std::cout << "Error when building the triangle fragment shader module"
                   << "\n";
@@ -537,7 +537,7 @@ void Engine::initializePipelines()
                   << "\n";
     }
 
-    if (!loadShaderModule(shell.shader("ColoredTriangle.vert.spv").c_str(), &coloredTriangleVertexShader))
+    if (!loadShaderModule(shell.shader("ColoredTriangle.vert.spv").c_str(), &colored_triangle_vertex_shader))
     {
         std::cout << "Error when building the triangle vertex shader module"
                   << "\n";
@@ -548,7 +548,7 @@ void Engine::initializePipelines()
                   << "\n";
     }
 
-    if (!loadShaderModule(shell.shader("Triangle.frag.spv").c_str(), &triangleFragShader))
+    if (!loadShaderModule(shell.shader("Triangle.frag.spv").c_str(), &triangle_frag_shader))
     {
         std::cout << "Error when building the triangle fragment shader module"
                   << "\n";
@@ -559,7 +559,7 @@ void Engine::initializePipelines()
                   << "\n";
     }
 
-    if (!loadShaderModule(shell.shader("Triangle.vert.spv").c_str(), &triangleVertexShader))
+    if (!loadShaderModule(shell.shader("Triangle.vert.spv").c_str(), &triangle_vertex_shader))
     {
         std::cout << "Error when building the triangle vertex shader module"
                   << "\n";
@@ -572,16 +572,16 @@ void Engine::initializePipelines()
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = init::pipelineLayoutCreateInfo();
 
-    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout));
+    VK_CHECK(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout));
 
     //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
     PipelineBuilder pipelineBuilder;
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, triangleVertexShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, triangle_vertex_shader));
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, triangleFragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, triangle_frag_shader));
 
     //vertex input controls how to read vertices from vertex buffers. We aren't using it yet
     pipelineBuilder.vertexInputInfo = init::vertexInputStateCreateInfo();
@@ -611,22 +611,22 @@ void Engine::initializePipelines()
     pipelineBuilder.colorBlendAttachment = init::colorBlendAttachmentState();
 
     //use the triangle layout we created
-    pipelineBuilder.pipelineLayout = pipelineLayout;
+    pipelineBuilder.pipelineLayout = pipeline_layout;
 
     pipelineBuilder.depthStencil = init::depthStencilCreateInfo(true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
     //finally build the pipeline
-    trianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    triangle_pipeline = pipelineBuilder.buildPipeline(device, render_pass);
 
     pipelineBuilder.shaderStages.clear();
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, coloredTriangleVertexShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, colored_triangle_vertex_shader));
 
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, colored_triangle_frag_shader));
 
-    coloredTrianglePipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    colored_triangle_pipeline = pipelineBuilder.buildPipeline(device, render_pass);
 
     //build the mesh pipeline
 
@@ -643,7 +643,7 @@ void Engine::initializePipelines()
     pipelineBuilder.shaderStages.clear();
 
     //compile mesh vertex shader
-    if (!loadShaderModule(shell.shader("TriangleMesh.vert.spv").c_str(), &meshVertexShader))
+    if (!loadShaderModule(shell.shader("TriangleMesh.vert.spv").c_str(), &mesh_vertex_shader))
     {
         std::cout << "Error when building the triangle mesh vertex shader module" << std::endl;
     }
@@ -654,11 +654,11 @@ void Engine::initializePipelines()
 
     //add the other shaders
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, meshVertexShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, mesh_vertex_shader));
 
     //make sure that triangleFragShader is holding the compiled colored_triangle.frag
     pipelineBuilder.shaderStages.push_back(
-        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, coloredTriangleFragShader));
+        init::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, colored_triangle_frag_shader));
 
     //we start from just the default empty pipeline layout info
     VkPipelineLayoutCreateInfo info = init::pipelineLayoutCreateInfo();
@@ -675,32 +675,32 @@ void Engine::initializePipelines()
     info.pPushConstantRanges = &pushConstant;
     info.pushConstantRangeCount = 1;
 
-    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &meshPipelineLayout));
+    VK_CHECK(vkCreatePipelineLayout(device, &info, nullptr, &mesh_pipeline_layout));
 
-    pipelineBuilder.pipelineLayout = meshPipelineLayout;
+    pipelineBuilder.pipelineLayout = mesh_pipeline_layout;
 
     //build the mesh pipeline
-    meshPipeline = pipelineBuilder.buildPipeline(device, renderPass);
+    mesh_pipeline = pipelineBuilder.buildPipeline(device, render_pass);
 
-    create_material(meshPipeline, meshPipelineLayout, "defaultmesh");
+    create_material(mesh_pipeline, mesh_pipeline_layout, "defaultmesh");
 
     //deleting all of the vulkan shaders
-    vkDestroyShaderModule(device, meshVertexShader, nullptr);
-    vkDestroyShaderModule(device, triangleVertexShader, nullptr);
-    vkDestroyShaderModule(device, triangleFragShader, nullptr);
-    vkDestroyShaderModule(device, coloredTriangleFragShader, nullptr);
-    vkDestroyShaderModule(device, coloredTriangleVertexShader, nullptr);
+    vkDestroyShaderModule(device, mesh_vertex_shader, nullptr);
+    vkDestroyShaderModule(device, triangle_vertex_shader, nullptr);
+    vkDestroyShaderModule(device, triangle_frag_shader, nullptr);
+    vkDestroyShaderModule(device, colored_triangle_frag_shader, nullptr);
+    vkDestroyShaderModule(device, colored_triangle_vertex_shader, nullptr);
 
     //adding the pipelines to the deletion queue
-    mainDeletionQueue.push_function([=]()
-                                    {
-                                        vkDestroyPipeline(device, trianglePipeline, nullptr);
-                                        vkDestroyPipeline(device, trianglePipeline, nullptr);
-                                        vkDestroyPipeline(device, meshPipeline, nullptr);
+    main_deletion_queue.push_function([=]()
+                                      {
+                                          vkDestroyPipeline(device, triangle_pipeline, nullptr);
+                                          vkDestroyPipeline(device, triangle_pipeline, nullptr);
+                                          vkDestroyPipeline(device, mesh_pipeline, nullptr);
 
-                                        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-                                        vkDestroyPipelineLayout(device, meshPipelineLayout, nullptr);
-                                    });
+                                          vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
+                                          vkDestroyPipelineLayout(device, mesh_pipeline_layout, nullptr);
+                                      });
 }
 
 bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule)
@@ -751,24 +751,24 @@ bool Engine::loadShaderModule(const char *filePath, VkShaderModule *shaderModule
 void Engine::loadMeshes()
 {
     //make the array 3 vertices long
-    triangleMesh.vertices.resize(3);
+    triangle_mesh.vertices.resize(3);
 
     //vertex positions
-    triangleMesh.vertices[0].position = {.5f, .5f, 0.0f};
-    triangleMesh.vertices[1].position = {-.5f, .5f, 0.0f};
-    triangleMesh.vertices[2].position = {0.f, -1.f, 0.0f};
+    triangle_mesh.vertices[0].position = {.5f, .5f, 0.0f};
+    triangle_mesh.vertices[1].position = {-.5f, .5f, 0.0f};
+    triangle_mesh.vertices[2].position = {0.f, -1.f, 0.0f};
 
-    triangleMesh.vertices[0].color = {0.f, 0.f, 1.f};
-    triangleMesh.vertices[1].color = {0.f, 0.f, 1.f};
-    triangleMesh.vertices[2].color = {0.75f, 0.75f, 1.f};
+    triangle_mesh.vertices[0].color = {0.f, 0.f, 1.f};
+    triangle_mesh.vertices[1].color = {0.f, 0.f, 1.f};
+    triangle_mesh.vertices[2].color = {0.75f, 0.75f, 1.f};
 
-    monkeyMesh.loadFromObj(shell.asset("MonkeySmooth.obj").c_str());
+    monkey_mesh.loadFromObj(shell.asset("MonkeySmooth.obj").c_str());
 
-    uploadMesh(triangleMesh);
-    uploadMesh(monkeyMesh);
+    uploadMesh(triangle_mesh);
+    uploadMesh(monkey_mesh);
 
-    this->meshes["triangle"] = triangleMesh;
-    this->meshes["monkey"] = monkeyMesh;
+    this->meshes["triangle"] = triangle_mesh;
+    this->meshes["monkey"] = monkey_mesh;
 }
 
 void Engine::uploadMesh(Mesh &mesh)
@@ -792,8 +792,8 @@ void Engine::uploadMesh(Mesh &mesh)
                              nullptr));
 
     //add the destruction of triangle mesh buffer to the deletion queue
-    mainDeletionQueue.push_function([=]()
-                                    { vmaDestroyBuffer(allocator, mesh.vertexBuffer.buffer, mesh.vertexBuffer.allocation); });
+    main_deletion_queue.push_function([=]()
+                                      { vmaDestroyBuffer(allocator, mesh.vertexBuffer.buffer, mesh.vertexBuffer.allocation); });
 
     //copy vertex data
     void *data;
@@ -808,7 +808,7 @@ Material *Engine::create_material(VkPipeline pipeline, VkPipelineLayout layout, 
 {
     Material mat;
     mat.pipeline = pipeline;
-    mat.pipelineLayout = layout;
+    mat.pipeline_layout = layout;
     this->materials[name] = mat;
     return &this->materials[name];
 }
@@ -865,15 +865,15 @@ void Engine::draw_objects(VkCommandBuffer cmd, RenderObject *first, int count)
             lastMaterial = object.material;
         }
 
-        glm::mat4 model = object.transformMatrix;
+        glm::mat4 model = object.transform_matrix;
         //final render matrix, that we are calculating on the cpu
         glm::mat4 mesh_matrix = projection * view * model;
 
         MeshPushConstants constants;
-        constants.renderMatrix = mesh_matrix;
+        constants.render_matrix = mesh_matrix;
 
         //upload the mesh to the GPU via push constants
-        vkCmdPushConstants(cmd, object.material->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+        vkCmdPushConstants(cmd, object.material->pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
 
         //only bind the mesh if it's a different one from last bind
         if (object.mesh != lastMesh)
@@ -893,7 +893,7 @@ void Engine::init_scene()
     RenderObject monkey;
     monkey.mesh = get_mesh("monkey");
     monkey.material = get_material("defaultmesh");
-    monkey.transformMatrix = glm::mat4{1.0f};
+    monkey.transform_matrix = glm::mat4{1.0f};
 
     this->renderables.push_back(monkey);
 
@@ -906,7 +906,7 @@ void Engine::init_scene()
             tri.material = get_material("defaultmesh");
             glm::mat4 translation = glm::translate(glm::mat4{1.0}, glm::vec3(x, 0, y));
             glm::mat4 scale = glm::scale(glm::mat4{1.0}, glm::vec3(0.2, 0.2, 0.2));
-            tri.transformMatrix = translation * scale;
+            tri.transform_matrix = translation * scale;
 
             this->renderables.push_back(tri);
         }

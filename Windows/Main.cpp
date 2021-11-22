@@ -8,7 +8,7 @@ int main()
     std::vector<std::string> args;
     args.push_back("-validate");
 
-    Engine *engine = new Engine(args, nullptr);
+    Engine *engine = new Engine(args);
     engine->initialize();
 
     while (!glfwWindowShouldClose(engine->window))
