@@ -1,8 +1,6 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
-#include "memory/allocator.h"
+#include <memory/allocator.h>
 
 struct AllocatedBuffer
 {

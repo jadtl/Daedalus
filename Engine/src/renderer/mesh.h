@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/types.h"
+#include <renderer/types.h>
 
 #include <glm/vec3.hpp>
 
@@ -20,13 +20,13 @@ struct Vertex
     glm::vec3 normal;
     glm::vec3 color;
 
-    static VertexInputDescription getVertexDescription();
+    static VertexInputDescription get_vertex_description();
 };
 
 struct Mesh
 {
     std::vector<Vertex> vertices;
-    AllocatedBuffer vertexBuffer;
+    AllocatedBuffer vertex_buffer;
 
-    bool loadFromObj(const char *fileName);
+    bool load_from_obj(const char* file_name);
 };

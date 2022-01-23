@@ -1,11 +1,11 @@
-#include "renderer/mesh.h"
+#include <renderer/mesh.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "renderer/tiny_obj_loader.h"
+#include <tiny_obj_loader.h>
 
 #include <iostream>
 
-VertexInputDescription Vertex::getVertexDescription()
+VertexInputDescription Vertex::get_vertex_description()
 {
     VertexInputDescription description;
 
@@ -45,7 +45,7 @@ VertexInputDescription Vertex::getVertexDescription()
     return description;
 }
 
-bool Mesh::loadFromObj(const char *fileName)
+bool Mesh::load_from_obj(const char* file_name)
 {
     //attrib will contain the vertex arrays of the file
     tinyobj::attrib_t attrib;
@@ -59,7 +59,7 @@ bool Mesh::loadFromObj(const char *fileName)
     std::string err;
 
     //load the OBJ file
-    tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fileName, nullptr);
+    tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, file_name, nullptr);
     //make sure to output the warnings to the console, in case there are issues with the file
     if (!warn.empty())
     {
