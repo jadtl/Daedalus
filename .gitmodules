@@ -13,3 +13,6 @@
 [submodule "External/VulkanMemoryAllocator"]
 	path = External/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "External/tinyobjloader"]
+	path = External/tinyobjloader
+	url = https://github.com/tinyobjloader/tinyobjloader.git
