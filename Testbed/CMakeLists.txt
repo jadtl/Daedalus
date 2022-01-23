@@ -16,7 +16,7 @@ file(GLOB_RECURSE GLSL_FRAG
 )
 
 file(GLOB_RECURSE GLSL_VERT
-    "${SHADER_DIR}*.vert.glsl"
+    "${SHADER_DIR}/*.vert.glsl"
 )
 
 foreach(GLSL ${GLSL_FRAG})
