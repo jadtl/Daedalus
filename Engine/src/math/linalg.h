@@ -1,9 +1,10 @@
 #pragma once
 
-#include <defines.h>
-#include <math/types.h>
+#include <core/memory.h>
 
-#include "daedalus/memory.h"
+#include <defines.h>
+
+#include <math/types.h>
 
 #define DDLS_PI 3.14159265358979323846f
 #define DDLS_PI_2 2.0f * DDLS_PI
@@ -17,12 +18,6 @@
 #define DDLS_SQRT_ONE_OVER_THREE 0.57735026918962576450f
 #define DDLS_DEG2RAD_MULTIPLIER DDLS_PI / 180.0f
 #define DDLS_RAD2DEG_MULTIPLIER 180.0f / DDLS_PI
-
-// The multiplier to convert seconds to milliseconds.
-#define DDLS_SEC_TO_MS_MULTIPLIER 1000.0f
-
-// The multiplier to convert milliseconds to seconds.
-#define DDLS_MS_TO_SEC_MULTIPLIER 0.001f
 
 // A huge number that should be larger than any valid number used.
 #define DDLS_INFINITY 1e30f
