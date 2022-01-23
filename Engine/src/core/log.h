@@ -125,7 +125,7 @@ namespace ddls {
         template<typename ... Args>
         static void Assert(bool expr, Args ... args) {
             if (expr) {
-                Out(Styles::Default, Colours::Magenta, Level::Assert args...);
+                Out(Styles::Default, Colours::Magenta, Level::Assert, args...);
                 assert(false);
             }
         }
