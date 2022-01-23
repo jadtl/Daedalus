@@ -1,4 +1,4 @@
-#include "daedalus/engine.h"
+#include <daedalus.h>
 
 #include <string>
 #include <vector>
@@ -8,7 +8,7 @@ int main()
     std::vector<std::string> args;
     args.push_back("-validate");
 
-    Engine *engine = new Engine(args);
+    ddls::Engine* engine = new ddls::Engine(args);
     engine->initialize();
 
     while (!glfwWindowShouldClose(engine->window))
