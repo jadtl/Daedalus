@@ -356,13 +356,12 @@ namespace ddls {
         vkb::InstanceBuilder builder;
 
         auto instanceBuilder = builder
+            .set_debug_callback(vk_debug_callback)
+            .request_validation_layers()
             .set_engine_name(settings.engine_name.c_str())
             .set_engine_version(0, 1)
             .set_app_name(settings.application_name.c_str())
             .set_app_version(0, 1)
-            .request_validation_layers()
-            .set_debug_callback(vk_debug_callback)
-            .enable_validation_layers()
             .require_api_version(1, 1, 0)
             .build();
 
@@ -593,22 +592,22 @@ namespace ddls {
     void Engine::initialize_pipelines()
     {
         if (!load_shader_module(File::Shader("ColoredTriangle.frag.spv").c_str(), &colored_triangle_frag_shader))
-            Log::Error("Failed to build the colored triangle fragment shader module");
+            Log::Error("Error when loading the colored triangle fragment shader module");
         else
             Log::Info("Colored triangle fragment shader succesfully loaded");
 
         if (!load_shader_module(File::Shader("ColoredTriangle.vert.spv").c_str(), &colored_triangle_vertex_shader))
-            Log::Error("Failed to build the colored triangle fragment shader module");
+            Log::Error("Error when loading the colored triangle fragment shader module");
         else
             Log::Info("Colored triangle fragment shader succesfully loaded");
 
         if (!load_shader_module(File::Shader("Triangle.frag.spv").c_str(), &triangle_frag_shader))
-            Log::Error("Failed to build the triangle fragment shader module");
+            Log::Error("Error when loading the triangle fragment shader module");
         else
             Log::Info("Triangle fragment shader succesfully loaded");
 
         if (!load_shader_module(File::Shader("Triangle.vert.spv").c_str(), &triangle_vertex_shader))
-            Log::Error("Failed to build the triangle fragment shader module");
+            Log::Error("Error when loading the triangle fragment shader module");
         else
             Log::Info("Triangle fragment shader succesfully loaded");
 
@@ -687,7 +686,7 @@ namespace ddls {
         //compile mesh vertex shader
         if (!load_shader_module(File::Shader("TriangleMesh.vert.spv").c_str(), &mesh_vertex_shader))
         {
-            Log::Error("Error when building the triangle mesh vertex shader module");
+            Log::Error("Error when loading the triangle mesh vertex shader module");
         }
         else
         {
