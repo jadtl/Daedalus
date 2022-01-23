@@ -41,44 +41,6 @@ STATIC_ASSERT(sizeof(i64) == 8, "Expected i64 to be 8 bytes.");
 STATIC_ASSERT(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
 STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
-// Platform detection
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
-#define DDLS_PLATFORM_WINDOWS 1
-#ifndef _WIN64
-#error "64-bit is required on Windows!"
-#endif
-#elif defined(__linux__) || defined(__gnu_linux__)
-#define DDLS_PLATFORM_LINUX 1
-#if defined(__ANDROID__)
-#define DDLS_PLATFORM_ANDROID 1
-#endif
-#elif defined(__unix__)
-// Catch anything else Unix-like
-#define DDLS_PLATFORM_UNIX 1
-#elif defined(_POSIX_VERSION)
-// Posix
-#define DDLS_PLATFORM_POSIX 1
-#elif __APPLE__
-// Apple platforms
-#define DDLS_PLATFORM_APPLE 1
-#include <TargetConditionals.h>
-#if TARGET_IPHONE_SIMULATOR
-// iOS Simulator
-#define DDLS_PLATFORM_IOS 1
-#define DDLS_PLATFORM_IOS_SIMULATOR 1
-#elif TARGET_OS_IPHONE
-#define DDLS_PLATFORM_IOS 1
-// iOS device
-#elif TARGET_OS_MAC
-// macOS device
-#define DDLS_PLATFORM_MACOS
-#else
-#error "Unknown Apple platform"
-#endif
-#else
-#error "Unknown platform!"
-#endif
-
 #ifdef DDLS_EXPORT
 // Exports
 #ifdef _MSC_VER
