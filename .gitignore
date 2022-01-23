@@ -1,6 +1,9 @@
 # CMake
 Build
 
+# Log files
+*.log
+
 # Hidden
 .*
 !.gitignore
