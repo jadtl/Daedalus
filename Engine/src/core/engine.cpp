@@ -385,6 +385,9 @@ namespace ddls {
             .set_minimum_version(1, 1)
             .set_surface(this->surface)
             .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
+#if defined(DDLS_PLATFORM_MACOS)
+            .add_required_extension("VK_KHR_portability_subset")
+#endif
             .select();
 
         if (!physicalDevice)
