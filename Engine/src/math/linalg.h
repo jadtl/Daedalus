@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/log.h>
 #include <core/memory.h>
 
 #include <defines.h>
@@ -1182,6 +1183,22 @@ namespace ddls {
         right.z = matrix.data[8];
         vec3_normalize(&right);
         return right;
+    }
+
+    /**
+     * @brief Prints a representation of the provided matrix.
+     * 
+     *  
+     */
+    DDLS_INLINE void mat4_print(mat4 matrix)
+    {
+        std::string matrix_representation = "\n";
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j)
+                matrix_representation.append(" ").append(std::to_string(matrix.data[i]));
+                matrix_representation.append("\n");
+            }
+        Log::Debug("Transform matrix representation: ", matrix_representation);
     }
 
     // ------------------------------------------
