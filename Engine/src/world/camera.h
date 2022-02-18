@@ -2,7 +2,7 @@
 
 #include <defines.h>
 
-#include <math/linalg.h>
+#include <glm/glm.hpp>
 
 namespace ddls {
     /**
@@ -38,31 +38,31 @@ namespace ddls {
         float get_field_of_view() const { return field_of_view; }
         void set_field_of_view(float field_of_view) { this->field_of_view = field_of_view; }
 
-        const vec3& get_position() const { return position; }
-        const vec3& get_rotation() const { return rotation; }
-        const vec3& get_velocity() const { return velocity; }
+        const glm::vec3& get_position() const { return position; }
+        const glm::vec3& get_rotation() const { return rotation; }
+        const glm::vec3& get_velocity() const { return velocity; }
 
         /**
          * Gets the view matrix created by the current camera position and rotation.
          * @return The view matrix created by the current camera position and rotation.
          */
-        const mat4& get_view_matrix() const { return view_matrix; }
+        const glm::mat4& get_view_matrix() const { return view_matrix; }
 
         /**
          * Gets the projection matrix used in the current scene render.
          * @return The projection matrix used in the current scene render.
          */
-        const mat4& get_projection_matrix() const { return projection_matrix; }
+        const glm::mat4& get_projection_matrix() const { return projection_matrix; }
 
     protected:
         float near_plane, far_plane;
         float field_of_view;
 
-        vec3 position;
-        vec3 rotation;
-        vec3 velocity;
+        glm::vec3 position;
+        glm::vec3 rotation;
+        glm::vec3 velocity;
 
-        mat4 view_matrix;
-        mat4 projection_matrix;
+        glm::mat4 view_matrix;
+        glm::mat4 projection_matrix;
     };
 }
