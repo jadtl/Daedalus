@@ -138,16 +138,22 @@ namespace ddls {
         if (is_initialized)
         {
             vkDeviceWaitIdle(device);
+
+            terminate_swapchain();
+
             main_deletion_queue.flush();
+
+            vkDestroySurfaceKHR(instance, surface, nullptr);
+
             vkDestroyDevice(device, nullptr);
             vkb::destroy_debug_utils_messenger(instance, debug_messenger);
-            vkDestroySurfaceKHR(instance, surface, nullptr);
             vkDestroyInstance(instance, nullptr);
 
-            vmaDestroyAllocator(allocator);
+            glfwDestroyWindow(window);
+
+            Log::Info("Daedalus can rest.");
+            Log::CloseLog();
         }
-        Log::Info("Daedalus can rest.");
-        Log::CloseLog();
     }
 
     void Engine::terminate_swapchain()
@@ -157,15 +163,22 @@ namespace ddls {
 
         vkFreeCommandBuffers(device, command_pool, 1, &main_command_buffer);
 
+        vkDestroyCommandPool(device, command_pool, nullptr);
+
         vkDestroyPipeline(device, triangle_pipeline, nullptr);
         vkDestroyPipeline(device, colored_triangle_pipeline, nullptr);
         vkDestroyPipeline(device, mesh_pipeline, nullptr);
 
         vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
+        vkDestroyPipelineLayout(device, mesh_pipeline_layout, nullptr);
+
         vkDestroyRenderPass(device, render_pass, nullptr);
 
-        std::for_each(swapchain_image_views.begin(), swapchain_image_views.end(), [device = device](VkImageView imageView)
-            { vkDestroyImageView(device, imageView, nullptr); });
+        vkDestroyImageView(device, depth_image_view, nullptr);
+        vmaDestroyImage(allocator, depth_image.image, depth_image.allocation);
+
+        std::for_each(swapchain_image_views.begin(), swapchain_image_views.end(), [device = device](VkImageView image_view)
+            { vkDestroyImageView(device, image_view, nullptr); });
 
         vkDestroySwapchainKHR(device, swapchain, nullptr);
     }
@@ -453,13 +466,6 @@ namespace ddls {
         //build an image-view for the depth image to use for rendering
         VkImageViewCreateInfo depth_view_info = init::image_view_create_info(depth_format, depth_image.image, VK_IMAGE_ASPECT_DEPTH_BIT);
         VK_CHECK(vkCreateImageView(device, &depth_view_info, nullptr, &depth_image_view));
-
-        //add to deletion queues
-        main_deletion_queue.push_function([=]()
-            {
-                vkDestroyImageView(device, depth_image_view, nullptr);
-                vmaDestroyImage(allocator, depth_image.image, depth_image.allocation);
-            });
     }
 
     void Engine::initialize_commands()
@@ -577,6 +583,10 @@ namespace ddls {
 
         VK_CHECK(vkCreateFence(device, &fence_info, nullptr, &render_fence));
 
+        main_deletion_queue.push_function([=]() {
+            vkDestroyFence(device, render_fence, nullptr);
+        });
+
         //for the semaphores we don't need any flags
         VkSemaphoreCreateInfo semaphore_info = {};
         semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -585,6 +595,12 @@ namespace ddls {
 
         VK_CHECK(vkCreateSemaphore(device, &semaphore_info, nullptr, &present_semaphore));
         VK_CHECK(vkCreateSemaphore(device, &semaphore_info, nullptr, &render_semaphore));
+
+        //enqueue the destruction of semaphores
+        main_deletion_queue.push_function([=]() {
+            vkDestroySemaphore(device, present_semaphore, nullptr);
+            vkDestroySemaphore(device, render_semaphore, nullptr);
+		});
     }
 
     void Engine::initialize_pipelines()
@@ -724,17 +740,6 @@ namespace ddls {
         vkDestroyShaderModule(device, triangle_frag_shader, nullptr);
         vkDestroyShaderModule(device, colored_triangle_frag_shader, nullptr);
         vkDestroyShaderModule(device, colored_triangle_vertex_shader, nullptr);
-
-        //adding the pipelines to the deletion queue
-        main_deletion_queue.push_function([=]()
-            {
-                vkDestroyPipeline(device, triangle_pipeline, nullptr);
-                vkDestroyPipeline(device, triangle_pipeline, nullptr);
-                vkDestroyPipeline(device, mesh_pipeline, nullptr);
-
-                vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
-                vkDestroyPipelineLayout(device, mesh_pipeline_layout, nullptr);
-            });
     }
 
     bool Engine::load_shader_module(const char* file_path, VkShaderModule* shader_module)

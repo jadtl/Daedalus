@@ -18,5 +18,7 @@ int main()
         glfwPollEvents();
     }
 
+    delete engine;
+
     return 0;
 }
