@@ -108,7 +108,7 @@ namespace ddls {
             "OOkolccc:c;';c:;,'.....;ldxl''oxdxdxOOOO\n",
             "OOOkxxxxdddodxdol;,llloloddxc,okxddxOOOO\n",
             "OOkOOOOkOOOOkkkkkdxkxxkdoxxkxoxOkxxkOOOO\n",
-            fmt::format("Daedalus Engine v{}.{}.{}, Copyright (c) 2022 Jad Tala.", DDLS_VERSION_MAJOR, DDLS_VERSION_MINOR, DDLS_VERSION_REVISION)
+            fmt::format("Daedalus Engine v{}.{}.{}, Copyright (c) 2022 Jad Tala.", DDLS_VERSION_MAJOR, DDLS_VERSION_MINOR, DDLS_VERSION_PATCH)
         );
     }
 
@@ -137,20 +137,10 @@ namespace ddls {
     {
         if (is_initialized)
         {
-            terminate_swapchain();
-
-            // Terminate sync objects
-            vkDestroySemaphore(device, present_semaphore, nullptr);
-            vkDestroySemaphore(device, render_semaphore, nullptr);
-            vkDestroyFence(device, render_fence, nullptr);
-
-            vkDestroyCommandPool(device, command_pool, nullptr);
-
+            vkDeviceWaitIdle(device);
+            main_deletion_queue.flush();
             vkDestroyDevice(device, nullptr);
-
-            if (settings.validate)
-                vkb::destroy_debug_utils_messenger(instance, debug_messenger);
-
+            vkb::destroy_debug_utils_messenger(instance, debug_messenger);
             vkDestroySurfaceKHR(instance, surface, nullptr);
             vkDestroyInstance(instance, nullptr);
 
@@ -355,9 +345,13 @@ namespace ddls {
 
         auto instance_builder = builder
             .set_debug_callback(vk_debug_callback)
+#if defined(DDLS_DEBUG)
             .request_validation_layers()
-            .set_engine_name(settings.engine_name.c_str())
-            .set_engine_version(0, 1)
+#endif
+            .set_debug_messenger_severity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+            .set_debug_messenger_type(VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
+            .set_engine_name("Daedalus")
+            .set_engine_version(DDLS_VERSION_MAJOR, DDLS_VERSION_MINOR, DDLS_VERSION_PATCH)
             .set_app_name(settings.application_name.c_str())
             .set_app_version(0, 1)
             .require_api_version(1, 1, 0)
@@ -396,6 +390,14 @@ namespace ddls {
         this->device = vkb_device.device;
         this->physical_device = physical_device.value().physical_device;
 
+        VkPhysicalDeviceProperties device_properties;
+        vkGetPhysicalDeviceProperties(this->physical_device, &device_properties);
+        Log::Info(fmt::format("GPU {} properties:", device_properties.deviceName),
+            Log::indent, fmt::format("GPU driver version {}.{}.{}", VK_VERSION_MAJOR(device_properties.driverVersion), VK_VERSION_MINOR(device_properties.driverVersion), VK_VERSION_PATCH(device_properties.driverVersion)),
+            Log::indent, fmt::format("GPU Vulkan API version {}.{}.{}", VK_VERSION_MAJOR(device_properties.apiVersion), VK_VERSION_MINOR(device_properties.apiVersion), VK_VERSION_PATCH(device_properties.apiVersion)),
+            Log::indent, fmt::format("Minimum buffer alignment {}", device_properties.limits.minUniformBufferOffsetAlignment)
+        );
+
         graphics_queue = vkb_device.get_queue(vkb::QueueType::graphics).value();
         graphics_queue_family = vkb_device.get_queue_index(vkb::QueueType::graphics).value();
 
@@ -404,6 +406,10 @@ namespace ddls {
         vma_allocator_info.device = this->device;
         vma_allocator_info.instance = this->instance;
         vmaCreateAllocator(&vma_allocator_info, &this->allocator);
+
+        main_deletion_queue.push_function([&]() {
+            vmaDestroyAllocator(allocator);
+        });
 
         load_meshes();
     }

@@ -132,6 +132,8 @@ namespace ddls {
 
         static void OpenLog(const std::filesystem::path &filepath);
         static void CloseLog();
+
+        inline static const char* indent = "\n                ";
     
     private:
         static std::mutex WriteMutex;
