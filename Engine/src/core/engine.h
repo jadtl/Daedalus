@@ -54,10 +54,10 @@ namespace ddls {
 
         void flush()
         {
-            // reverse iterate the deletion queue to execute all the functions
+            // Reverse iterate the deletion queue to execute all the functions
             for (auto it = deletors.rbegin(); it != deletors.rend(); it++)
             {
-                (*it)(); //call functors
+                (*it)(); // Call functors
             }
             deletors.clear();
         }

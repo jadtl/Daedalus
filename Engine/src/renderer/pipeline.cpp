@@ -3,8 +3,8 @@
 #include <iostream>
 
 VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass render_pass) {
-    //make viewport state from our stored viewport and scissor.
-    //at the moment we won't support multiple viewports or scissors
+    // Make viewport state from our stored viewport and scissor.
+    // At the moment we won't support multiple viewports or scissors
     VkPipelineViewportStateCreateInfo viewport_state_info = {};
     viewport_state_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewport_state_info.pNext = nullptr;
@@ -14,8 +14,8 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass render_p
     viewport_state_info.scissorCount = 1;
     viewport_state_info.pScissors = &scissor;
 
-    //setup dummy color blending. We aren't using transparent objects yet
-    //the blending is just "no blend", but we do write to the color attachment
+    // Setup dummy color blending. We aren't using transparent objects yet
+    // The blending is just "no blend", but we do write to the color attachment
     VkPipelineColorBlendStateCreateInfo color_blending_info = {};
     color_blending_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     color_blending_info.pNext = nullptr;
@@ -25,8 +25,8 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass render_p
     color_blending_info.attachmentCount = 1;
     color_blending_info.pAttachments = &color_blend_attachment;
 
-    //build the actual pipeline
-    //we now use all of the info structs we have been writing into into this one to create the pipeline
+    // Build the actual pipeline
+    // We now use all of the info structs we have been writing into into this one to create the pipeline
     VkGraphicsPipelineCreateInfo pipeline_info = {};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipeline_info.pNext = nullptr;
@@ -45,7 +45,7 @@ VkPipeline PipelineBuilder::buildPipeline(VkDevice device, VkRenderPass render_p
     pipeline_info.subpass = 0;
     pipeline_info.basePipelineHandle = nullptr;
 
-    //it's easy to error out on create graphics pipeline, so we handle it a bit better than the common VK_CHECK case
+    // It's easy to error out on create graphics pipeline, so we handle it a bit better than the common VK_CHECK case
     VkPipeline pipeline;
     if (vkCreateGraphicsPipelines(
         device, nullptr, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS) {

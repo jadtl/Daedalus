@@ -45,7 +45,7 @@ namespace ddls {
 
     Engine::~Engine()
     {
-        //destroy context
+        // Destroy context
         terminate();
     }
 
@@ -203,11 +203,11 @@ namespace ddls {
 
     void Engine::render()
     {
-        //wait until the GPU has finished rendering the last frame. Timeout of 1 second
+        // Wait until the GPU has finished rendering the last frame. Timeout of 1 second
         VK_CHECK(vkWaitForFences(device, 1, &render_fence, VK_TRUE, 1000000000));
         VK_CHECK(vkResetFences(device, 1, &render_fence));
 
-        //request image from the swapchain, one second timeout
+        // Request image from the swapchain, one second timeout
         uint32_t swapchain_image_index;
         VkResult swapchain_status = vkAcquireNextImageKHR(device, swapchain, 1000000000, present_semaphore, nullptr, &swapchain_image_index);
         if (swapchain_status == VK_ERROR_OUT_OF_DATE_KHR)
@@ -218,13 +218,13 @@ namespace ddls {
         else if (swapchain_status != VK_SUCCESS && swapchain_status != VK_SUBOPTIMAL_KHR)
             Log::Error("Failed to acquire swapchain image!");
         
-        //now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
+        // Now that we are sure that the commands finished executing, we can safely reset the command buffer to begin recording again.
         VK_CHECK(vkResetCommandBuffer(main_command_buffer, 0));
 
-        //naming it cmd for shorter writing
+        // Naming it cmd for shorter writing
         VkCommandBuffer cmd = main_command_buffer;
 
-        //begin the command buffer recording. We will use this command buffer exactly once, so we want to let Vulkan know that
+        // Begin the command buffer recording. We will use this command buffer exactly once, so we want to let Vulkan know that
         VkCommandBufferBeginInfo command_buffer_begin_info = {};
         command_buffer_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         command_buffer_begin_info.pNext = nullptr;
@@ -234,21 +234,21 @@ namespace ddls {
 
         VK_CHECK(vkBeginCommandBuffer(cmd, &command_buffer_begin_info));
 
-        //make a clear-color from frame number. This will flash with a 120*pi frame period.
+        // Make a clear-color from frame number. This will flash with a 120*pi frame period.
         VkClearValue clear_value;
 
         float fadeBlue = abs(sin((f32)frame_number / 50.f)) / 7.5f;
         clear_value.color = { {0.f, 0.f, fadeBlue, 1.0f} };
 
-        //clear depth at 1
+        // Clear depth at 1
         VkClearValue depth_clear;
         depth_clear.depthStencil.depth = 1.f;
 
-        //start the main renderpass.
-        //We will use the clear color from above, and the framebuffer of the index the swapchain gave us
+        // Start the main renderpass.
+        // We will use the clear color from above, and the framebuffer of the index the swapchain gave us
         VkRenderPassBeginInfo render_pass_info = init::render_pass_begin_info(render_pass, settings.window_extent, framebuffers[swapchain_image_index]);
 
-        //connect clear values
+        // Connect clear values
         render_pass_info.clearValueCount = 2;
 
         VkClearValue clearValues[] = { clear_value, depth_clear };
@@ -260,13 +260,13 @@ namespace ddls {
         draw_objects(cmd, renderables.data(), renderables.size());
 
         vkCmdEndRenderPass(cmd);
-        //finalize the command buffer (we can no longer add commands, but it can now be executed)
+
+        // Finalize the command buffer (we can no longer add commands, but it can now be executed)
         VK_CHECK(vkEndCommandBuffer(cmd));
 
-        //prepare the submission to the queue.
-        //we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
-        //we will signal the _renderSemaphore, to signal that rendering has finished
-
+        // Prepare the submission to the queue.
+        // We want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
+        // We will signal the _renderSemaphore, to signal that rendering has finished
         VkSubmitInfo submit_info = {};
         submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submit_info.pNext = nullptr;
@@ -284,12 +284,12 @@ namespace ddls {
         submit_info.commandBufferCount = 1;
         submit_info.pCommandBuffers = &cmd;
 
-        //submit command buffer to the queue and execute it.
-        // _renderFence will now block until the graphic commands finish execution
+        // Submit command buffer to the queue and execute it.
+        // render_fence will now block until the graphic commands finish execution
         VK_CHECK(vkQueueSubmit(graphics_queue, 1, &submit_info, render_fence));
 
-        // this will put the image we just rendered into the visible window.
-        // we want to wait on the _renderSemaphore for that,
+        // This will put the image we just rendered into the visible window.
+        // We want to wait on the _renderSemaphore for that,
         // as it's necessary that drawing commands have finished before the image is displayed to the user
         VkPresentInfoKHR present_info = {};
         present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -312,7 +312,7 @@ namespace ddls {
         else if (swapchain_status != VK_SUCCESS)
             Log::Error("Failed to present swapchain image!");
         
-        //increase the number of frames drawn
+        // Increase the number of frames drawn
         frame_number++;
     }
 
@@ -443,27 +443,27 @@ namespace ddls {
         settings.window_extent = vkb_swapchain.extent;
         swapchain_image_format = vkb_swapchain.image_format;
 
-        //depth image size will match the window
+        // Depth image size will match the window
         VkExtent3D depth_image_extent = {
             settings.window_extent.width,
             settings.window_extent.height,
             1 };
 
-        //hardcoding the depth format to 32 bit float
+        // Hardcoding the depth format to 32 bit float
         depth_format = VK_FORMAT_D32_SFLOAT;
 
-        //the depth image will be an image with the format we selected and Depth Attachment usage flag
+        // The depth image will be an image with the format we selected and Depth Attachment usage flag
         VkImageCreateInfo depth_image_info = init::image_create_info(depth_format, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, depth_image_extent);
 
-        //for the depth image, we want to allocate it from GPU local memory
+        // For the depth image, we want to allocate it from GPU local memory
         VmaAllocationCreateInfo depth_image_allocation_info = {};
         depth_image_allocation_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
         depth_image_allocation_info.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        //allocate and create the image
+        // Allocate and create the image
         vmaCreateImage(allocator, &depth_image_info, &depth_image_allocation_info, &depth_image.image, &depth_image.allocation, nullptr);
 
-        //build an image-view for the depth image to use for rendering
+        // Build an image-view for the depth image to use for rendering
         VkImageViewCreateInfo depth_view_info = init::image_view_create_info(depth_format, depth_image.image, VK_IMAGE_ASPECT_DEPTH_BIT);
         VK_CHECK(vkCreateImageView(device, &depth_view_info, nullptr, &depth_image_view));
     }
@@ -479,26 +479,26 @@ namespace ddls {
 
     void Engine::initialize_default_renderpass()
     {
-        // the renderpass will use this color attachment.
+        // The renderpass will use this color attachment.
         VkAttachmentDescription color_attachment = {};
-        //the attachment will have the format needed by the swapchain
+        // The attachment will have the format needed by the swapchain
         color_attachment.format = swapchain_image_format;
-        //1 sample, we won't be doing MSAA
+        // 1 sample, we won't be doing MSAA
         color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        // we Clear when this attachment is loaded
+        // We clear when this attachment is loaded
         color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        // we keep the attachment stored when the renderpass ends
+        // We keep the attachment stored when the renderpass ends
         color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        //we don't care about stencil
+        // We don't care about stencil
         color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        //we don't know or care about the starting layout of the attachment
+        // We don't know or care about the starting layout of the attachment
         color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        //after the renderpass ends, the image has to be on a layout ready for display
+        // After the renderpass ends, the image has to be on a layout ready for display
         color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentReference color_attachment_reference = {};
-        //attachment number will index into the pAttachments array in the parent renderpass itself
+        // Attachment number will index into the pAttachments array in the parent renderpass itself
         color_attachment_reference.attachment = 0;
         color_attachment_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
@@ -517,24 +517,24 @@ namespace ddls {
         depth_attachement_reference.attachment = 1;
         depth_attachement_reference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-        //we are going to create 1 subpass, which is the minimum you can do
+        // We are going to create 1 subpass, which is the minimum you can do
         VkSubpassDescription subpass = {};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &color_attachment_reference;
-        //hook the depth attachment into the subpass
+        // Hook the depth attachment into the subpass
         subpass.pDepthStencilAttachment = &depth_attachement_reference;
 
-        //array of 2 attachments, one for the color, and other for depth
+        // Array of 2 attachments, one for the color, and other for depth
         VkAttachmentDescription attachments[2] = { color_attachment, depth_attachment };
 
         VkRenderPassCreateInfo render_pass_info = {};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
-        //connect the color attachment to the info
+        // Connect the color attachment to the info
         render_pass_info.attachmentCount = 2;
         render_pass_info.pAttachments = &attachments[0];
-        //connect the subpass to the info
+        // Connect the subpass to the info
         render_pass_info.subpassCount = 1;
         render_pass_info.pSubpasses = &subpass;
 
@@ -543,7 +543,7 @@ namespace ddls {
 
     void Engine::initialize_framebuffers()
     {
-        //create the framebuffers for the swapchain images. This will connect the render-pass to the images for rendering
+        // Create the framebuffers for the swapchain images. This will connect the render-pass to the images for rendering
         VkFramebufferCreateInfo framebuffer_info = {};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebuffer_info.pNext = nullptr;
@@ -553,11 +553,11 @@ namespace ddls {
         framebuffer_info.height = settings.window_extent.height;
         framebuffer_info.layers = 1;
 
-        //grab how many images we have in the swapchain
+        // Grab how many images we have in the swapchain
         const uint32_t swapchain_image_count = swapchain_images.size();
         framebuffers = std::vector<VkFramebuffer>(swapchain_image_count);
 
-        //create framebuffers for each of the swapchain image views
+        // Create framebuffers for each of the swapchain image views
         for (int i = 0; i < swapchain_image_count; i++)
         {
             VkImageView attachments[2];
@@ -573,12 +573,12 @@ namespace ddls {
 
     void Engine::initialize_sync_structures()
     {
-        //create syncronization structures
+        // Create syncronization structures
         VkFenceCreateInfo fence_info = {};
         fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fence_info.pNext = nullptr;
 
-        //we want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
+        // We want to create the fence with the Create Signaled flag, so we can wait on it before using it on a GPU command (for the first frame)
         fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
         VK_CHECK(vkCreateFence(device, &fence_info, nullptr, &render_fence));
@@ -587,7 +587,7 @@ namespace ddls {
             vkDestroyFence(device, render_fence, nullptr);
         });
 
-        //for the semaphores we don't need any flags
+        // For the semaphores we don't need any flags
         VkSemaphoreCreateInfo semaphore_info = {};
         semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         semaphore_info.pNext = nullptr;
@@ -596,7 +596,7 @@ namespace ddls {
         VK_CHECK(vkCreateSemaphore(device, &semaphore_info, nullptr, &present_semaphore));
         VK_CHECK(vkCreateSemaphore(device, &semaphore_info, nullptr, &render_semaphore));
 
-        //enqueue the destruction of semaphores
+        // Enqueue the destruction of semaphores
         main_deletion_queue.push_function([=]() {
             vkDestroySemaphore(device, present_semaphore, nullptr);
             vkDestroySemaphore(device, render_semaphore, nullptr);
@@ -629,7 +629,7 @@ namespace ddls {
 
         VK_CHECK(vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, &pipeline_layout));
 
-        //build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
+        // Build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
         PipelineBuilder pipeline_builder;
 
         pipeline_builder.shader_stages.push_back(
@@ -638,14 +638,14 @@ namespace ddls {
         pipeline_builder.shader_stages.push_back(
             init::pipeline_shader_state_create_info(VK_SHADER_STAGE_FRAGMENT_BIT, triangle_frag_shader));
 
-        //vertex input controls how to read vertices from vertex buffers. We aren't using it yet
+        // Vertex input controls how to read vertices from vertex buffers. We aren't using it yet
         pipeline_builder.vertex_input_info = init::vertex_input_state_create_info();
 
-        //input assembly is the configuration for drawing triangle lists, strips, or individual points.
-        //we are just going to draw triangle list
+        // Input assembly is the configuration for drawing triangle lists, strips, or individual points.
+        // We are just going to draw triangle list
         pipeline_builder.input_assembly = init::input_assembly_create_info(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
-        //build viewport and scissor from the swapchain extents
+        // Build viewport and scissor from the swapchain extents
         pipeline_builder.viewport.x = 0.0f;
         pipeline_builder.viewport.y = 0.0f;
         pipeline_builder.viewport.width = (float)settings.window_extent.width;
@@ -656,21 +656,21 @@ namespace ddls {
         pipeline_builder.scissor.offset = { 0, 0 };
         pipeline_builder.scissor.extent = settings.window_extent;
 
-        //configure the rasterizer to draw filled triangles
+        // Configure the rasterizer to draw filled triangles
         pipeline_builder.rasterizer = init::rasterization_state_create_info(VK_POLYGON_MODE_FILL);
 
-        //we don't use multisampling, so just run the default one
+        // We don't use multisampling, so just run the default one
         pipeline_builder.multisampling = init::multisampling_state_create_info();
 
-        //a single blend attachment with no blending and writing to RGBA
+        // A single blend attachment with no blending and writing to RGBA
         pipeline_builder.color_blend_attachment = init::color_blend_attachment_state();
 
-        //use the triangle layout we created
+        // Use the triangle layout we created
         pipeline_builder.pipeline_layout = pipeline_layout;
 
         pipeline_builder.depth_stencil = init::depth_stencil_create_info(true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
-        //finally build the pipeline
+        // Finally build the pipeline
         triangle_pipeline = pipeline_builder.buildPipeline(device, render_pass);
 
         pipeline_builder.shader_stages.clear();
@@ -683,43 +683,43 @@ namespace ddls {
 
         colored_triangle_pipeline = pipeline_builder.buildPipeline(device, render_pass);
 
-        //build the mesh pipeline
+        // Build the mesh pipeline
         VertexInputDescription vertex_description = Vertex::get_vertex_description();
 
-        //connect the pipeline builder vertex input info to the one we get from Vertex
+        // Connect the pipeline builder vertex input info to the one we get from Vertex
         pipeline_builder.vertex_input_info.pVertexAttributeDescriptions = vertex_description.attributes.data();
         pipeline_builder.vertex_input_info.vertexAttributeDescriptionCount = vertex_description.attributes.size();
 
         pipeline_builder.vertex_input_info.pVertexBindingDescriptions = vertex_description.bindings.data();
         pipeline_builder.vertex_input_info.vertexBindingDescriptionCount = vertex_description.bindings.size();
 
-        //clear the shader stages for the builder
+        // Clear the shader stages for the builder
         pipeline_builder.shader_stages.clear();
 
-        //compile mesh vertex shader
+        // Compile mesh vertex shader
         if (!load_shader_module(File::Shader("TriangleMesh.vert.spv").c_str(), &mesh_vertex_shader))
             Log::Error("Error when loading the triangle mesh vertex shader module");
         else
             Log::Info("Triangle mesh vertex shader succesfully loaded");
 
-        //add the other shaders
+        // Add the other shaders
         pipeline_builder.shader_stages.push_back(
             init::pipeline_shader_state_create_info(VK_SHADER_STAGE_VERTEX_BIT, mesh_vertex_shader));
 
-        //make sure that triangleFragShader is holding the compiled colored_triangle.frag
+        // Make sure that triangleFragShader is holding the compiled colored_triangle.frag
         pipeline_builder.shader_stages.push_back(
             init::pipeline_shader_state_create_info(VK_SHADER_STAGE_FRAGMENT_BIT, colored_triangle_frag_shader));
 
-        //we start from just the default empty pipeline layout info
+        // We start from just the default empty pipeline layout info
         pipeline_layout_info = init::pipeline_layout_create_info();
 
-        //setup push constants
+        // Setup push constants
         VkPushConstantRange push_constant;
-        //this push constant range starts at the beginning
+        // This push constant range starts at the beginning
         push_constant.offset = 0;
-        //this push constant range takes up the size of a MeshPushConstants struct
+        // This push constant range takes up the size of a MeshPushConstants struct
         push_constant.size = sizeof(MeshPushConstants);
-        //this push constant range is accessible only in the vertex shader
+        // This push constant range is accessible only in the vertex shader
         push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
         pipeline_layout_info.pPushConstantRanges = &push_constant;
@@ -729,12 +729,12 @@ namespace ddls {
 
         pipeline_builder.pipeline_layout = mesh_pipeline_layout;
 
-        //build the mesh pipeline
+        // Build the mesh pipeline
         mesh_pipeline = pipeline_builder.buildPipeline(device, render_pass);
 
         create_material(mesh_pipeline, mesh_pipeline_layout, "defaultmesh");
 
-        //deleting all of the vulkan shaders
+        // Deleting all of the vulkan shaders
         vkDestroyShaderModule(device, mesh_vertex_shader, nullptr);
         vkDestroyShaderModule(device, triangle_vertex_shader, nullptr);
         vkDestroyShaderModule(device, triangle_frag_shader, nullptr);
@@ -751,32 +751,32 @@ namespace ddls {
             return false;
         }
 
-        //find what the size of the file is by looking up the location of the cursor
-        //because the cursor is at the end, it gives the size directly in bytes
+        // Find what the size of the file is by looking up the location of the cursor
+        // Because the cursor is at the end, it gives the size directly in bytes
         size_t fileSize = (size_t)file.tellg();
 
-        //spirv expects the buffer to be on uint32, so make sure to reserve an int vector big enough for the entire file
+        // SPIR-V expects the buffer to be on uint32, so make sure to reserve an int vector big enough for the entire file
         std::vector<uint32_t> buffer(fileSize / sizeof(uint32_t));
 
-        //put file cursor at beggining
+        // Put file cursor at beggining
         file.seekg(0);
 
-        //load the entire file into the buffer
+        // Load the entire file into the buffer
         file.read((char*)buffer.data(), fileSize);
 
-        //now that the file is loaded into the buffer, we can close it
+        // Now that the file is loaded into the buffer, we can close it
         file.close();
 
-        //create a new shader module, using the buffer we loaded
+        // Create a new shader module, using the buffer we loaded
         VkShaderModuleCreateInfo shader_module_info = {};
         shader_module_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         shader_module_info.pNext = nullptr;
 
-        //codeSize has to be in bytes, so multply the ints in the buffer by size of int to know the real size of the buffer
+        // codeSize has to be in bytes, so multply the ints in the buffer by size of int to know the real size of the buffer
         shader_module_info.codeSize = buffer.size() * sizeof(uint32_t);
         shader_module_info.pCode = buffer.data();
 
-        //check that the creation goes well.
+        // Check that the creation goes well.
         VkShaderModule result;
         if (vkCreateShaderModule(device, &shader_module_info, nullptr, &result) != VK_SUCCESS)
             return false;
@@ -787,10 +787,10 @@ namespace ddls {
 
     void Engine::load_meshes()
     {
-        //make the array 3 vertices long
+        // Make the array 3 vertices long
         triangle_mesh.vertices.resize(3);
 
-        //vertex positions
+        // Vertex positions
         triangle_mesh.vertices[0].position = { .5f, .5f, 0.0f };
         triangle_mesh.vertices[1].position = { -.5f, .5f, 0.0f };
         triangle_mesh.vertices[2].position = { 0.f, -1.f, 0.0f };
@@ -810,29 +810,29 @@ namespace ddls {
 
     void Engine::upload_mesh(Mesh& mesh)
     {
-        //allocate vertex buffer
+        // Allocate vertex buffer
         VkBufferCreateInfo buffer_info = {};
         buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        //this is the total size, in bytes, of the buffer we are allocating
+        // This is the total size, in bytes, of the buffer we are allocating
         buffer_info.size = mesh.vertices.size() * sizeof(Vertex);
-        //this buffer is going to be used as a Vertex Buffer
+        // This buffer is going to be used as a Vertex Buffer
         buffer_info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
-        //let the VMA library know that this data should be writeable by CPU, but also readable by GPU
+        // Let the VMA library know that this data should be writeable by CPU, but also readable by GPU
         VmaAllocationCreateInfo vma_allocation_info = {};
         vma_allocation_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
-        //allocate the buffer
+        // Allocate the buffer
         VK_CHECK(vmaCreateBuffer(allocator, &buffer_info, &vma_allocation_info,
             &mesh.vertex_buffer.buffer,
             &mesh.vertex_buffer.allocation,
             nullptr));
 
-        //add the destruction of triangle mesh buffer to the deletion queue
+        // Add the destruction of triangle mesh buffer to the deletion queue
         main_deletion_queue.push_function([=]()
             { vmaDestroyBuffer(allocator, mesh.vertex_buffer.buffer, mesh.vertex_buffer.allocation); });
 
-        //copy vertex data
+        // Copy vertex data
         void* data;
         vmaMapMemory(allocator, mesh.vertex_buffer.allocation, &data);
 
@@ -852,7 +852,7 @@ namespace ddls {
 
     Material* Engine::get_material(const std::string& name)
     {
-        //search for the object, and return nullptr if not found
+        // Search for the object, and return nullptr if not found
         auto it = this->materials.find(name);
         if (it == this->materials.end())
             return nullptr;
@@ -871,12 +871,12 @@ namespace ddls {
 
     void Engine::draw_objects(VkCommandBuffer cmd, RenderObject* first, int count)
     {
-        //make a model view matrix for rendering the object
-        //camera view
+        // Make a model view matrix for rendering the object
+        // Camera view
         glm::vec3 position = { 0.f, -6.f, -10.f };
 
         glm::mat4 view = glm::translate(glm::mat4(1.f), position);
-        //camera projection
+        // Camera projection
         glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
         projection[1][1] *= -1;
         
@@ -886,7 +886,7 @@ namespace ddls {
         {
             RenderObject& object = first[i];
 
-            //only bind the pipeline if it doesn't match with the already bound one
+            // Only bind the pipeline if it doesn't match with the already bound one
             if (object.material != last_material)
             {
 
@@ -895,24 +895,24 @@ namespace ddls {
             }
 
             glm::mat4 model = object.transform_matrix;
-            //final render matrix, that we are calculating on the cpu
+            // Final render matrix, that we are calculating on the cpu
             glm::mat4 mesh_matrix = projection * view * model;
 
             MeshPushConstants constants;
             constants.render_matrix = mesh_matrix;
 
-            //upload the mesh to the GPU via push constants
+            // Upload the mesh to the GPU via push constants
             vkCmdPushConstants(cmd, object.material->pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
 
-            //only bind the mesh if it's a different one from last bind
+            // Only bind the mesh if it's a different one from last bind
             if (object.mesh != last_mesh)
             {
-                //bind the mesh vertex buffer with offset 0
+                // Bind the mesh vertex buffer with offset 0
                 VkDeviceSize offset = 0;
                 vkCmdBindVertexBuffers(cmd, 0, 1, &object.mesh->vertex_buffer.buffer, &offset);
                 last_mesh = object.mesh;
             }
-            //we can now draw
+            // We can now draw
             vkCmdDraw(cmd, object.mesh->vertices.size(), 1, 0, 0);
         }
     }

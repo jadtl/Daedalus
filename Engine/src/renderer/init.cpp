@@ -29,11 +29,11 @@ VkPipelineShaderStageCreateInfo init::pipeline_shader_state_create_info(VkShader
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     info.pNext = nullptr;
 
-    //shader stage
+    // Shader stage
     info.stage = stage;
-    //module containing the code for this shader stage
+    // Module containing the code for this shader stage
     info.module = shader_module;
-    //the entry point of the shader
+    // The entry point of the shader
     info.pName = "main";
     return info;
 }
@@ -44,7 +44,7 @@ VkPipelineVertexInputStateCreateInfo init::vertex_input_state_create_info()
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     info.pNext = nullptr;
 
-    //no vertex bindings or attributes
+    // No vertex bindings or attributes
     info.vertexBindingDescriptionCount = 0;
     info.vertexAttributeDescriptionCount = 0;
     return info;
@@ -57,7 +57,7 @@ VkPipelineInputAssemblyStateCreateInfo init::input_assembly_create_info(VkPrimit
     info.pNext = nullptr;
 
     info.topology = topology;
-    //we are not going to use primitive restart on the entire tutorial so leave it on false
+    // We are not going to use primitive restart on the entire tutorial so leave it on false
     info.primitiveRestartEnable = VK_FALSE;
     return info;
 }
@@ -69,15 +69,15 @@ VkPipelineRasterizationStateCreateInfo init::rasterization_state_create_info(VkP
     info.pNext = nullptr;
 
     info.depthClampEnable = VK_FALSE;
-    //discards all primitives before the rasterization stage if enabled which we don't want
+    // Discards all primitives before the rasterization stage if enabled which we don't want
     info.rasterizerDiscardEnable = VK_FALSE;
 
     info.polygonMode = polygon_mode;
     info.lineWidth = 1.0f;
-    //no backface cull
+    // No backface cull
     info.cullMode = VK_CULL_MODE_NONE;
     info.frontFace = VK_FRONT_FACE_CLOCKWISE;
-    //no depth bias
+    // No depth bias
     info.depthBiasEnable = VK_FALSE;
     info.depthBiasConstantFactor = 0.0f;
     info.depthBiasClamp = 0.0f;
@@ -93,7 +93,7 @@ VkPipelineMultisampleStateCreateInfo init::multisampling_state_create_info()
     info.pNext = nullptr;
 
     info.sampleShadingEnable = VK_FALSE;
-    //multisampling defaulted to no multisampling (1 sample per pixel)
+    // Multisampling defaulted to no multisampling (1 sample per pixel)
     info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     info.minSampleShading = 1.0f;
     info.pSampleMask = nullptr;
@@ -148,7 +148,7 @@ VkImageCreateInfo init::image_create_info(VkFormat format, VkImageUsageFlags usa
 
 VkImageViewCreateInfo init::image_view_create_info(VkFormat format, VkImage image, VkImageAspectFlags aspect_flags)
 {
-    //build a image-view for the depth image to use for rendering
+    // Build a image-view for the depth image to use for rendering
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.pNext = nullptr;
