@@ -1,5 +1,6 @@
 #include <core/memory.h>
 
+#include <cstring>
 #include <memory>
 
 namespace ddls {
