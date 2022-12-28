@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace ddls {
 
 /** @brief A unsigned 8-bit integer */
@@ -33,7 +35,6 @@ using f32 = float;
 
 /** @brief An IEEE-754 64-bit floating-point number */
 using f64 = double;
-
 
 // TODO: Add other essential raw data types
 // TODO: Add 'fast' u32 and f32 types
