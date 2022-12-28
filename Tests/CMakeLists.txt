@@ -1,3 +1,5 @@
-add_executable(Endian src/endian.cpp)
 include_directories(src/)
-target_link_libraries(Endian Daedalus::Engine)
+link_libraries(Daedalus::Engine)
+
+add_executable(Endian src/endian.cpp)
+add_executable(Allocator src/allocator.cpp)
