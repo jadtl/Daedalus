@@ -75,40 +75,7 @@ namespace ddls {
     }
 
     void Engine::print_welcome() {
-        Log::Info("\n",
-            "OOOOOOOkxxdxOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOOOOxdl:;lkOOOOOOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOOOkoloc,;dOkOOOOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOOxlodool;:kOOOOOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOOxolodooo:okOOOOOOOkOOOOOOOOOOOOOOOOO\n",
-            "OOOOkkocoxdoccdxkOOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOkddxxodxoooolokOOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOkdooddodllodoclxOOOOOOOOOOOOOOOOOOOOO\n",
-            "OOOOkkxodxolddooodddxkOOOOOOOOOOOOOOOOOO\n",
-            "OOOOkoddddolodxdodxdloxkOkkOOOOOOOOOOOOO\n",
-            "OOOOkxddollolododxxxddodxddkOOOOOOOOOOOO\n",
-            "OOOOOOkkxxdlcddoodxxdodoollxkOOOOOOOOOOO\n",
-            "OOOOOOkxdoddddoooc:::cllooloxOOOOOOOOOOO\n",
-            "OOOOOOOkkxdxollc,....',;:clcoxkOOOOOOOOO\n",
-            "OOOOOOOOOkdoodc'..,'.,::;,,:looxOOOOOOOO\n",
-            "OOOOOOOkxdlcool:::,:looc;..:loookOOOOOOO\n",
-            "OOOOOkxl:ldxkkxdx:';c:;'..;looodkOOOOOOO\n",
-            "OkOkdl:codkkkkxo:'''....'clllodxkOOOOOOO\n",
-            "kkxc,',lodkkkkkkc:c;',:cclllllodxOOOOOOO\n",
-            "kxl;',:coxdloxkxl:ll:cdocllllooodxkkkOOO\n",
-            "Od:,,::lddl;;oxlcllllcclll::::lc:lxxkOOO\n",
-            "Oo;,:;,,::c:,,lodxlcolccclooodxo;ckkOOOO\n",
-            "kl,,;,,,;::,'..'oxdoooooollc;,,;,,lxkkOO\n",
-            "kl,;:;:c:::::,...,;,',,,'''',;:c;;ldxdkO\n",
-            "Ox:;:cc:::;;;,,;'......',:odxxxxddxkkxox\n",
-            "Okc,,,,;;,,;,;;;;,;:::;;ccc:;,',:cc:;;;o\n",
-            "Okc,;;;:lc:;:lllolc::clloolloc,;cll:lddx\n",
-            "Oxccc:ccc;:clooooc::cldxxxdoddccdxddkOOO\n",
-            "Okoclc::;,;:::clc;,'';cloxxc;ccoxxdxOOkO\n",
-            "OOkolccc:c;';c:;,'.....;ldxl''oxdxdxOOOO\n",
-            "OOOkxxxxdddodxdol;,llloloddxc,okxddxOOOO\n",
-            "OOkOOOOkOOOOkkkkkdxkxxkdoxxkxoxOkxxkOOOO\n",
-            fmt::format("Daedalus Engine v{}.{}.{}, Copyright (c) 2022 Jad Tala.", DDLS_VERSION_MAJOR, DDLS_VERSION_MINOR, DDLS_VERSION_PATCH)
+        Log::Info(fmt::format("Daedalus Engine v{}.{}.{}", DDLS_VERSION_MAJOR, DDLS_VERSION_MINOR, DDLS_VERSION_PATCH)
         );
     }
 
@@ -151,7 +118,7 @@ namespace ddls {
 
             glfwDestroyWindow(window);
 
-            Log::Info("Daedalus can rest.");
+            Log::Info("Closing log and shutting down...");
             Log::CloseLog();
         }
     }
