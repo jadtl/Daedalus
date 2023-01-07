@@ -204,7 +204,7 @@ namespace ddls {
         // Make a clear-color from frame number. This will flash with a 120*pi frame period.
         VkClearValue clear_value;
 
-        float fadeBlue = abs(sin((f32)frame_number / 50.f)) / 7.5f;
+        float fadeBlue = fabs(sin((f32)frame_number / 50.f)) / 7.5f;
         clear_value.color = { {0.f, 0.f, fadeBlue, 1.0f} };
 
         // Clear depth at 1
