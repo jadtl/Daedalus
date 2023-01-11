@@ -1,7 +1,6 @@
 #include "graphics/renderer.h"
 
 #include <core/log.h>
-#include "renderer.h"
 
 namespace ddls {
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -18,88 +17,71 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineName)
 {
-    ignore(window);
-    Log::Assert(checkValidationLayersSupport() || !_enableValidationLayers,
-        "Validation layers were requested but not supported!");
+    Log::Assert(checkValidationLayerSupport(_validationLayers) || !_enableValidationLayers, 
+        "Validations layers requested but not supported!");
+
+    // Fill application info
+    VkApplicationInfo applicationInfo{};
+    applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    applicationInfo.pApplicationName = appName;
+    applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    applicationInfo.pEngineName = engineName;
+    applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    applicationInfo.apiVersion = VK_API_VERSION_1_0;
+
+    // Fill instance create info
+    VkInstanceCreateInfo instanceCreateInfo{};
+    instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instanceCreateInfo.pApplicationInfo = &applicationInfo;
+    std::vector<const char*> requiredExtensions = 
+        getRequiredExtensions(&instanceCreateInfo, _enableValidationLayers);
+    instanceCreateInfo.enabledExtensionCount = (uint32_t)requiredExtensions.size();
+    instanceCreateInfo.ppEnabledExtensionNames = requiredExtensions.data();
+    if (_enableValidationLayers)
+    {
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+        fillDebugMessengerCreateInfo(debugCreateInfo, debugCallback);
+        instanceCreateInfo.pNext = &debugCreateInfo;
+        instanceCreateInfo.enabledLayerCount = (uint32_t)_validationLayers.size();
+        instanceCreateInfo.ppEnabledLayerNames = _validationLayers.data();
+    }
+    else
+    {
+        instanceCreateInfo.enabledLayerCount = 0;
+        instanceCreateInfo.ppEnabledLayerNames = nullptr;
+    }
 
     enumerateAvailableExtensions();
 
-    vk::ApplicationInfo appInfo(appName, 1, engineName, 1, VK_API_VERSION_1_0);
+    Log::Assert(vkCreateInstance(&instanceCreateInfo, nullptr, &_instance) == VK_SUCCESS, 
+        "Instance creation failed!");
 
-    vk::InstanceCreateInfo instanceCreateInfo({}, &appInfo);
-    std::vector<const char*> requiredExtensions = getRequiredExtensions(instanceCreateInfo);
-    instanceCreateInfo.setPEnabledExtensionNames(requiredExtensions);
 #ifdef DDLS_DEBUG
-    vk::DebugUtilsMessengerCreateInfoEXT debugInfo;
-    debugInfo.setMessageSeverity(
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning
-    );
-    debugInfo.setMessageType(
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
-    );
-    debugInfo.setPfnUserCallback(debugCallback);
-    instanceCreateInfo.setPNext(&debugInfo);
-    instanceCreateInfo.setPEnabledLayerNames(_validationLayers);
+
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+    fillDebugMessengerCreateInfo(debugCreateInfo, debugCallback);
+
+    auto createFunction = (PFN_vkCreateDebugUtilsMessengerEXT)
+        vkGetInstanceProcAddr(_instance, "vkCreateDebugUtilsMessengerEXT");
+    Log::Assert(createFunction, 
+        "Failed to get vkCreateDebugUtilsMessengerEXT function!");
+    Log::Assert(createFunction(_instance, &debugCreateInfo, nullptr, &_debugMessenger) == VK_SUCCESS,
+        "Failed to create debug messenger!");
 #endif
-
-    _instance = std::make_unique<vk::raii::Instance>(_context, instanceCreateInfo);
-
-    _physicalDevices = std::make_unique<vk::raii::PhysicalDevices>(*_instance);
-    
-    b8 suitableDeviceFound = false;
-    for (u32 i = 0; i < (*_physicalDevices).size(); i++)
-    {
-        if (isDeviceSuitable((*_physicalDevices)[i]))
-        {
-            _physicalDeviceIndex = i;
-            suitableDeviceFound = true;
-            break;
-        }
-    }
-
-    Log::Assert(suitableDeviceFound, "No suitable physical device was found!");
-
-    vk::raii::PhysicalDevice physicalDevice = (*_physicalDevices)[_physicalDeviceIndex];
-    Log::Info("Picking physical device ", physicalDevice.getProperties().deviceName);
-
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-
-    vk::DeviceQueueCreateInfo queueCreateInfo;
-    queueCreateInfo.sType = vk::StructureType::eDeviceQueueCreateInfo;
-    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-    queueCreateInfo.queueCount = 1;
-    float queuePriority = 1.0f;
-    queueCreateInfo.pQueuePriorities = &queuePriority;
-
-    vk::PhysicalDeviceFeatures deviceFeatures;
-
-    Log::Info("Available device extensions: ");
-    for (const auto& extension : physicalDevice.enumerateDeviceExtensionProperties())
-        Log::Info('\t', extension.extensionName);
-
-    vk::DeviceCreateInfo deviceCreateInfo;
-    deviceCreateInfo.sType = vk::StructureType::eDeviceCreateInfo;
-    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
-    deviceCreateInfo.queueCreateInfoCount = 1;
-    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-    deviceCreateInfo.enabledExtensionCount = 0;
-#ifdef DDLS_PLATFORM_MACOS
-    std::vector<const char*> enabledExtensions;
-    enabledExtensions.push_back("VK_KHR_portability_subset");
-    deviceCreateInfo.enabledExtensionCount = (u32)enabledExtensions.size();
-    deviceCreateInfo.setPEnabledExtensionNames(enabledExtensions);
-#endif
-
-    _device = std::make_unique<vk::raii::Device>(physicalDevice, deviceCreateInfo);
-
-    _graphicsQueue = std::make_unique<vk::raii::Queue>(_device->getQueue(indices.graphicsFamily.value(), 0));
 }
 
-std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo& createInfo)
+Renderer::~Renderer()
+{
+#ifdef DDLS_DEBUG
+    auto destroyFunction = (PFN_vkDestroyDebugUtilsMessengerEXT)
+        vkGetInstanceProcAddr(_instance, "vkDestroyDebugUtilsMessengerEXT");
+    destroyFunction(_instance, _debugMessenger, nullptr);
+#endif
+
+    vkDestroyInstance(_instance, nullptr);
+}
+
+std::vector<const char*> Renderer::getRequiredExtensions(VkInstanceCreateInfo* instanceCreateInfo, bool enableValidationLayers)
 {
     // Get required extensions for windowing
     u32 glfwExtensionCount = 0;
@@ -110,33 +92,44 @@ std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo&
         requiredExtensions.push_back(glfwExtensions[i]);
 
     // Add portability enumeration extension when on Apple platform
-#ifdef DDLS_PLATFORM_MACOS
+#ifdef __APPLE__
     requiredExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     requiredExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    createInfo.setFlags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
+    instanceCreateInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
     // Add debug utils if validation layers are requested
-    if (_enableValidationLayers)
+    if (enableValidationLayers)
         requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
     return requiredExtensions;
 }
+
 void Renderer::enumerateAvailableExtensions()
 {
-    Log::Info("Available extensions: ");
-    for (const auto& extension : _context.enumerateInstanceExtensionProperties())
+    u32 extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+    Log::Info("Available extensions");
+    for (const auto& extension : extensions)
         Log::Info('\t', extension.extensionName);
 }
-bool Renderer::checkValidationLayersSupport()
+
+bool Renderer::checkValidationLayerSupport(std::vector<const char*> validationLayers)
 {
-    for (std::string layerName: _validationLayers)
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char* layerName: validationLayers)
     {
         bool layerFound = false;
-        for (const auto& layerProperties: 
-            _context.enumerateInstanceLayerProperties())
+        for (const auto& layerProperties: availableLayers)
         {
-            if (layerName == layerProperties.layerName)
+            if (strcmp(layerName, layerProperties.layerName) == 0)
             {
                 layerFound = true;
                 break;
@@ -149,37 +142,20 @@ bool Renderer::checkValidationLayersSupport()
     return true;
 }
 
-bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice physicalDevice)
+void Renderer::fillDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo, PFN_vkDebugUtilsMessengerCallbackEXT debugCallback)
 {
-    vk::PhysicalDeviceProperties physicalDeviceProperties = physicalDevice.getProperties();
-    Log::Info("Checking if device ", physicalDeviceProperties.deviceName, " is suitable");
-    vk::PhysicalDeviceFeatures deviceFeatures = physicalDevice.getFeatures();
-
-    Renderer::QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    // Select a physical device that supports graphics commands
-    if (!indices.isComplete()) return false;
-
-    Log::Info("Physical device ", physicalDeviceProperties.deviceName, " meets the requirements");
-    return true;
+    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    createInfo.messageSeverity = 
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | 
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfo.messageType =
+        VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.pfnUserCallback = debugCallback;
+    createInfo.flags = 0;
+    createInfo.pUserData = nullptr;
 }
 
-Renderer::QueueFamilyIndices Renderer::findQueueFamilies(vk::raii::PhysicalDevice physicalDevice)
-{
-    // Finding a queue that supports graphics commands
-    Renderer::QueueFamilyIndices indices;
-    int i = 0;
-    for (const auto& queueFamily: physicalDevice.getQueueFamilyProperties())
-    {
-        if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
-        {
-            indices.graphicsFamily = i;
-        }
-
-        if (indices.isComplete()) break;
-
-        i++;
-    }
-
-    return indices;
-}
 }

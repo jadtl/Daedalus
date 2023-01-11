@@ -3,10 +3,11 @@
 #include <core/defines.h>
 #include <core/types.h>
 
-#include <vulkan/vulkan_raii.hpp>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <optional>
+#include <vector>
 
 namespace ddls {
 /**
@@ -17,38 +18,31 @@ class DDLS_API Renderer
 {
 public:
     Renderer(GLFWwindow *window, const char* appName, const char* engineName);
+    ~Renderer();
 private:
-    GLFWwindow *window;
-
-    vk::raii::Context _context;
-    std::unique_ptr<vk::raii::Instance> _instance;
-    std::unique_ptr<vk::raii::PhysicalDevices> _physicalDevices;
-    u32 _physicalDeviceIndex;
-    std::unique_ptr<vk::raii::Device> _device;
-    std::unique_ptr<vk::raii::Queue> _graphicsQueue;
+    VkInstance _instance;
+    VkPhysicalDevice _physicalDevice;
+    VkDevice _device;
+    VkQueue _graphicsQueue;
+    VkSurfaceKHR _surface;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
 #ifdef DDLS_DEBUG
     const bool _enableValidationLayers = true;
+    VkDebugUtilsMessengerEXT _debugMessenger;
 #else
     const bool _enableValidationLayers = false;
 #endif
 
     std::vector<const char*> getRequiredExtensions(
-        vk::InstanceCreateInfo& createInfo);
+        VkInstanceCreateInfo *instanceCreateInfo,
+        bool enableValidationLayers);
     void enumerateAvailableExtensions();
-    bool checkValidationLayersSupport();
-    struct QueueFamilyIndices {
-        std::optional<u32> graphicsFamily;
-        bool isComplete()
-        {
-            return graphicsFamily.has_value();
-        }
-    };
-    bool isDeviceSuitable(
-        vk::raii::PhysicalDevice device);
-    QueueFamilyIndices findQueueFamilies(
-        vk::raii::PhysicalDevice device);
+    bool checkValidationLayerSupport(
+        std::vector<const char*> validationLayers);
+    void fillDebugMessengerCreateInfo(
+        VkDebugUtilsMessengerCreateInfoEXT& createInfo, 
+        PFN_vkDebugUtilsMessengerCallbackEXT debugCallback);
 };
 }
