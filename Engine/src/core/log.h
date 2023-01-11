@@ -74,7 +74,7 @@ public:
      */
     template<typename ... Args>
     static void Out(const std::string_view &style, const std::string_view &colour, const std::string_view &level, Args ... args) {
-        Write(style, colour, fmt::format("[{} - {}]: ", Time::GetDateTime(TimestampFormat), level), args..., Styles::Default);
+        Write(style, colour, fmt::format("[{} - {}]: ", Time::GetDateTime(TimestampFormat), level), args..., '\n', Styles::Default);
     }
 
     /**

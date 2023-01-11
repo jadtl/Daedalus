@@ -1,6 +1,7 @@
 #include "graphics/renderer.h"
 
 #include <core/log.h>
+#include "renderer.h"
 
 namespace ddls {
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -10,7 +11,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     void* pUserData) {
     ignore(messageSeverity, messageType, pUserData);
 
-    Log::Out(Log::Styles::Default, Log::Colours::LightBlue, "VALIDATION", pCallbackData->pMessage, '\n');
+    Log::Out(Log::Styles::Default, Log::Colours::LightBlue, "VALIDATION", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
@@ -44,7 +45,24 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
     createInfo.setPEnabledLayerNames(_validationLayers);
 #endif
 
-    vk::raii::Instance instance(_context, createInfo);
+    _instance = std::make_unique<vk::raii::Instance>(_context, createInfo);
+
+    _physicalDevices = std::make_unique<vk::raii::PhysicalDevices>(*_instance);
+    
+    b8 suitableDeviceFound = false;
+    for (u32 i = 0; i < (*_physicalDevices).size(); i++)
+    {
+        if (isDeviceSuitable((*_physicalDevices)[i]))
+        {
+            _physicalDeviceIndex = i;
+            suitableDeviceFound = true;
+            break;
+        }
+    }
+
+    Log::Assert(suitableDeviceFound, "No suitable physical device was found!");
+
+    Log::Info("Picking physical device ", (*_physicalDevices)[_physicalDeviceIndex].getProperties().deviceName);
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo& createInfo)
@@ -71,9 +89,9 @@ std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo&
 }
 void Renderer::enumerateAvailableExtensions()
 {
-    Log::Info("Available extensions: ", '\n');
+    Log::Info("Available extensions: ");
     for (const auto& extension : _context.enumerateInstanceExtensionProperties())
-        Log::Info('\t', extension.extensionName, '\n');
+        Log::Info('\t', extension.extensionName);
 }
 bool Renderer::checkValidationLayersSupport()
 {
@@ -94,5 +112,39 @@ bool Renderer::checkValidationLayersSupport()
     }
 
     return true;
+}
+
+bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice physicalDevice)
+{
+    vk::PhysicalDeviceProperties physicalDeviceProperties = physicalDevice.getProperties();
+    Log::Info("Checking if device ", physicalDeviceProperties.deviceName, " is suitable");
+    vk::PhysicalDeviceFeatures deviceFeatures = physicalDevice.getFeatures();
+
+    Renderer::QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    // Select a physical device that supports graphics commands
+    if (!indices.isComplete()) return false;
+
+    Log::Info("Physical device ", physicalDeviceProperties.deviceName, " meets the requirements");
+    return true;
+}
+
+Renderer::QueueFamilyIndices Renderer::findQueueFamilies(vk::raii::PhysicalDevice physicalDevice)
+{
+    // Finding a queue that supports graphics commands
+    Renderer::QueueFamilyIndices indices;
+    int i = 0;
+    for (const auto& queueFamily: physicalDevice.getQueueFamilyProperties())
+    {
+        if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+        {
+            indices.graphicsFamily = i;
+        }
+
+        if (indices.isComplete()) break;
+
+        i++;
+    }
+
+    return indices;
 }
 }

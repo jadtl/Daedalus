@@ -21,7 +21,9 @@ private:
     GLFWwindow *window;
 
     vk::raii::Context _context;
-    vk::Instance _instance;
+    std::unique_ptr<vk::raii::Instance> _instance;
+    std::unique_ptr<vk::raii::PhysicalDevices> _physicalDevices;
+    u32 _physicalDeviceIndex;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
@@ -31,7 +33,8 @@ private:
     const bool _enableValidationLayers = false;
 #endif
 
-    std::vector<const char*> getRequiredExtensions(vk::InstanceCreateInfo& createInfo);
+    std::vector<const char*> getRequiredExtensions(
+        vk::InstanceCreateInfo& createInfo);
     void enumerateAvailableExtensions();
     bool checkValidationLayersSupport();
     struct QueueFamilyIndices {
@@ -41,5 +44,9 @@ private:
             return graphicsFamily.has_value();
         }
     };
+    bool isDeviceSuitable(
+        vk::raii::PhysicalDevice device);
+    QueueFamilyIndices findQueueFamilies(
+        vk::raii::PhysicalDevice device);
 };
 }
