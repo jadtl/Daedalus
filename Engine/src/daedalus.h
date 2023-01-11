@@ -6,5 +6,6 @@
 #include "core/types.h"
 #include "core/memory.h"
 #include "core/error.h"
+#include "core/log.h"
 
 #include "utils/endian.h"

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <core/debug.h>
+
 #if DDLS_ASSERT
 
 #define reportAssertionFailure(expr, file, line) \
