@@ -1,5 +1,4 @@
-# TODO: Add earlier minimum version
-cmake_minimum_required(VERSION 3.05)
+cmake_minimum_required(VERSION 3.2)
 
 project(Daedalus VERSION 0.0.1 LANGUAGES CXX C)
 
