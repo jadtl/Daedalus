@@ -126,12 +126,14 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Assert(b8 expr, Args ... args) {
+    static inline void _Assert(b8 expr, const char* file, u32 line, Args ... args) {
         if (!expr) {
             Out(Styles::Default, Colours::Magenta, Level::Assert, args...);
-            ASSERT(false);
+            ASSERT_TRACE(false, file, line);
         }
     }
+
+#define Assert(expr, args) _Assert(expr, __FILE__, __LINE__, args)
 
     static void OpenLog(const std::filesystem::path &filepath);
     static void CloseLog();

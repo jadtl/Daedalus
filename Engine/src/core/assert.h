@@ -1,14 +1,15 @@
 #pragma once
 
+#include "core/assert.h"
+#include "core/debug.h"
+
 #include <iostream>
 
-#include <core/debug.h>
-
+namespace ddls {
 #if DDLS_ASSERT
 
 #define reportAssertionFailure(expr, file, line) \
-    std::cout << "Assertion \"" << expr << "\" failed in " \
-        << file << ":" << line << "\n";
+    ddls::Log::Error("Assertion \"", expr, "\" failed in ", file, ":", line);
 
 // Check the expression and fail if it is false
 #define ASSERT(expr) \
@@ -19,9 +20,20 @@
         debugBreak(); \
     }
 
+#define ASSERT_TRACE(expr, file, line) \
+    if (expr) {} \
+    else \
+    { \
+        reportAssertionFailure(#expr, file, line); \
+        debugBreak(); \
+    }
+
 #else
 
 // Evaluates to nothing
-#define ASSERT(expr) 
+#define ASSERT(expr)
+
+#define ASSERT_TRACE(expr)
 
 #endif
+}
