@@ -43,6 +43,10 @@ private:
         std::vector<VkPresentModeKHR> presentModes;
     };
     VkSwapchainKHR _swapchain;
+    std::vector<VkImage> _swapchainImages;
+    VkFormat _swapchainImageFormat;
+    VkExtent2D _swapchainExtent;
+    std::vector<VkImageView> _swapchainImageViews;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};

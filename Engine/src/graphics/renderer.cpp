@@ -200,10 +200,45 @@ Renderer::Renderer(
 
     Log::Assert(vkCreateSwapchainKHR(_device, &swapchainCreateInfo, nullptr, &_swapchain) == VK_SUCCESS,
         "Failed to create swapchain!");
+
+    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, nullptr);
+    _swapchainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, _swapchainImages.data());
+
+    _swapchainImageFormat = surfaceFormat.format;
+    _swapchainExtent = extent;
+
+    _swapchainImageViews.resize(_swapchainImages.size());
+
+    for (u32 i = 0; i < _swapchainImages.size(); i++)
+    {
+        VkImageViewCreateInfo imageViewCreateInfo{};
+        imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        imageViewCreateInfo.image = _swapchainImages[i];
+        imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        imageViewCreateInfo.format = _swapchainImageFormat;
+        imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+        imageViewCreateInfo.subresourceRange.levelCount = 1;
+        imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+        imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+        Log::Assert(vkCreateImageView(_device, &imageViewCreateInfo, nullptr, &_swapchainImageViews[i]) == VK_SUCCESS,
+            "Failed to create swapchain image view!");
+    }
 }
 
 Renderer::~Renderer()
 {
+    for (u32 i = 0; i < _swapchainImages.size(); i++)
+    {
+        vkDestroyImageView(_device, _swapchainImageViews[i], nullptr);
+    }
+
     vkDestroySwapchainKHR(_device, _swapchain, nullptr);
 
     vkDestroyDevice(_device, nullptr);
