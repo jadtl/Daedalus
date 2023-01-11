@@ -18,6 +18,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineName)
 {
+    ignore(window);
     Log::Assert(checkValidationLayersSupport() || !_enableValidationLayers,
         "Validation layers were requested but not supported!");
 
@@ -25,9 +26,9 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
 
     vk::ApplicationInfo appInfo(appName, 1, engineName, 1, VK_API_VERSION_1_0);
 
-    vk::InstanceCreateInfo createInfo({}, &appInfo);
-    std::vector<const char*> requiredExtensions = getRequiredExtensions(createInfo);
-    createInfo.setPEnabledExtensionNames(requiredExtensions);
+    vk::InstanceCreateInfo instanceCreateInfo({}, &appInfo);
+    std::vector<const char*> requiredExtensions = getRequiredExtensions(instanceCreateInfo);
+    instanceCreateInfo.setPEnabledExtensionNames(requiredExtensions);
 #ifdef DDLS_DEBUG
     vk::DebugUtilsMessengerCreateInfoEXT debugInfo;
     debugInfo.setMessageSeverity(
@@ -41,11 +42,11 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
         vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
     );
     debugInfo.setPfnUserCallback(debugCallback);
-    createInfo.setPNext(&debugInfo);
-    createInfo.setPEnabledLayerNames(_validationLayers);
+    instanceCreateInfo.setPNext(&debugInfo);
+    instanceCreateInfo.setPEnabledLayerNames(_validationLayers);
 #endif
 
-    _instance = std::make_unique<vk::raii::Instance>(_context, createInfo);
+    _instance = std::make_unique<vk::raii::Instance>(_context, instanceCreateInfo);
 
     _physicalDevices = std::make_unique<vk::raii::PhysicalDevices>(*_instance);
     
@@ -62,7 +63,40 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
 
     Log::Assert(suitableDeviceFound, "No suitable physical device was found!");
 
-    Log::Info("Picking physical device ", (*_physicalDevices)[_physicalDeviceIndex].getProperties().deviceName);
+    vk::raii::PhysicalDevice physicalDevice = (*_physicalDevices)[_physicalDeviceIndex];
+    Log::Info("Picking physical device ", physicalDevice.getProperties().deviceName);
+
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+    vk::DeviceQueueCreateInfo queueCreateInfo;
+    queueCreateInfo.sType = vk::StructureType::eDeviceQueueCreateInfo;
+    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+    queueCreateInfo.queueCount = 1;
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    vk::PhysicalDeviceFeatures deviceFeatures;
+
+    Log::Info("Available device extensions: ");
+    for (const auto& extension : physicalDevice.enumerateDeviceExtensionProperties())
+        Log::Info('\t', extension.extensionName);
+
+    vk::DeviceCreateInfo deviceCreateInfo;
+    deviceCreateInfo.sType = vk::StructureType::eDeviceCreateInfo;
+    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+    deviceCreateInfo.enabledExtensionCount = 0;
+#ifdef DDLS_PLATFORM_MACOS
+    std::vector<const char*> enabledExtensions;
+    enabledExtensions.push_back("VK_KHR_portability_subset");
+    deviceCreateInfo.enabledExtensionCount = (u32)enabledExtensions.size();
+    deviceCreateInfo.setPEnabledExtensionNames(enabledExtensions);
+#endif
+
+    _device = std::make_unique<vk::raii::Device>(physicalDevice, deviceCreateInfo);
+
+    _graphicsQueue = std::make_unique<vk::raii::Queue>(_device->getQueue(indices.graphicsFamily.value(), 0));
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo& createInfo)
@@ -78,6 +112,7 @@ std::vector<const char*> Renderer::getRequiredExtensions(vk::InstanceCreateInfo&
     // Add portability enumeration extension when on Apple platform
 #ifdef DDLS_PLATFORM_MACOS
     requiredExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    requiredExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     createInfo.setFlags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
 #endif
 

@@ -24,6 +24,8 @@ private:
     std::unique_ptr<vk::raii::Instance> _instance;
     std::unique_ptr<vk::raii::PhysicalDevices> _physicalDevices;
     u32 _physicalDeviceIndex;
+    std::unique_ptr<vk::raii::Device> _device;
+    std::unique_ptr<vk::raii::Queue> _graphicsQueue;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
