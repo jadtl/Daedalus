@@ -95,10 +95,55 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
     vkGetPhysicalDeviceProperties(_physicalDevice, &physicalDeviceProperties);
 
     Log::Info("Picking physical device ", physicalDeviceProperties.deviceName);
+
+    u32 extensionCount = 0;
+    vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
+    Log::Info("Device extensions");
+    for (const auto& extension : extensions)
+        Log::Info('\t', extension.extensionName);
+
+    QueueFamilyIndices indices = findQueueFamilies(_physicalDevice);
+
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+    queueCreateInfo.queueCount = 1;
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    VkPhysicalDeviceFeatures deviceFeatures{};
+
+    VkDeviceCreateInfo deviceCreateInfo{};
+    deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+    deviceCreateInfo.queueCreateInfoCount = 1;
+    deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
+    deviceCreateInfo.enabledExtensionCount = 0;
+#ifdef DDLS_PLATFORM_MACOS
+    std::vector<const char*> enabledExtensions;
+    enabledExtensions.push_back("VK_KHR_portability_subset");
+    deviceCreateInfo.enabledExtensionCount = (u32)enabledExtensions.size();
+    deviceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
+#endif
+    if (_enableValidationLayers) {
+        deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
+        deviceCreateInfo.ppEnabledLayerNames = _validationLayers.data();
+    } else {
+        deviceCreateInfo.enabledLayerCount = 0;
+    }
+
+    Log::Assert(vkCreateDevice(_physicalDevice, &deviceCreateInfo, nullptr, &_device) == VK_SUCCESS,
+        "Failed to create device!");
+
+    vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &_graphicsQueue);
 }
 
 Renderer::~Renderer()
 {
+    vkDestroyDevice(_device, nullptr);
+
 #ifdef DDLS_DEBUG
     auto destroyFunction = (PFN_vkDestroyDebugUtilsMessengerEXT)
         vkGetInstanceProcAddr(_instance, "vkDestroyDebugUtilsMessengerEXT");
