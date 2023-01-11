@@ -3,6 +3,7 @@
 #include <core/log.h>
 
 #include <set>
+#include <algorithm>
 
 namespace ddls {
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -137,9 +138,9 @@ Renderer::Renderer(
 #ifdef DDLS_PLATFORM_MACOS
     std::vector<const char*> enabledExtensions;
     _deviceExtensions.push_back("VK_KHR_portability_subset");
+#endif
     deviceCreateInfo.enabledExtensionCount = (u32)_deviceExtensions.size();
     deviceCreateInfo.ppEnabledExtensionNames = _deviceExtensions.data();
-#endif
     if (_enableValidationLayers) {
         deviceCreateInfo.enabledLayerCount = (u32)_validationLayers.size();
         deviceCreateInfo.ppEnabledLayerNames = _validationLayers.data();
@@ -271,6 +272,8 @@ std::vector<const char*> Renderer::getRequiredExtensions(
     requiredExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     requiredExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     instanceCreateInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#else
+    ignore(instanceCreateInfo);
 #endif
 
     // Add debug utils if validation layers are requested

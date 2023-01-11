@@ -12,6 +12,10 @@ add_subdirectory(External/glfw)
 
 find_package(Vulkan REQUIRED)
 
+if (LINUX)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Compiler warnings
 if (MSVC)
     add_compile_options(/W4 /WX)

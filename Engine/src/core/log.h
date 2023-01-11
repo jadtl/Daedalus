@@ -86,6 +86,8 @@ public:
     static void Debug(Args ... args) {
     #ifdef DDLS_DEBUG
         Out(Styles::Default, Colours::LightBlue, Level::Debug, args...);
+    #else
+        ignore(args);
     #endif
     }
 
