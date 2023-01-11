@@ -5,28 +5,31 @@
 
 namespace ddls
 {
-    RetCode StackAllocator::initialize(MemSize size)
-    {
-        sp = (Ptr)malloc(size);
-        spMin = sp;
-        spMax = sp + size;
-        return sp ? Success : OutOfMemory;
-    }
+StackAllocator::StackAllocator(MemSize size) 
+{
+    _spInit = (Ptr)malloc(size);
+    _sp = _spInit;
+    _spMin = _sp;
+    _spMax = _sp + size;
+    if (!_sp) throw OutOfMemoryException("Failed to allocate stack!");
+}
 
-    Ptr StackAllocator::allocate(MemSize size, Boolean clear)
-    {
-        if (!isInitialized) return nullptr;
-        if (sp + size > spMax) return nullptr;
-        if (clear) memset(sp, 0, size);
-        sp += size;
-        return sp - size;
-    }
+StackAllocator::~StackAllocator()
+{
+    free(_spInit);
+}
 
-    RetCode StackAllocator::free(Ptr ptr)
-    {
-        if (!isInitialized) return Failure;
-        if (!(spMin <= ptr && ptr <= sp)) return Failure;
-        sp = ptr;
-        return Success;
-    }
+Ptr StackAllocator::allocate(MemSize size, Boolean clear)
+{
+    if (_sp + size > _spMax) throw OutOfMemoryException("Stack is full!");
+    if (clear) memset(_sp, 0, size);
+    _sp += size;
+    return _sp - size;
+}
+
+void StackAllocator::free(Ptr ptr)
+{
+    if (!(_spMin <= ptr && ptr <= _sp)) throw OutOfBoundsException("The requested free location isn't on the stack!");
+    _sp = ptr;
+}
 }

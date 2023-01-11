@@ -10,12 +10,18 @@ class DDLS_API StackAllocator
 {
 public:
     /**
-     * @brief Reserves the a memory region of the given size for allocations
+     * @brief Allocates memory to use as a stack
+     * 
      * 
      * @param size The size of the memory region
-     * @return RetCode An error code
      */
-    RetCode initialize(MemSize size);
+    explicit StackAllocator(MemSize size = MemSize_default);
+
+    /**
+     * @brief Frees the allocated memory region
+     * 
+     */
+    ~StackAllocator();
 
     /**
      * @brief Allocates memory to a given object
@@ -32,12 +38,12 @@ public:
      * @param ptr The new stack pointer
      * @return u8 An error code, Failure if the new stack pointer is not valid
      */
-    RetCode free(Ptr ptr);
+    void free(Ptr ptr);
 
 private:
-    Ptr sp;
-    Ptr spMin;
-    Ptr spMax;
-    Boolean isInitialized;
+    Ptr _spInit;
+    Ptr _sp;
+    Ptr _spMin;
+    Ptr _spMax;
 };
 }

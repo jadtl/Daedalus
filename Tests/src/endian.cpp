@@ -3,11 +3,12 @@
 #include <limits>
 #include <iostream>
 
+#include "test.h"
+
 using namespace ddls;
 
 int main()
 {
-
     u32 n1 = 0x12'34'56'78;
     n1 = Endian::swapU32(n1);
     ASSERT(n1 == 0x78'56'34'12)
@@ -30,6 +31,5 @@ int main()
     ASSERT(abs(u3.f - Endian::swapF64((f64)1.50897478170006352032767046355E-315))
         < std::numeric_limits<f64>::epsilon())
 
-    std::cout << "Test passed!" << '\n';
-    return Success;
+    TEST_SUCCESS
 }
