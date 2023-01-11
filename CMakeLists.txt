@@ -1,9 +1,11 @@
 # TODO: Add earlier minimum version
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.05)
 
 project(Daedalus VERSION 0.0.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 # Compiler warnings
 if (MSVC)
