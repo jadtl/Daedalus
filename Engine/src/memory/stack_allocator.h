@@ -1,8 +1,8 @@
 #pragma once
 
-#include "defines.h"
-#include "memory.h"
-#include "error.h"
+#include "core/defines.h"
+#include "core/memory.h"
+#include "core/error.h"
 
 namespace ddls
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <defines.h>
+#include <core/defines.h>
 
 #define ASSERT_THROWS(expression, ExceptionType)\
    bool _exceptionThrown = false;\

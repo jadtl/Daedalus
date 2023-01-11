@@ -1,7 +1,7 @@
 #pragma once
 
 #include "helper.h"
-#include "types.h"
+#include "core/types.h"
 
 namespace ddls {
 class DDLS_API Endian : public Helper

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "assert.h"
-#include "debug.h"
-#include "defines.h"
-#include "endian.h"
-#include "types.h"
-#include "memory.h"
-#include "error.h"
+#include "core/assert.h"
+#include "core/debug.h"
+#include "core/defines.h"
+#include "core/types.h"
+#include "core/memory.h"
+#include "core/error.h"
+
+#include "utils/endian.h"
