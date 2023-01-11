@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.2)
 
 project(Daedalus VERSION 0.0.1 LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(External/fmt)
 
 # Compiler warnings
 if (MSVC)
@@ -19,4 +19,5 @@ endif()
 add_compile_options(-DDDLS_ASSERT)
 
 add_subdirectory(Engine)
+add_subdirectory(Testbed)
 add_subdirectory(Tests)
