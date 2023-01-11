@@ -13,7 +13,9 @@ set_target_properties(Engine
     CXX_VISIBILITY_PRESET hidden)
 
 target_link_libraries(Engine
-    fmt::fmt)
+    fmt::fmt
+    Vulkan::Vulkan
+    glfw)
 
 target_compile_definitions(Engine 
     PRIVATE
