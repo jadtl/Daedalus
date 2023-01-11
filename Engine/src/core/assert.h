@@ -6,7 +6,7 @@
 
 #define reportAssertionFailure(expr, file, line) \
     std::cout << "Assertion \"" << expr << "\" failed in " \
-        << file << " at line " << line << "\n";
+        << file << ":" << line << "\n";
 
 // Check the expression and fail if it is false
 #define ASSERT(expr) \
