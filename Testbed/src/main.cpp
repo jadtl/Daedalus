@@ -4,6 +4,10 @@
 
 #include <memory>
 
+const char *appName = "Daedalus";
+
+const char *engineName = "Daedalus";
+
 int main()
 {
     glfwInit();
@@ -11,9 +15,9 @@ int main()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Daedalus", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(800, 600, appName, nullptr, nullptr);
 
-    std::unique_ptr<ddls::Renderer> renderer = std::make_unique<ddls::Renderer>(window);
+    std::unique_ptr<ddls::Renderer> renderer = std::make_unique<ddls::Renderer>(window, appName, engineName);
 
     while (!glfwWindowShouldClose(window))
     {

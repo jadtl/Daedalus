@@ -1,9 +1,12 @@
 #pragma once
 
 #include <core/defines.h>
+#include <core/types.h>
 
 #include <vulkan/vulkan_raii.hpp>
 #include <GLFW/glfw3.h>
+
+#include <optional>
 
 namespace ddls {
 /**
@@ -13,7 +16,7 @@ namespace ddls {
 class DDLS_API Renderer
 {
 public:
-    Renderer(GLFWwindow *window);
+    Renderer(GLFWwindow *window, const char* appName, const char* engineName);
 private:
     GLFWwindow *window;
 
@@ -27,5 +30,16 @@ private:
 #else
     const bool _enableValidationLayers = false;
 #endif
+
+    std::vector<const char*> getRequiredExtensions(vk::InstanceCreateInfo& createInfo);
+    void enumerateAvailableExtensions();
+    bool checkValidationLayersSupport();
+    struct QueueFamilyIndices {
+        std::optional<u32> graphicsFamily;
+        bool isComplete()
+        {
+            return graphicsFamily.has_value();
+        }
+    };
 };
 }
