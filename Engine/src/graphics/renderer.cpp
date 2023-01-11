@@ -1,6 +1,7 @@
 #include "graphics/renderer.h"
 
 #include <core/log.h>
+#include "renderer.h"
 
 namespace ddls {
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -57,7 +58,6 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
         "Instance creation failed!");
 
 #ifdef DDLS_DEBUG
-
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     fillDebugMessengerCreateInfo(debugCreateInfo, debugCallback);
 
@@ -68,6 +68,33 @@ Renderer::Renderer(GLFWwindow *window, const char* appName, const char* engineNa
     Log::Assert(createFunction(_instance, &debugCreateInfo, nullptr, &_debugMessenger) == VK_SUCCESS,
         "Failed to create debug messenger!");
 #endif
+
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+
+    Log::Assert(deviceCount, 
+        "No physical device was found!");
+
+    std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, physicalDevices.data());
+
+    // Find a suitable physical device
+    for (const auto& physicalDevice: physicalDevices)
+    {
+        if (isDeviceSuitable(physicalDevice))
+        {
+            _physicalDevice = physicalDevice;
+            break;
+        }
+    }
+
+    Log::Assert(_physicalDevice != VK_NULL_HANDLE, 
+        "No suitable physical device was found!");
+
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(_physicalDevice, &physicalDeviceProperties);
+
+    Log::Info("Picking physical device ", physicalDeviceProperties.deviceName);
 }
 
 Renderer::~Renderer()
@@ -158,4 +185,43 @@ void Renderer::fillDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& 
     createInfo.pUserData = nullptr;
 }
 
+bool Renderer::isDeviceSuitable(VkPhysicalDevice physicalDevice)
+{
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+    Log::Info("Checking if device ", physicalDeviceProperties.deviceName, " is suitable");
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
+
+    Renderer::QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    // Select a physical device that supports graphics commands
+    if (!indices.isComplete()) return false;
+
+    Log::Info("Physical device ", physicalDeviceProperties.deviceName, " meets the requirements");
+    return true;
+}
+
+Renderer::QueueFamilyIndices Renderer::findQueueFamilies(VkPhysicalDevice physicalDevice)
+{
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    // Finding a queue that supports graphics commands
+    Renderer::QueueFamilyIndices indices;
+    int i = 0;
+    for (const auto& queueFamily: queueFamilies)
+    {
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            indices.graphicsFamily = i;
+
+        if (indices.isComplete()) break;
+
+        i++;
+    }
+
+    return indices;
+}
 }

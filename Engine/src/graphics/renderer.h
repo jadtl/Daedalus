@@ -22,6 +22,13 @@ public:
 private:
     VkInstance _instance;
     VkPhysicalDevice _physicalDevice;
+    struct QueueFamilyIndices {
+        std::optional<uint32_t> graphicsFamily;
+        bool isComplete()
+        {
+            return graphicsFamily.has_value();
+        }
+    };
     VkDevice _device;
     VkQueue _graphicsQueue;
     VkSurfaceKHR _surface;
@@ -44,5 +51,9 @@ private:
     void fillDebugMessengerCreateInfo(
         VkDebugUtilsMessengerCreateInfoEXT& createInfo, 
         PFN_vkDebugUtilsMessengerCallbackEXT debugCallback);
+    bool isDeviceSuitable(
+        VkPhysicalDevice physicalDevice);
+    QueueFamilyIndices findQueueFamilies(
+        VkPhysicalDevice physicalDevice);
 };
 }
