@@ -22,7 +22,10 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
+        renderer->render();
     }
+
+    vkDeviceWaitIdle(renderer->device());
 
     glfwDestroyWindow(window);
     glfwTerminate();

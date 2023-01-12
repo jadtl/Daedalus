@@ -374,6 +374,15 @@ Renderer::Renderer(
     renderPassInfo.pAttachments = &colorAttachment;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
 
     Assert(vkCreateRenderPass(_device, &renderPassInfo, nullptr, &_renderPass) == VK_SUCCESS,
         "Failed to create render pass!");
@@ -432,19 +441,49 @@ Renderer::Renderer(
     Assert(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) == VK_SUCCESS,
         "Failed to create command pool!");
 
+    _commandBuffers.resize(_MaxFramesInFlight);
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = _commandPool;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = (u32)_commandBuffers.size();
 
-    Assert(vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer) == VK_SUCCESS,
+    Assert(vkAllocateCommandBuffers(_device, &allocInfo, _commandBuffers.data()) == VK_SUCCESS,
         "Failed to allocate command buffers!");
 
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    // Need this workaround to avoid a deadlock at the first frame
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    _imageAvailableSemaphores.resize(_MaxFramesInFlight);
+    _renderFinishedSemaphores.resize(_MaxFramesInFlight);
+    _inFlightFences.resize(_MaxFramesInFlight);
+    for (u32 i = 0; i < _MaxFramesInFlight; i++)
+    {
+        Assert(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) == VK_SUCCESS,
+            "Failed to create semaphore!");
+
+        Assert(vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) == VK_SUCCESS,
+            "Failed to create semaphore!");
+
+        Assert(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFences[i]) == VK_SUCCESS,
+            "Failed to create fence!");
+    }
 }
 
 Renderer::~Renderer()
 {
+    for (u32 i = 0; i < _MaxFramesInFlight; i++)
+    {
+        vkDestroySemaphore(_device, _imageAvailableSemaphores[i], nullptr);
+        vkDestroySemaphore(_device, _renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(_device, _inFlightFences[i], nullptr);
+    }
+
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
     for (u32 i = 0; i < _swapchainImages.size(); i++)
@@ -480,6 +519,46 @@ Renderer::~Renderer()
 
 void Renderer::render()
 {
+    vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, (u64)-1);
+    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
+
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(_device, _swapchain, (u64)-1, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
+
+    recordCommandBuffer(_commandBuffers[_currentFrame], imageIndex);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &_commandBuffers[_currentFrame];
+    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    Assert(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFences[_currentFrame]) == VK_SUCCESS,
+        "Failed to submit draw command buffer!");
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    VkSwapchainKHR swapChains[] = {_swapchain};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+
+    vkQueuePresentKHR(_presentQueue, &presentInfo);
+
+    _currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(
@@ -714,7 +793,7 @@ std::vector<char> ddls::Renderer::readFile(
     std::ifstream file(fileName, std::ios::ate | std::ios::binary);
 
     Assert(file.is_open(),
-        "Failed to open file!");
+        fmt::format("Failed to open file {}!", fileName));
 
     u32 fileSize = (u32)file.tellg();
     std::vector<char> buffer(fileSize);

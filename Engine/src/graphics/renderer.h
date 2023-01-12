@@ -20,6 +20,7 @@ public:
     Renderer(GLFWwindow *window, const char* appName, const char* engineName);
     ~Renderer();
     void render();
+    VkDevice device() const { return _device; }
 private:
     GLFWwindow *_window;
     VkInstance _instance;
@@ -53,7 +54,12 @@ private:
     VkPipeline _graphicsPipeline;
     std::vector<VkFramebuffer> _swapchainFramebuffers;
     VkCommandPool _commandPool;
-    VkCommandBuffer _commandBuffer;
+    std::vector<VkCommandBuffer> _commandBuffers;
+    std::vector<VkSemaphore> _imageAvailableSemaphores;
+    std::vector<VkSemaphore> _renderFinishedSemaphores;
+    std::vector<VkFence> _inFlightFences;
+    const u32 _MaxFramesInFlight = 2;
+    u32 _currentFrame;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
