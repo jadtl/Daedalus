@@ -561,7 +561,7 @@ void Renderer::render()
 
     vkQueuePresentKHR(_presentQueue, &presentInfo);
 
-    //_currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
+    _currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(
