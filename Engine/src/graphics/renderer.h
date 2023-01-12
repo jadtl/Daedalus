@@ -103,6 +103,13 @@ private:
             return attributeDescriptions;
         }
     };
+    const std::vector<Vertex> _vertices = {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    };
+    VkBuffer _vertexBuffer;
+    VkDeviceMemory _vertexBufferMemory;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
@@ -144,6 +151,22 @@ private:
     std::vector<char> readFile(const std::string& fileName);
     VkShaderModule createShaderModule(std::vector<char> code);
 
+    u32 findMemoryType(
+        u32 typeFilter,
+        VkMemoryPropertyFlags properties);
+    void createBuffer(
+        VkDeviceSize size,
+        VkBufferUsageFlags usage,
+        VkMemoryPropertyFlags properties,
+        VkBuffer& buffer,
+        VkDeviceMemory& bufferMemory);
+    void copyBuffer(
+        VkBuffer dstBuffer,
+        VkBuffer srcBuffer,
+        VkDeviceSize size
+    );
+
     void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
+
 };
 }
