@@ -15,7 +15,8 @@ set_target_properties(Engine
 target_link_libraries(Engine
     fmt::fmt
     Vulkan::Vulkan
-    glfw)
+    glfw
+    glm)
 
 target_compile_definitions(Engine 
     PRIVATE
