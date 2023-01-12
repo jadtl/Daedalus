@@ -401,10 +401,57 @@ Renderer::Renderer(
 
     vkDestroyShaderModule(_device, vertShaderModule, nullptr);
     vkDestroyShaderModule(_device, fragShaderModule, nullptr);
+
+    _swapchainFramebuffers.resize(_swapchainImageViews.size());
+
+    for (size_t i = 0; i < _swapchainImageViews.size(); i++) {
+        VkImageView attachments[] = {
+            _swapchainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = _renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = _swapchainExtent.width;
+        framebufferInfo.height = _swapchainExtent.height;
+        framebufferInfo.layers = 1;
+
+        Assert(vkCreateFramebuffer(_device, &framebufferInfo, nullptr, &_swapchainFramebuffers[i]) == VK_SUCCESS,
+            "Failed to create framebuffer!");
+    }
+
+    indices = findQueueFamilies(_physicalDevice);
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = indices.graphicsFamily.value();
+
+    Assert(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool) == VK_SUCCESS,
+        "Failed to create command pool!");
+
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = _commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+
+    Assert(vkAllocateCommandBuffers(_device, &allocInfo, &_commandBuffer) == VK_SUCCESS,
+        "Failed to allocate command buffers!");
+
 }
 
 Renderer::~Renderer()
 {
+    vkDestroyCommandPool(_device, _commandPool, nullptr);
+
+    for (u32 i = 0; i < _swapchainImages.size(); i++)
+    {
+        vkDestroyFramebuffer(_device, _swapchainFramebuffers[i], nullptr);
+    }
+
     vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 
     vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
@@ -429,6 +476,10 @@ Renderer::~Renderer()
     vkDestroySurfaceKHR(_instance, _surface, nullptr);
 
     vkDestroyInstance(_instance, nullptr);
+}
+
+void Renderer::render()
+{
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(
@@ -656,7 +707,8 @@ VkExtent2D Renderer::chooseSwapExtent(
     return actualExtent;
 }
 
-std::vector<char> ddls::Renderer::readFile(const std::string& fileName)
+std::vector<char> ddls::Renderer::readFile(
+    const std::string& fileName)
 {
     // Start reading at the end of the file and avoid text transformations
     std::ifstream file(fileName, std::ios::ate | std::ios::binary);
@@ -674,7 +726,8 @@ std::vector<char> ddls::Renderer::readFile(const std::string& fileName)
     return buffer;
 }
 
-VkShaderModule Renderer::createShaderModule(std::vector<char> code)
+VkShaderModule Renderer::createShaderModule(
+    std::vector<char> code)
 {
     VkShaderModuleCreateInfo shaderCreateInfo{};
     shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -685,6 +738,54 @@ VkShaderModule Renderer::createShaderModule(std::vector<char> code)
     Assert(vkCreateShaderModule(_device, &shaderCreateInfo, nullptr, &shaderModule) == VK_SUCCESS,
         "Failed to create shader module!");
     return shaderModule;
+}
+
+void Renderer::recordCommandBuffer(
+    VkCommandBuffer commandBuffer, 
+    u32 imageIndex)
+{
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = 0;
+    beginInfo.pInheritanceInfo = nullptr;
+
+    Assert(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS,
+        "Failed to begin recording command buffer!");
+
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = _renderPass;
+    renderPassInfo.framebuffer = _swapchainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = _swapchainExtent;
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = static_cast<f32>(_swapchainExtent.width);
+    viewport.height = static_cast<f32>(_swapchainExtent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = _swapchainExtent;
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer);
+
+    Assert(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS,
+        "Failed to record command buffer");
 }
 
 }
