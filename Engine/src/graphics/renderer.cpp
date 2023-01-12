@@ -20,11 +20,23 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     return VK_FALSE;
 }
 
+static void framebufferResizeCallback(GLFWwindow *window, i32 width, i32 height)
+{
+    ignore(width, height);
+
+    auto renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+
+    renderer->setFramebufferResized();
+}
+
 Renderer::Renderer(
     GLFWwindow *window, 
     const char* appName, 
     const char* engineName) : _window(window)
 {
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
     Assert(checkValidationLayerSupport(_validationLayers) || !_enableValidationLayers, 
         "Validations layers requested but not supported!");
 
@@ -156,83 +168,9 @@ Renderer::Renderer(
     vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &_graphicsQueue);
     vkGetDeviceQueue(_device, indices.presentFamily.value(), 0, &_presentQueue);
 
-    swapchainSupportDetails swapChainSupport = querySwapChainSupport(_physicalDevice);
+    createSwapchain();
 
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-
-    // Adding one reduces internal waiting
-    u32 imageCount = swapChainSupport.capabilities.minImageCount + 1;
-
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-        imageCount = swapChainSupport.capabilities.maxImageCount;
-    }
-
-    VkSwapchainCreateInfoKHR swapchainCreateInfo{};
-    swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    swapchainCreateInfo.surface = _surface;
-    swapchainCreateInfo.minImageCount = imageCount;
-    swapchainCreateInfo.imageFormat = surfaceFormat.format;
-    swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-    swapchainCreateInfo.imageExtent = extent;
-    // Always 1 unless developing a stereoscoping 3D application
-    swapchainCreateInfo.imageArrayLayers = 1;
-    // Rendering directly to the images, i.e. not doing any post-processing
-    swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    u32 queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
-    if (indices.graphicsFamily != indices.presentFamily)
-    {
-        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        swapchainCreateInfo.queueFamilyIndexCount = 2;
-        swapchainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
-    } 
-    else
-    {
-        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        swapchainCreateInfo.queueFamilyIndexCount = 0;
-        swapchainCreateInfo.pQueueFamilyIndices = nullptr;
-    }
-    // No pre-transform
-    swapchainCreateInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    // Ignore the alpha channel
-    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    swapchainCreateInfo.presentMode = presentMode;
-    swapchainCreateInfo.clipped = VK_TRUE;
-    swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
-
-    Assert(vkCreateSwapchainKHR(_device, &swapchainCreateInfo, nullptr, &_swapchain) == VK_SUCCESS,
-        "Failed to create swapchain!");
-
-    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, nullptr);
-    _swapchainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, _swapchainImages.data());
-
-    _swapchainImageFormat = surfaceFormat.format;
-    _swapchainExtent = extent;
-
-    _swapchainImageViews.resize(_swapchainImages.size());
-
-    for (u32 i = 0; i < _swapchainImages.size(); i++)
-    {
-        VkImageViewCreateInfo imageViewCreateInfo{};
-        imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        imageViewCreateInfo.image = _swapchainImages[i];
-        imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        imageViewCreateInfo.format = _swapchainImageFormat;
-        imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-        imageViewCreateInfo.subresourceRange.levelCount = 1;
-        imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
-        imageViewCreateInfo.subresourceRange.layerCount = 1;
-
-        Assert(vkCreateImageView(_device, &imageViewCreateInfo, nullptr, &_swapchainImageViews[i]) == VK_SUCCESS,
-            "Failed to create swapchain image view!");
-    }
+    createSwapchainImageViews();
 
     auto vertShaderCode = readFile("shader.vert.spv");
     auto fragShaderCode = readFile("shader.frag.spv");
@@ -412,25 +350,7 @@ Renderer::Renderer(
     vkDestroyShaderModule(_device, vertShaderModule, nullptr);
     vkDestroyShaderModule(_device, fragShaderModule, nullptr);
 
-    _swapchainFramebuffers.resize(_swapchainImageViews.size());
-
-    for (size_t i = 0; i < _swapchainImageViews.size(); i++) {
-        VkImageView attachments[] = {
-            _swapchainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo{};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = _renderPass;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = _swapchainExtent.width;
-        framebufferInfo.height = _swapchainExtent.height;
-        framebufferInfo.layers = 1;
-
-        Assert(vkCreateFramebuffer(_device, &framebufferInfo, nullptr, &_swapchainFramebuffers[i]) == VK_SUCCESS,
-            "Failed to create framebuffer!");
-    }
+    createSwapchainFramebuffers();
 
     indices = findQueueFamilies(_physicalDevice);
 
@@ -480,6 +400,8 @@ Renderer::Renderer(
 
 Renderer::~Renderer()
 {
+    destroySwapchain();
+
     for (u32 i = 0; i < _MaxFramesInFlight; i++)
     {
         vkDestroySemaphore(_device, _imageAvailableSemaphores[i], nullptr);
@@ -489,23 +411,11 @@ Renderer::~Renderer()
 
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
-    for (u32 i = 0; i < _swapchainImages.size(); i++)
-    {
-        vkDestroyFramebuffer(_device, _swapchainFramebuffers[i], nullptr);
-    }
-
     vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
 
     vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
 
-    for (u32 i = 0; i < _swapchainImages.size(); i++)
-    {
-        vkDestroyImageView(_device, _swapchainImageViews[i], nullptr);
-    }
-
     vkDestroyRenderPass(_device, _renderPass, nullptr);
-
-    vkDestroySwapchainKHR(_device, _swapchain, nullptr);
 
     vkDestroyDevice(_device, nullptr);
 
@@ -523,10 +433,21 @@ Renderer::~Renderer()
 void Renderer::render()
 {
     vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, (u64)-1);
-    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
 
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(_device, _swapchain, (u64)-1, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_device, _swapchain, (u64)-1, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        _framebufferResized = false;
+        recreateSwapchain();
+        return;
+    }
+
+    Assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR,
+        "Failed to acquire swapchain image!");
+
+    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
 
     vkResetCommandBuffer(_commandBuffers[_currentFrame], 0);
 
@@ -559,9 +480,157 @@ void Renderer::render()
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
 
-    vkQueuePresentKHR(_presentQueue, &presentInfo);
+    result = vkQueuePresentKHR(_presentQueue, &presentInfo);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    {
+        _framebufferResized = false;
+        recreateSwapchain();
+    }
+    else
+    {
+        Assert(result == VK_SUCCESS,
+            "Failed to present swapchain image!");
+    }
 
     _currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
+}
+
+void Renderer::recreateSwapchain()
+{
+    i32 width = 0, height = 0;
+    glfwGetFramebufferSize(_window, &width, &height);
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(_window, &width, &height);
+        glfwWaitEvents();
+    }
+
+    vkDeviceWaitIdle(_device);
+
+    destroySwapchain();
+
+    createSwapchain();
+    createSwapchainImageViews();
+    createSwapchainFramebuffers();
+}
+
+void Renderer::createSwapchain()
+{
+    swapchainSupportDetails swapChainSupport = querySwapChainSupport(_physicalDevice);
+
+    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+
+    // Adding one reduces internal waiting
+    u32 imageCount = swapChainSupport.capabilities.minImageCount + 1;
+
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR swapchainCreateInfo{};
+    swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    swapchainCreateInfo.surface = _surface;
+    swapchainCreateInfo.minImageCount = imageCount;
+    swapchainCreateInfo.imageFormat = surfaceFormat.format;
+    swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+    swapchainCreateInfo.imageExtent = extent;
+    // Always 1 unless developing a stereoscoping 3D application
+    swapchainCreateInfo.imageArrayLayers = 1;
+    // Rendering directly to the images, i.e. not doing any post-processing
+    swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    QueueFamilyIndices indices = findQueueFamilies(_physicalDevice);
+    u32 queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    if (indices.graphicsFamily != indices.presentFamily)
+    {
+        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        swapchainCreateInfo.queueFamilyIndexCount = 2;
+        swapchainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
+    } 
+    else
+    {
+        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        swapchainCreateInfo.queueFamilyIndexCount = 0;
+        swapchainCreateInfo.pQueueFamilyIndices = nullptr;
+    }
+    // No pre-transform
+    swapchainCreateInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+    // Ignore the alpha channel
+    swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    swapchainCreateInfo.presentMode = presentMode;
+    swapchainCreateInfo.clipped = VK_TRUE;
+    swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    Assert(vkCreateSwapchainKHR(_device, &swapchainCreateInfo, nullptr, &_swapchain) == VK_SUCCESS,
+        "Failed to create swapchain!");
+
+    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, nullptr);
+    _swapchainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(_device, _swapchain, &imageCount, _swapchainImages.data());
+
+    _swapchainImageFormat = surfaceFormat.format;
+    _swapchainExtent = extent;
+}
+
+void Renderer::createSwapchainImageViews()
+{
+    _swapchainImageViews.resize(_swapchainImages.size());
+
+    for (u32 i = 0; i < _swapchainImages.size(); i++)
+    {
+        VkImageViewCreateInfo imageViewCreateInfo{};
+        imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        imageViewCreateInfo.image = _swapchainImages[i];
+        imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        imageViewCreateInfo.format = _swapchainImageFormat;
+        imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+        imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+        imageViewCreateInfo.subresourceRange.levelCount = 1;
+        imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+        imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+        Assert(vkCreateImageView(_device, &imageViewCreateInfo, nullptr, &_swapchainImageViews[i]) == VK_SUCCESS,
+            "Failed to create swapchain image view!");
+    }
+}
+
+void Renderer::createSwapchainFramebuffers()
+{
+    _swapchainFramebuffers.resize(_swapchainImageViews.size());
+
+    for (size_t i = 0; i < _swapchainImageViews.size(); i++) {
+        VkImageView attachments[] = {
+            _swapchainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = _renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = _swapchainExtent.width;
+        framebufferInfo.height = _swapchainExtent.height;
+        framebufferInfo.layers = 1;
+
+        Assert(vkCreateFramebuffer(_device, &framebufferInfo, nullptr, &_swapchainFramebuffers[i]) == VK_SUCCESS,
+            "Failed to create framebuffer!");
+    }
+}
+
+void Renderer::destroySwapchain()
+{
+    for (size_t i = 0; i < _swapchainFramebuffers.size(); i++)
+        vkDestroyFramebuffer(_device, _swapchainFramebuffers[i], nullptr);
+
+    for (size_t i = 0; i < _swapchainImageViews.size(); i++)
+        vkDestroyImageView(_device, _swapchainImageViews[i], nullptr);
+
+    vkDestroySwapchainKHR(_device, _swapchain, nullptr);
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(

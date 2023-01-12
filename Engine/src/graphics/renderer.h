@@ -22,7 +22,14 @@ public:
     ~Renderer();
     void render();
     VkDevice device() const { return _device; }
+    void setFramebufferResized() { _framebufferResized = true; }
 private:
+    void recreateSwapchain();
+    void createSwapchain();
+    void createSwapchainImageViews();
+    void createSwapchainFramebuffers();
+    void destroySwapchain();
+
     GLFWwindow *_window;
     VkInstance _instance;
     VkPhysicalDevice _physicalDevice;
@@ -61,6 +68,7 @@ private:
     std::vector<VkFence> _inFlightFences;
     const u32 _MaxFramesInFlight = 2;
     u32 _currentFrame;
+    b8 _framebufferResized;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
