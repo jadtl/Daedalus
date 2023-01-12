@@ -47,6 +47,9 @@ private:
     VkFormat _swapchainImageFormat;
     VkExtent2D _swapchainExtent;
     std::vector<VkImageView> _swapchainImageViews;
+    VkPipelineLayout _pipelineLayout;
+    VkRenderPass _renderPass;
+    VkPipeline _graphicsPipeline;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
@@ -68,12 +71,14 @@ private:
     void fillDebugMessengerCreateInfo(
         VkDebugUtilsMessengerCreateInfoEXT& createInfo, 
         PFN_vkDebugUtilsMessengerCallbackEXT debugCallback);
+
     bool isDeviceSuitable(
         VkPhysicalDevice physicalDevice);
     QueueFamilyIndices findQueueFamilies(
         VkPhysicalDevice physicalDevice);
     bool checkDeviceExtensionSupport(
         VkPhysicalDevice physicalDevice);
+
     swapchainSupportDetails querySwapChainSupport(
         VkPhysicalDevice physicalDevice);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -82,5 +87,8 @@ private:
         const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(
         const VkSurfaceCapabilitiesKHR& capabilities);
+
+    std::vector<char> readFile(const std::string& fileName);
+    VkShaderModule createShaderModule(std::vector<char> code);
 };
 }
