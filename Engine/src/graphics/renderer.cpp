@@ -474,6 +474,8 @@ Renderer::Renderer(
         Assert(vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFences[i]) == VK_SUCCESS,
             "Failed to create fence!");
     }
+
+    _currentFrame = 0;
 }
 
 Renderer::~Renderer()
@@ -559,7 +561,7 @@ void Renderer::render()
 
     vkQueuePresentKHR(_presentQueue, &presentInfo);
 
-    _currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
+    //_currentFrame = (_currentFrame + 1) % _MaxFramesInFlight;
 }
 
 std::vector<const char*> Renderer::getRequiredExtensions(
