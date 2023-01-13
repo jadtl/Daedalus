@@ -1,5 +1,12 @@
 # CMake
 Build
+Target
+CMake*
+!CMakeLists.txt
+Makefile
+
+# ccls
+compile_commands.json
 
 # Log files
 *.log

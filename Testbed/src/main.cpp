@@ -1,24 +1,116 @@
 #include <daedalus.h>
 
-#include <string>
-#include <vector>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_vulkan.h>
+
+#include <memory>
+
+using namespace ddls;
+
+const char *appName = "Daedalus";
+const char *engineName = "Daedalus";
+
+const u32 width = 800;
+const u32 height = 600;
 
 int main()
 {
-    std::vector<std::string> args;
-    args.push_back("-validate");
+    glfwInit();
 
-    ddls::Engine* engine = new ddls::Engine(args);
-    engine->initialize();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    while (!glfwWindowShouldClose(engine->window))
+    GLFWwindow *window = glfwCreateWindow(width, height, appName, nullptr, nullptr);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO &io = ImGui::GetIO();
+		(void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    ImGui::StyleColorsLight();
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        engine->update();
-        engine->render();
-        glfwPollEvents();
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    delete engine;
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+
+    std::unique_ptr<ddls::Renderer> renderer = std::make_unique<ddls::Renderer>(window, appName, engineName);
+
+    ImGui_ImplVulkan_InitInfo initInfo{};
+    initInfo.Instance = renderer->instance();
+    initInfo.PhysicalDevice = renderer->physicalDevice();
+    initInfo.Device = renderer->device();
+    initInfo.Queue = renderer->queue();
+    initInfo.DescriptorPool = renderer->descriptorPoolImGui();
+    initInfo.MinImageCount = 2;
+    initInfo.ImageCount = renderer->imageCount();
+    ImGui_ImplVulkan_Init(&initInfo, renderer->renderPassImGui());
+
+    VkCommandPool commandPool = renderer->commandPoolImGui();
+    VkCommandBuffer commandBuffer = renderer->commandBufferImGui();
+
+    vkResetCommandPool(renderer->device(), commandPool, 0);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkEndCommandBuffer(commandBuffer);
+
+    Assert(vkQueueSubmit(renderer->queue(), 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS,
+        "Failed to submit to queue!");
+
+    vkDeviceWaitIdle(renderer->device());
+
+    ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
+
+        ImGui::Render();
+        ImDrawData *drawData = ImGui::GetDrawData();
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+        renderer->render(drawData);
+    }
+
+    vkDeviceWaitIdle(renderer->device());
+
+    ImGui_ImplVulkan_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    renderer.reset();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
 
     return 0;
 }

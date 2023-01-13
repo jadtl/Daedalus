@@ -1,25 +1,38 @@
-file(GLOB_RECURSE HEADERS "src/*.h")
-file(GLOB_RECURSE SOURCES "src/*.c" "src/*.cpp" "src/*.m")
+file(GLOB_RECURSE DDLS_SOURCES "src/*.h" "src/*.cpp")
+if (WIN32)
+    add_library(Engine STATIC ${DDLS_SOURCES})
+else()
+    add_library(Engine SHARED ${DDLS_SOURCES})
+endif()
+add_library(Daedalus::Engine ALIAS Engine)
 
-add_library(Daedalus STATIC ${HEADERS} ${SOURCES})
-add_library(Daedalus::Daedalus ALIAS Daedalus)
-
-target_compile_features(Daedalus
+target_include_directories(Engine 
     PUBLIC 
-    c_std_11 
-    cxx_std_17
-)
+    src/)
 
-target_compile_definitions(Daedalus 
-    PRIVATE 
+set_target_properties(Engine 
+    PROPERTIES 
+    OUTPUT_NAME "Daedalus" 
+    CXX_VISIBILITY_PRESET hidden)
+
+target_link_libraries(Engine
+    fmt::fmt
+    Vulkan::Vulkan
+    glfw
+    glm
+    imgui)
+
+target_compile_definitions(Engine 
+    PRIVATE
     DDLS_EXPORT
-    PUBLIC
-    # Daedalus version
+    ## Version ##
     DDLS_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
     DDLS_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
     DDLS_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}
-    # Debug macro
+    PUBLIC
+    ## Debug ##
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:DEBUG DDLS_DEBUG>
+    ## Platforms ##
     # Windows
 	$<$<PLATFORM_ID:Windows>:DDLS_PLATFORM_WINDOWS WIN32_LEAN_AND_MEAN NOMINMAX>
 	# Linux
@@ -28,20 +41,43 @@ target_compile_definitions(Daedalus
 	$<$<PLATFORM_ID:Darwin>:DDLS_PLATFORM_MACOS>
 )
 
-target_include_directories(Daedalus 
-    PUBLIC
-    # Daedalus sources
-    src
+set(SHADER_DIR "shaders")
+
+file(GLOB_RECURSE GLSL_FRAG
+    "${SHADER_DIR}/*.frag.glsl"
 )
 
-target_link_libraries(Daedalus 
-    PUBLIC
-    Vulkan::Vulkan 
-    glm 
-    glfw
-    fmt::fmt
-    tinyobjloader
-    vk-bootstrap
-    VulkanMemoryAllocator
+file(GLOB_RECURSE GLSL_VERT
+    "${SHADER_DIR}/*.vert.glsl"
 )
 
+foreach(GLSL ${GLSL_FRAG})
+    get_filename_component(FILE_NAME ${GLSL} NAME)
+    set(SPIRV "${SHADER_DIR}/${FILE_NAME}.spv")
+    string(REPLACE ".glsl" "" SPIRV "${SPIRV}")
+    add_custom_command(
+        OUTPUT ${SPIRV}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_DIR}
+        COMMAND glslc -fshader-stage=frag ${GLSL} -o ${SPIRV}
+        DEPENDS ${GLSL})
+    list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+endforeach(GLSL)
+
+foreach(GLSL ${GLSL_VERT})
+    get_filename_component(FILE_NAME ${GLSL} NAME)
+    set(SPIRV "${SHADER_DIR}/${FILE_NAME}.spv")
+    string(REPLACE ".glsl" "" SPIRV "${SPIRV}")
+    add_custom_command(
+        OUTPUT ${SPIRV}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_DIR}
+        COMMAND glslc -fshader-stage=vert ${GLSL} -o ${SPIRV}
+        DEPENDS ${GLSL})
+    list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+endforeach(GLSL)
+
+add_custom_target(
+    Shaders 
+    DEPENDS ${SPIRV_BINARY_FILES}
+)
+
+add_dependencies(Engine Shaders)
