@@ -23,7 +23,10 @@ public:
     Renderer(GLFWwindow *window, const char* appName, const char* engineName);
     ~Renderer();
     void render();
+    VkInstance instance() const { return _instance; }
+    VkPhysicalDevice physicalDevice() const { return _physicalDevice; }
     VkDevice device() const { return _device; }
+    VkQueue queue() const { return _graphicsQueue; }
     void setFramebufferResized() { _framebufferResized = true; }
 private:
     void recreateSwapchain();
@@ -61,6 +64,9 @@ private:
     std::vector<VkImageView> _swapchainImageViews;
     VkPipelineLayout _pipelineLayout;
     VkRenderPass _renderPass;
+    VkDescriptorSetLayout _descriptorSetLayout;
+    VkDescriptorPool _descriptorPool;
+    std::vector<VkDescriptorSet> _descriptorSets;
     VkPipeline _graphicsPipeline;
     std::vector<VkFramebuffer> _swapchainFramebuffers;
     VkCommandPool _commandPool;
@@ -104,12 +110,26 @@ private:
         }
     };
     const std::vector<Vertex> _vertices = {
-        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
     };
     VkBuffer _vertexBuffer;
     VkDeviceMemory _vertexBufferMemory;
+    const std::vector<u16> _indices = {
+        0, 1, 2, 2, 3, 0
+    };
+    VkBuffer _indexBuffer;
+    VkDeviceMemory _indexBufferMemory;
+    struct UniformBufferObject {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+    std::vector<VkBuffer> _uniformBuffers;
+    std::vector<VkDeviceMemory> _uniformBuffersMemory;
+    std::vector<void*> _uniformBuffersMapped;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
@@ -167,6 +187,6 @@ private:
     );
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
-
+    void updateUniformBuffer(u32 currentFrame);
 };
 }
