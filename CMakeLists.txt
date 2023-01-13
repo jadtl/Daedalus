@@ -4,12 +4,13 @@ project(Daedalus VERSION 0.0.1 LANGUAGES CXX C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(External/fmt)
 add_subdirectory(External/glfw)
 add_subdirectory(External/glm)
+add_subdirectory(External/imgui)
 
 find_package(Vulkan REQUIRED)
 

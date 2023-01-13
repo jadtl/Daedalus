@@ -16,7 +16,8 @@ target_link_libraries(Engine
     fmt::fmt
     Vulkan::Vulkan
     glfw
-    glm)
+    glm
+    imgui)
 
 target_compile_definitions(Engine 
     PRIVATE
