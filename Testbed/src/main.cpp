@@ -26,19 +26,20 @@ int main()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO &io = ImGui::GetIO();
-		(void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
     ImGui::StyleColorsLight();
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
+
+    //ImGuiIO &io = ImGui::GetIO();
+		//(void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    //ImGuiStyle& style = ImGui::GetStyle();
+    //if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    //{
+        //style.WindowRounding = 0.0f;
+        //style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    //}
 
     ImGui_ImplGlfw_InitForVulkan(window, true);
 
@@ -93,11 +94,11 @@ int main()
         ImGui::Render();
         ImDrawData *drawData = ImGui::GetDrawData();
         // Update and Render additional Platform Windows
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
+        //if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        //{
+            //ImGui::UpdatePlatformWindows();
+            //ImGui::RenderPlatformWindowsDefault();
+        //}
         renderer->render(drawData);
     }
 
