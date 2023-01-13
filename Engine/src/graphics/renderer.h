@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <imgui.h>
 
 #include <optional>
 #include <vector>
@@ -22,11 +23,17 @@ class DDLS_API Renderer
 public:
     Renderer(GLFWwindow *window, const char* appName, const char* engineName);
     ~Renderer();
-    void render();
+    void render(ImDrawData *drawData = nullptr);
     VkInstance instance() const { return _instance; }
     VkPhysicalDevice physicalDevice() const { return _physicalDevice; }
     VkDevice device() const { return _device; }
     VkQueue queue() const { return _graphicsQueue; }
+    VkRenderPass renderPass() const { return _renderPass; }
+    VkRenderPass renderPassImGui() const { return _renderPassImGui; }
+    VkDescriptorPool descriptorPoolImGui() const { return _descriptorPoolImGui; }
+    VkCommandPool commandPoolImGui() const { return _commandPoolImGui; }
+    VkCommandBuffer commandBufferImGui() const { return _commandBuffersImGui[_currentFrame]; }
+    u32 imageCount() const { return (u32)_swapchainImageViews.size(); }
     void setFramebufferResized() { _framebufferResized = true; }
 private:
     void recreateSwapchain();
@@ -123,9 +130,9 @@ private:
     VkBuffer _indexBuffer;
     VkDeviceMemory _indexBufferMemory;
     struct UniformBufferObject {
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
+        alignas(16) glm::mat4 model;
+        alignas(16) glm::mat4 view;
+        alignas(16) glm::mat4 proj;
     };
     std::vector<VkBuffer> _uniformBuffers;
     std::vector<VkDeviceMemory> _uniformBuffersMemory;
@@ -188,5 +195,36 @@ private:
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
     void updateUniformBuffer(u32 currentFrame);
+
+    void createDescriptorPoolImGui();
+    void createCommandsImGui();
+    void createRenderPassImGui();
+    void createFramebuffersImGui();
+
+    std::vector<VkCommandBuffer> submitBuffer;
+
+    VkRenderPass _renderPassImGui;
+    VkDescriptorPool _descriptorPoolImGui;
+    std::vector<VkFramebuffer> _framebuffersImGui;
+    VkCommandPool _commandPoolImGui;
+    std::vector<VkCommandBuffer> _commandBuffersImGui;
+
+    void recordImGui(
+        VkCommandBuffer commandBuffer, 
+        u32 imageIndex,
+        ImDrawData *drawData);
+
+    void createCommandPool(
+        VkCommandPool *commandPool, 
+        VkCommandPoolCreateFlags flags);
+    void createCommandBuffers(
+        VkCommandBuffer *commandBuffer, 
+        u32 commandBufferCount, 
+        VkCommandPool& commandPool);
+
+    template <typename F>
+    void record(VkRenderPass renderPass, VkCommandBuffer commandBuffer, F&& drawCalls);
+    void submit();
+    void present();
 };
 }

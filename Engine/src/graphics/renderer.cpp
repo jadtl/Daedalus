@@ -2,7 +2,6 @@
 
 #include "core/log.h"
 
-#include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <backends/imgui_impl_glfw.h>
 #define GLM_FORCE_RADIANS
@@ -295,7 +294,7 @@ Renderer::Renderer(
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference colorAttachmentRef{};
     colorAttachmentRef.attachment = 0;
@@ -339,6 +338,12 @@ Renderer::Renderer(
 
     Assert(vkCreateDescriptorSetLayout(_device, &layoutInfo, nullptr, &_descriptorSetLayout) == VK_SUCCESS,
         "Failed to create descriptor set layout!");
+
+    // Initialize ImGui Vulkan structures
+    createRenderPassImGui();
+    createDescriptorPoolImGui();
+    createCommandsImGui();
+    createFramebuffersImGui();
 
     VkDescriptorPoolSize poolSize{};
     poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -543,6 +548,11 @@ Renderer::~Renderer()
         vkFreeMemory(_device, _uniformBuffersMemory[i], nullptr);
     }
 
+    for (auto framebuffer : _framebuffersImGui) vkDestroyFramebuffer(_device, framebuffer, nullptr);
+    vkDestroyRenderPass(_device, _renderPassImGui, nullptr);
+    vkDestroyCommandPool(_device, _commandPoolImGui, nullptr);
+    vkDestroyDescriptorPool(_device, _descriptorPoolImGui, nullptr);
+
     vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
 
     vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
@@ -581,7 +591,7 @@ Renderer::~Renderer()
     vkDestroyInstance(_instance, nullptr);
 }
 
-void Renderer::render()
+void Renderer::render(ImDrawData *drawData)
 {
     vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, (u64)-1);
 
@@ -606,16 +616,22 @@ void Renderer::render()
 
     updateUniformBuffer(_currentFrame);
 
+    vkResetCommandBuffer(_commandBuffersImGui[_currentFrame], 0);
+
+    recordImGui(_commandBuffersImGui[_currentFrame], imageIndex, drawData);
+
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+    std::array<VkCommandBuffer, 2> submitCommandBuffers = 
+        { _commandBuffers[_currentFrame], _commandBuffersImGui[_currentFrame] };
     VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &_commandBuffers[_currentFrame];
+    submitInfo.commandBufferCount = (u32)submitCommandBuffers.size();
+    submitInfo.pCommandBuffers = submitCommandBuffers.data();
     VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
@@ -665,6 +681,8 @@ void Renderer::recreateSwapchain()
     createSwapchain();
     createSwapchainImageViews();
     createSwapchainFramebuffers();
+    for (auto framebuffer: _framebuffersImGui) vkDestroyFramebuffer(_device, framebuffer, nullptr);
+    createFramebuffersImGui();
 }
 
 void Renderer::createSwapchain()
@@ -1120,6 +1138,124 @@ void Renderer::updateUniformBuffer(u32 currentFrame)
     memcpy(_uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
 }
 
+void Renderer::createDescriptorPoolImGui()
+{
+    VkDescriptorPoolSize poolSizes[] =
+    {
+        { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+    };
+    VkDescriptorPoolCreateInfo pool_info = {};
+    pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    pool_info.maxSets = 1000 * IM_ARRAYSIZE(poolSizes);
+    pool_info.poolSizeCount = (u32)IM_ARRAYSIZE(poolSizes);
+    pool_info.pPoolSizes = poolSizes;
+    Assert(vkCreateDescriptorPool(_device, &pool_info, nullptr, &_descriptorPoolImGui) == VK_SUCCESS,
+        "Failed to create ImGui descriptor pool!");
+}
+
+void Renderer::createCommandsImGui()
+{
+    createCommandPool(&_commandPoolImGui, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    _commandBuffersImGui.resize(_swapchainImageViews.size());
+    createCommandBuffers(_commandBuffersImGui.data(), static_cast<u32>(_commandBuffersImGui.size()), _commandPoolImGui);
+}
+
+void Renderer::createRenderPassImGui()
+{
+    VkAttachmentDescription attachment = {};
+    attachment.format = _swapchainImageFormat;
+    attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    attachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference color_attachment = {};
+    color_attachment.attachment = 0;
+    color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &color_attachment;
+
+    VkSubpassDependency dependency = {};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;  // or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+    VkRenderPassCreateInfo info = {};
+    info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    info.attachmentCount = 1;
+    info.pAttachments = &attachment;
+    info.subpassCount = 1;
+    info.pSubpasses = &subpass;
+    info.dependencyCount = 1;
+    info.pDependencies = &dependency;
+
+    Assert(vkCreateRenderPass(_device, &info, nullptr, &_renderPassImGui) == VK_SUCCESS,
+        "Failed to create ImGui render pass!");
+}
+
+void Renderer::createFramebuffersImGui()
+{
+    VkImageView attachment[1];
+    VkFramebufferCreateInfo info = {};
+    info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    info.renderPass = _renderPassImGui;
+    info.attachmentCount = 1;
+    info.pAttachments = attachment;
+    info.width = _swapchainExtent.width;
+    info.height = _swapchainExtent.height;
+    info.layers = 1;
+
+    _framebuffersImGui.resize(_swapchainImageViews.size());
+    for (u32 i = 0; i < _framebuffersImGui.size(); i++)
+    {
+        attachment[0] = _swapchainImageViews[i];
+        Assert(vkCreateFramebuffer(_device, &info, nullptr, &_framebuffersImGui[i]) == VK_SUCCESS,
+            "Failed to create ImGui framebuffer!");
+    }
+}
+
+void Renderer::createCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateFlags flags)
+{
+    QueueFamilyIndices indices = findQueueFamilies(_physicalDevice);
+    VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+    commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    commandPoolCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+    commandPoolCreateInfo.flags = flags;
+
+    Assert(vkCreateCommandPool(_device, &commandPoolCreateInfo, nullptr, commandPool) == VK_SUCCESS,
+        "Failed to create ImGui command pool!");
+}
+
+void Renderer::createCommandBuffers(VkCommandBuffer* commandBuffer, u32 commandBufferCount, VkCommandPool& commandPool)
+{
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+    commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    commandBufferAllocateInfo.commandPool = commandPool;
+    commandBufferAllocateInfo.commandBufferCount = commandBufferCount;
+    vkAllocateCommandBuffers(_device, &commandBufferAllocateInfo, commandBuffer);
+}
+
 void Renderer::createBuffer(
     VkDeviceSize size, 
     VkBufferUsageFlags usage, 
@@ -1215,6 +1351,55 @@ void Renderer::recordCommandBuffer(
         nullptr);
 
     vkCmdDrawIndexed(commandBuffer, static_cast<u32>(_indices.size()), 1, 0, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer);
+
+    Assert(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS,
+        "Failed to record command buffer");
+}
+
+void Renderer::recordImGui(
+    VkCommandBuffer commandBuffer, 
+    u32 imageIndex, 
+    ImDrawData *drawData)
+{
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = 0;
+    beginInfo.pInheritanceInfo = nullptr;
+
+    Assert(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS,
+        "Failed to begin recording command buffer!");
+
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = _renderPassImGui;
+    renderPassInfo.framebuffer = _framebuffersImGui[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = _swapchainExtent;
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = static_cast<f32>(_swapchainExtent.width);
+    viewport.height = static_cast<f32>(_swapchainExtent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = _swapchainExtent;
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);
 
     vkCmdEndRenderPass(commandBuffer);
 
