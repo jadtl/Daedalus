@@ -400,6 +400,12 @@ Renderer::Renderer(
     Assert(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) == VK_SUCCESS,
         "Failed to create graphics pipeline!");
 
+    rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
+    pipelineInfo.pRasterizationState = &rasterizer;
+
+    Assert(vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipelineWireframe) == VK_SUCCESS,
+        "Failed to create graphics pipeline!");
+
     vkDestroyShaderModule(_device, vertShaderModule, nullptr);
     vkDestroyShaderModule(_device, fragShaderModule, nullptr);
 
@@ -547,6 +553,8 @@ Renderer::~Renderer()
         vkDestroyBuffer(_device, _uniformBuffers[i], nullptr);
         vkFreeMemory(_device, _uniformBuffersMemory[i], nullptr);
     }
+
+    vkDestroyPipeline(_device, _graphicsPipelineWireframe, nullptr);
 
     for (auto framebuffer : _framebuffersImGui) vkDestroyFramebuffer(_device, framebuffer, nullptr);
     vkDestroyRenderPass(_device, _renderPassImGui, nullptr);
@@ -1129,7 +1137,8 @@ void Renderer::updateUniformBuffer(u32 currentFrame)
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
     UniformBufferObject ubo{};
-    ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.model = glm::rotate(glm::mat4(1.0f), rotate, glm::vec3(0.0, 1.0, 0.0));
+    ubo.model = glm::rotate(ubo.model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f), (f32)_swapchainExtent.width / (f32)_swapchainExtent.height, 0.1f, 10.0f);
     // Compensate for OpenGL's Y coordinate inversion
@@ -1306,13 +1315,13 @@ void Renderer::recordCommandBuffer(
     renderPassInfo.framebuffer = _swapchainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = _swapchainExtent;
-    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    VkClearValue clearColor = {{{red, green, blue, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, wireframe ? _graphicsPipelineWireframe : _graphicsPipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;

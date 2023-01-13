@@ -35,6 +35,11 @@ public:
     VkCommandBuffer commandBufferImGui() const { return _commandBuffersImGui[_currentFrame]; }
     u32 imageCount() const { return (u32)_swapchainImageViews.size(); }
     void setFramebufferResized() { _framebufferResized = true; }
+    bool wireframe;
+    f32 red;
+    f32 green;
+    f32 blue;
+    f32 rotate;
 private:
     void recreateSwapchain();
     void createSwapchain();
@@ -61,8 +66,7 @@ private:
     struct swapchainSupportDetails
     {
         VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
+        std::vector<VkSurfaceFormatKHR> formats; std::vector<VkPresentModeKHR> presentModes;
     };
     VkSwapchainKHR _swapchain;
     std::vector<VkImage> _swapchainImages;
@@ -226,5 +230,7 @@ private:
     void record(VkRenderPass renderPass, VkCommandBuffer commandBuffer, F&& drawCalls);
     void submit();
     void present();
+
+    VkPipeline _graphicsPipelineWireframe;
 };
 }
