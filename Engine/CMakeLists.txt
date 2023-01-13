@@ -1,6 +1,9 @@
 file(GLOB_RECURSE DDLS_SOURCES "src/*.h" "src/*.cpp")
-
-add_library(Engine SHARED ${DDLS_SOURCES})
+if (WIN32)
+    add_library(Engine STATIC ${DDLS_SOURCES})
+else()
+    add_library(Engine SHARED ${DDLS_SOURCES})
+endif()
 add_library(Daedalus::Engine ALIAS Engine)
 
 target_include_directories(Engine 

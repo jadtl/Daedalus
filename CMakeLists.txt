@@ -25,7 +25,7 @@ else()
     add_compile_options(-Wextra -Wfloat-equal -Wshadow -Wpointer-arith -Wbad-function-cast -Wwrite-strings -Wconversion -Wunreachable-code -Wcast-qual -W -Wformat=2 -Winit-self -Wuninitialized)
 endif()
 
-add_compile_options(-DDDLS_ASSERT)
+add_compile_options(-DDDLS_ASSERT -D_CRT_SECURE_NO_WARNINGS)
 
 add_subdirectory(Engine)
 add_subdirectory(Testbed)

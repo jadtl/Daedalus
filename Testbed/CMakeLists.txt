@@ -14,6 +14,12 @@ else()
     add_executable(Testbed src/main.cpp)
 endif()
 
+if (WIN32)
+    target_compile_definitions(Testbed
+        PRIVATE
+        DDLS_EXPORT)
+endif()
+
 target_link_libraries(Testbed Daedalus::Engine)
 
 add_custom_command(TARGET Testbed POST_BUILD
