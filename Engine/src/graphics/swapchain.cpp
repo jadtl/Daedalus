@@ -1,5 +1,6 @@
 #include "graphics/swapchain.h"
-#include "swapchain.h"
+
+#include "core/log.h"
 
 namespace ddls
 {
@@ -9,6 +10,8 @@ Swapchain::Swapchain(
     VkDevice device,
     VkSurfaceKHR surface) : _window(window), _physicalDevice(physicalDevice), _device(device), _surface(surface)
 {
+    createSwapchain();
+    createSwapchainImageViews();
 }
 
 Swapchain::~Swapchain()
@@ -31,11 +34,24 @@ void Swapchain::recreate()
 
     createSwapchain();
     createSwapchainImageViews();
+
+    for (auto recreateCallback: _recreateCallbacks)
+    {
+        for (u32 i = 0; i < (u32)_imageViews.size(); i++)
+            vkDestroyFramebuffer(_device, recreateCallback.first[i], nullptr);
+        vk::createFramebuffers(
+            _device,
+            recreateCallback.first,
+            (u32)_imageViews.size(),
+            recreateCallback.second,
+            _extent,
+            _imageViews.data());
+    }
 }
 
 void Swapchain::createSwapchain()
 {
-    Vulkan::SwapchainSupportDetails swapChainSupport = Vulkan::querySwapchainSupport(_physicalDevice, _surface);
+    vk::SwapchainSupportDetails swapChainSupport = vk::querySwapchainSupport(_physicalDevice, _surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -59,7 +75,7 @@ void Swapchain::createSwapchain()
     swapchainCreateInfo.imageArrayLayers = 1;
     // Rendering directly to the images, i.e. not doing any post-processing
     swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    Vulkan::QueueFamilyIndices indices = Vulkan::findQueueFamilies(_physicalDevice, _surface);
+    vk::QueueFamilyIndices indices = vk::findQueueFamilies(_physicalDevice, _surface);
     u32 queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
     if (indices.graphicsFamily != indices.presentFamily)
     {

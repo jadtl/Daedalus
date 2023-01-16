@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include <vector>
+#include <functional>
 
 namespace ddls
 {
@@ -26,11 +27,13 @@ public:
     ~Swapchain();
     void recreate();
 
-    Vulkan::SwapchainSupportDetails supportDetails() const { return _supportDetails; }
+    VkSwapchainKHR handle() const { return _swapchain; }
+    vk::SwapchainSupportDetails supportDetails() const { return _supportDetails; }
     u32 imageCount() const { return (u32)_imageViews.size(); }
     VkFormat format() const { return _format; }
     VkExtent2D extent() const { return _extent; }
     std::vector<VkImageView> imageViews() const { return _imageViews; }
+    void addFramebuffers(std::pair<VkFramebuffer*, VkRenderPass> recreateCallback) { _recreateCallbacks.push_back(recreateCallback); }
 
 private:
     GLFWwindow *_window;
@@ -42,7 +45,8 @@ private:
     VkFormat _format;
     VkExtent2D _extent;
     std::vector<VkImageView> _imageViews;
-    Vulkan::SwapchainSupportDetails _supportDetails;
+    vk::SwapchainSupportDetails _supportDetails;
+    std::vector<std::pair<VkFramebuffer*, VkRenderPass> > _recreateCallbacks;
 
     void createSwapchain();
     void createSwapchainImageViews();
