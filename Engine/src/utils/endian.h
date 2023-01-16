@@ -4,7 +4,11 @@
 #include "core/types.h"
 
 namespace ddls {
-class DDLS_API Endian : public Helper
+/**
+ * @brief A collection of functions to help deal with endianness
+ * 
+ */
+class DDLS_API Endian: public Helper
 {
 public:
     inline static u16 swapU16(u16 value)
