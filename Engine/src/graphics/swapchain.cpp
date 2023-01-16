@@ -1,5 +1,6 @@
 #include "graphics/swapchain.h"
 
+#include "graphics/pipeline.h"
 #include "core/log.h"
 
 namespace ddls
@@ -35,17 +36,22 @@ void Swapchain::recreate()
     createSwapchain();
     createSwapchainImageViews();
 
-    for (auto recreateCallback: _recreateCallbacks)
+    for (auto pair: _framebuffersCallbacks)
     {
         for (u32 i = 0; i < (u32)_imageViews.size(); i++)
-            vkDestroyFramebuffer(_device, recreateCallback.first[i], nullptr);
+            vkDestroyFramebuffer(_device, pair.first[i], nullptr);
         vk::createFramebuffers(
             _device,
-            recreateCallback.first,
+            pair.first,
             (u32)_imageViews.size(),
-            recreateCallback.second,
+            pair.second,
             _extent,
             _imageViews.data());
+    }
+
+    for (auto pipeline : _pipelineCallbacks)
+    {
+        pipeline->recreate(this);
     }
 }
 

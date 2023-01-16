@@ -60,7 +60,7 @@ Gui::Gui(
 
     createCommands();
     createFramebuffers();
-    _swapchain->addFramebuffers(std::make_pair(_framebuffers.data(), _renderPass));
+    _swapchain->addFramebuffersRecreateCallback(_framebuffers.data(), _renderPass);
 
     uploadFonts();
 }
