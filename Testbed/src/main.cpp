@@ -406,7 +406,7 @@ int main()
         renderer->swapchain(),
         renderPass,
         pipelineLayout,
-        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
+        VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
         vertexShader,
         fragmentShader,
         VK_POLYGON_MODE_FILL
