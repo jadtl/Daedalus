@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/assert.h"
 #include "core/debug.h"
+#include "core/log.h"
 
 #include <iostream>
 
@@ -16,6 +16,15 @@ namespace ddls {
     if (expr) {} \
     else \
     { \
+        reportAssertionFailure(#expr, __FILE__, __LINE__); \
+        debugBreak(); \
+    }
+
+#define Assert(expr, args) \
+    if (expr) {} \
+    else \
+    { \
+        Log::Out(Log::Colours::Magenta, Log::Level::Assert, args); \
         reportAssertionFailure(#expr, __FILE__, __LINE__); \
         debugBreak(); \
     }
