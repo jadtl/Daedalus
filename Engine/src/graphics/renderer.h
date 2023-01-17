@@ -2,7 +2,6 @@
 
 #include <core/defines.h>
 #include <core/types.h>
-#include <graphics/swapchain.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -24,43 +23,124 @@ class DDLS_API Renderer
 public:
     Renderer(GLFWwindow *window, const char* appName, const char* engineName);
     ~Renderer();
-    void draw(ImDrawData *drawData = nullptr);
+    void render(ImDrawData *drawData = nullptr);
     VkInstance instance() const { return _instance; }
     VkPhysicalDevice physicalDevice() const { return _physicalDevice; }
     VkDevice device() const { return _device; }
-    Swapchain *swapchain() const { return _swapchain.get(); }
     VkQueue queue() const { return _graphicsQueue; }
-    u32 queueFamilyIndex() const { return _indices.graphicsFamily.value(); }
+    VkRenderPass renderPass() const { return _renderPass; }
+    VkRenderPass renderPassImGui() const { return _renderPassImGui; }
+    VkDescriptorPool descriptorPoolImGui() const { return _descriptorPoolImGui; }
+    VkCommandPool commandPoolImGui() const { return _commandPoolImGui; }
+    VkCommandBuffer commandBufferImGui() const { return _commandBuffersImGui[_currentFrame]; }
+    u32 imageCount() const { return (u32)_swapchainImageViews.size(); }
     void setFramebufferResized() { _framebufferResized = true; }
-    u32 MaxFramesInFlight() const { return _MaxFramesInFlight; }
     bool wireframe;
     f32 red;
     f32 green;
     f32 blue;
     f32 rotate;
-    u32 currentFrame() const { return _currentFrame; }
-    u32 newFrame();
-    void submit(VkCommandBuffer commandBuffer) { _submitBuffer.push_back(commandBuffer); }
-    void render(u32 imageIndex);
 private:
+    void recreateSwapchain();
+    void createSwapchain();
+    void createSwapchainImageViews();
+    void createSwapchainFramebuffers();
+    void destroySwapchain();
+
     GLFWwindow *_window;
     VkInstance _instance;
     VkPhysicalDevice _physicalDevice;
-    std::unique_ptr<Swapchain> _swapchain;
+    struct QueueFamilyIndices
+    {
+        std::optional<u32> graphicsFamily;
+        std::optional<u32> presentFamily;
+        bool isComplete()
+        {
+            return graphicsFamily.has_value() && presentFamily.has_value();
+        }
+    };
     VkDevice _device;
-    vk::QueueFamilyIndices _indices;
     VkQueue _graphicsQueue;
     VkQueue _presentQueue;
     VkSurfaceKHR _surface;
+    struct swapchainSupportDetails
+    {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats; std::vector<VkPresentModeKHR> presentModes;
+    };
+    VkSwapchainKHR _swapchain;
+    std::vector<VkImage> _swapchainImages;
+    VkFormat _swapchainImageFormat;
+    VkExtent2D _swapchainExtent;
+    std::vector<VkImageView> _swapchainImageViews;
+    VkPipelineLayout _pipelineLayout;
+    VkRenderPass _renderPass;
     VkDescriptorSetLayout _descriptorSetLayout;
     VkDescriptorPool _descriptorPool;
     std::vector<VkDescriptorSet> _descriptorSets;
+    VkPipeline _graphicsPipeline;
+    std::vector<VkFramebuffer> _swapchainFramebuffers;
+    VkCommandPool _commandPool;
+    std::vector<VkCommandBuffer> _commandBuffers;
     std::vector<VkSemaphore> _imageAvailableSemaphores;
     std::vector<VkSemaphore> _renderFinishedSemaphores;
     std::vector<VkFence> _inFlightFences;
     const u32 _MaxFramesInFlight = 2;
     u32 _currentFrame;
     b8 _framebufferResized;
+    struct Vertex {
+        glm::vec2 position;
+        glm::vec3 color;
+
+        static VkVertexInputBindingDescription getBindingDescription() {
+            VkVertexInputBindingDescription bindingDescription{};
+
+            bindingDescription.binding = 0;
+            bindingDescription.stride = sizeof(Vertex);
+            bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+            return bindingDescription;
+        }
+        
+        static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+            std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+            attributeDescriptions[0].binding = 0;
+            attributeDescriptions[0].location = 0;
+            // vec2
+            attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptions[0].offset = offsetof(Vertex, position);
+
+            attributeDescriptions[1].binding = 0;
+            attributeDescriptions[1].location = 1;
+            // vec3
+            attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+            return attributeDescriptions;
+        }
+    };
+    const std::vector<Vertex> _vertices = {
+        {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    };
+    VkBuffer _vertexBuffer;
+    VkDeviceMemory _vertexBufferMemory;
+    const std::vector<u16> _indices = {
+        0, 1, 2, 2, 3, 0
+    };
+    VkBuffer _indexBuffer;
+    VkDeviceMemory _indexBufferMemory;
+    struct UniformBufferObject {
+        alignas(16) glm::mat4 model;
+        alignas(16) glm::mat4 view;
+        alignas(16) glm::mat4 proj;
+    };
+    std::vector<VkBuffer> _uniformBuffers;
+    std::vector<VkDeviceMemory> _uniformBuffersMemory;
+    std::vector<void*> _uniformBuffersMapped;
 
     const std::vector<const char*> _validationLayers = 
         {"VK_LAYER_KHRONOS_validation"};
@@ -84,13 +164,73 @@ private:
         PFN_vkDebugUtilsMessengerCallbackEXT debugCallback);
 
     bool isDeviceSuitable(
-        VkPhysicalDevice physicalDevice,
-        VkSurfaceKHR surface);
+        VkPhysicalDevice physicalDevice);
+    QueueFamilyIndices findQueueFamilies(
+        VkPhysicalDevice physicalDevice);
     bool checkDeviceExtensionSupport(
         VkPhysicalDevice physicalDevice);
 
-    void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
+    swapchainSupportDetails querySwapChainSupport(
+        VkPhysicalDevice physicalDevice);
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+        const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    VkPresentModeKHR chooseSwapPresentMode(
+        const std::vector<VkPresentModeKHR>& availablePresentModes);
+    VkExtent2D chooseSwapExtent(
+        const VkSurfaceCapabilitiesKHR& capabilities);
 
-    std::vector<VkCommandBuffer> _submitBuffer;
+    std::vector<char> readFile(const std::string& fileName);
+    VkShaderModule createShaderModule(std::vector<char> code);
+
+    u32 findMemoryType(
+        u32 typeFilter,
+        VkMemoryPropertyFlags properties);
+    void createBuffer(
+        VkDeviceSize size,
+        VkBufferUsageFlags usage,
+        VkMemoryPropertyFlags properties,
+        VkBuffer& buffer,
+        VkDeviceMemory& bufferMemory);
+    void copyBuffer(
+        VkBuffer dstBuffer,
+        VkBuffer srcBuffer,
+        VkDeviceSize size
+    );
+
+    void recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
+    void updateUniformBuffer(u32 currentFrame);
+
+    void createDescriptorPoolImGui();
+    void createCommandsImGui();
+    void createRenderPassImGui();
+    void createFramebuffersImGui();
+
+    std::vector<VkCommandBuffer> submitBuffer;
+
+    VkRenderPass _renderPassImGui;
+    VkDescriptorPool _descriptorPoolImGui;
+    std::vector<VkFramebuffer> _framebuffersImGui;
+    VkCommandPool _commandPoolImGui;
+    std::vector<VkCommandBuffer> _commandBuffersImGui;
+
+    void recordImGui(
+        VkCommandBuffer commandBuffer, 
+        u32 imageIndex,
+        ImDrawData *drawData);
+
+    void createCommandPool(
+        VkCommandPool *commandPool, 
+        VkCommandPoolCreateFlags flags);
+    void createCommandBuffers(
+        VkCommandBuffer *commandBuffer, 
+        u32 commandBufferCount, 
+        VkCommandPool& commandPool);
+
+    template <typename F>
+    void record(VkRenderPass renderPass, VkCommandBuffer commandBuffer, F&& drawCalls);
+    void submit();
+    void present();
+
+    VkPipeline _graphicsPipelineWireframe;
 };
 }
