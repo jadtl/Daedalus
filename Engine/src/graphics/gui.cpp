@@ -1,11 +1,9 @@
 #include "graphics/gui.h"
 
-#include "core/log.h"
 #include "utils/helper.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
-#include "gui.h"
 
 namespace ddls
 {
@@ -16,8 +14,8 @@ Gui::Gui(
     VkDevice device,
     VkQueue queue,
     u32 queueFamilyIndex,
-    ddls::Swapchain *swapchain,
-    b8 docking) : _device(device), _swapchain(swapchain), _queue(queue), _queueFamilyIndex(queueFamilyIndex)
+    const ddls::Swapchain& swapchain,
+    b8 docking) : _device(device), _swapchain(swapchain), _queueFamilyIndex(queueFamilyIndex)
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -53,16 +51,14 @@ Gui::Gui(
     initInfo.Device = device;
     initInfo.Queue = queue;
     initInfo.DescriptorPool = _descriptorPool;
-    initInfo.MinImageCount = 2;
-    initInfo.ImageCount = swapchain->imageCount();
+    initInfo.MinImageCount = swapchain.supportDetails().capabilities.minImageCount;
+    initInfo.ImageCount = swapchain.imageCount();
     createRenderPass();
     ImGui_ImplVulkan_Init(&initInfo, _renderPass);
 
     createCommands();
+    createRenderPass();
     createFramebuffers();
-    _swapchain->addFramebuffers(std::make_pair(_framebuffers.data(), _renderPass));
-
-    uploadFonts();
 }
 
 ddls::Gui::~Gui()
@@ -76,6 +72,14 @@ ddls::Gui::~Gui()
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void Gui::recreateFramebuffers(const ddls::Swapchain& swapchain)
+{
+    // Update swapchain and recreate framebuffers
+    _swapchain = swapchain;
+    destroyFramebuffers();
+    createFramebuffers();
 }
 
 void Gui::newFrame()
@@ -128,14 +132,14 @@ void Gui::createDescriptorPool()
 }
 void Gui::createCommands()
 {
-    vk::createCommandPool(_device, &_commandPool, _queueFamilyIndex, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-    _commandBuffers.resize(_swapchain->imageCount());
-    vk::createCommandBuffers(_device, _commandBuffers.data(), (u32)_commandBuffers.size(), _commandPool);
+    Vulkan::createCommandPool(_device, &_commandPool, _queueFamilyIndex, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    _commandBuffers.resize(_swapchain.imageCount());
+    Vulkan::createCommandBuffers(_device, _commandBuffers.data(), (u32)_commandBuffers.size(), _commandPool);
 }
 void Gui::createRenderPass()
 {
     VkAttachmentDescription attachment = {};
-    attachment.format = _swapchain->format();
+    attachment.format = _swapchain.format();
     attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
     attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -175,89 +179,18 @@ void Gui::createRenderPass()
 }
 void Gui::createFramebuffers()
 {
-    _framebuffers.resize(_swapchain->imageCount());
-    vk::createFramebuffers(
+    _framebuffers.resize(_swapchain.imageCount());
+    Vulkan::createFramebuffers(
         _device, 
         _framebuffers.data(), 
-        _swapchain->imageCount(),
+        _swapchain.imageCount(),
         _renderPass,
-        _swapchain->extent(),
-        _swapchain->imageViews().data());
+        _swapchain.extent(),
+        _swapchain.imageViews().data());
 }
 void Gui::destroyFramebuffers()
 {
     for (auto framebuffer: _framebuffers)
         vkDestroyFramebuffer(_device, framebuffer, nullptr);
 }
-
-void ddls::Gui::uploadFonts()
-{
-    VkCommandBuffer commandBuffer = _commandBuffers[0];
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-    ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkEndCommandBuffer(commandBuffer);
-
-    Assert(vkQueueSubmit(_queue, 1, &submitInfo, VK_NULL_HANDLE) == VK_SUCCESS,
-        "Failed to submit to queue!");
-
-    vkDeviceWaitIdle(_device);
-
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-}
-
-void Gui::recordCommands(u32 currentFrame, u32 imageIndex, Swapchain *swapchain)
-{
-    vkResetCommandBuffer(_commandBuffers[currentFrame], 0);
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = 0;
-    beginInfo.pInheritanceInfo = nullptr;
-
-    Assert(vkBeginCommandBuffer(_commandBuffers[currentFrame], &beginInfo) == VK_SUCCESS,
-        "Failed to begin recording command buffer!");
-
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = _renderPass;
-    renderPassInfo.framebuffer = _framebuffers[imageIndex];
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = swapchain->extent();
-
-    vkCmdBeginRenderPass(_commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<f32>(swapchain->extent().width);
-    viewport.height = static_cast<f32>(swapchain->extent().height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(_commandBuffers[currentFrame], 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = swapchain->extent();
-    vkCmdSetScissor(_commandBuffers[currentFrame], 0, 1, &scissor);
-
-    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), _commandBuffers[currentFrame]);
-
-    vkCmdEndRenderPass(_commandBuffers[currentFrame]);
-
-    Assert(vkEndCommandBuffer(_commandBuffers[currentFrame]) == VK_SUCCESS,
-        "Failed to record command buffer");
-}
-
 }

@@ -21,7 +21,7 @@ public:
         VkDevice device,
         VkQueue queue,
         u32 queueFamilyIndex,
-        ddls::Swapchain *swapchain,
+        const ddls::Swapchain& swapchain,
         b8 docking = false);
 
     /**
@@ -29,6 +29,13 @@ public:
      * 
      */
     ~Gui();
+
+    /**
+     * @brief Recreates the GUI's framebuffers, this is needed
+     *        when the swapchain used to present it becomes obsolete
+     *
+     */
+    void recreateFramebuffers(const ddls::Swapchain& swapchain);
 
     /**
      * @brief Acquires a new frame to render
@@ -42,14 +49,10 @@ public:
      */
     void render();
 
-    std::vector<VkCommandBuffer> commandBuffers() const { return _commandBuffers; }
-    void recordCommands(u32 currentFrame, u32 imageIndex, Swapchain *swapchain);
-
 private:
     VkDevice _device;
     VkDescriptorPool _descriptorPool;
-    ddls::Swapchain *_swapchain;
-    VkQueue _queue;
+    ddls::Swapchain _swapchain;
     u32 _queueFamilyIndex;
     std::vector<VkFramebuffer> _framebuffers;
     VkCommandPool _commandPool;
@@ -61,10 +64,7 @@ private:
     void createDescriptorPool();
     void createCommands();
     void createRenderPass();
-
     void createFramebuffers();
     void destroyFramebuffers();
-
-    void uploadFonts();
 };
 }
