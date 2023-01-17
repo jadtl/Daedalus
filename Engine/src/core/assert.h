@@ -20,20 +20,20 @@ namespace ddls {
         debugBreak(); \
     }
 
-#define Assert(expr, args)\
-    if (expr) {}\
-    else {\
-        Log::Out(Log::Styles::Default, Log::Colours::Magenta, Log::Level::Assert, args);\
-        reportAssertionFailure(#expr, __FILE__, __LINE__);\
-        debugBreak();\
-    }\
+#define ASSERT_TRACE(expr, file, line) \
+    if (expr) {} \
+    else \
+    { \
+        reportAssertionFailure(#expr, file, line); \
+        debugBreak(); \
+    }
 
 #else
 
 // Evaluates to nothing
 #define ASSERT(expr)
 
-#define Assert(expr, args)
+#define ASSERT_TRACE(expr)
 
 #endif
 }

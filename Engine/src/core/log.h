@@ -121,6 +121,22 @@ public:
         Out(Styles::Bold, Colours::Red, Level::Error, args...);
     }
 
+    /**
+     * Outputs a assert message into the console.
+     * @tparam Args The value types to write.
+     * @param expr The expression to assertion check.
+     * @param args The values to write.
+     */
+    template<typename ... Args>
+    static inline void _Assert(b8 expr, const char* file, u32 line, Args ... args) {
+        if (!expr) {
+            Out(Styles::Default, Colours::Magenta, Level::Assert, args...);
+            ASSERT_TRACE(expr, file, line);
+        }
+    }
+
+#define Assert(expr, args) Log::_Assert(expr, __FILE__, __LINE__, args)
+
     static void OpenLog(const std::filesystem::path &filepath);
     static void CloseLog();
 
