@@ -202,9 +202,6 @@ Renderer::Renderer(
     }
 
     _currentFrame = 0;
-    red = 0.f;
-    green = 0.f;
-    blue = 0.f;
 }
 
 Renderer::~Renderer()
