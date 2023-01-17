@@ -10,10 +10,8 @@
 #include <vector>
 #include <functional>
 
-
 namespace ddls
 {
-class Pipeline;
 /**
  * @brief A swapchain used by the renderer to present rendered images
  * 
@@ -35,10 +33,7 @@ public:
     VkFormat format() const { return _format; }
     VkExtent2D extent() const { return _extent; }
     std::vector<VkImageView> imageViews() const { return _imageViews; }
-    void addFramebuffersRecreateCallback(VkFramebuffer* framebuffer, VkRenderPass renderPass) 
-        { _framebuffersCallbacks.push_back(std::make_pair(framebuffer, renderPass)); }
-    void addPipelineRecreateCallback(Pipeline *pipeline) 
-        { _pipelineCallbacks.push_back(pipeline); };
+    void addFramebuffers(std::pair<VkFramebuffer*, VkRenderPass> recreateCallback) { _recreateCallbacks.push_back(recreateCallback); }
 
 private:
     GLFWwindow *_window;
@@ -51,8 +46,7 @@ private:
     VkExtent2D _extent;
     std::vector<VkImageView> _imageViews;
     vk::SwapchainSupportDetails _supportDetails;
-    std::vector<std::pair<VkFramebuffer*, VkRenderPass> > _framebuffersCallbacks;
-    std::vector<Pipeline*> _pipelineCallbacks;
+    std::vector<std::pair<VkFramebuffer*, VkRenderPass> > _recreateCallbacks;
 
     void createSwapchain();
     void createSwapchainImageViews();

@@ -1,7 +1,6 @@
 #include "graphics/pipeline.h"
 
-#include "core/log.h"
-#include "graphics/swapchain.h"
+#include <core/log.h>
 
 namespace ddls
 {
@@ -13,32 +12,32 @@ Pipeline::Pipeline(
     VkPrimitiveTopology topology,
     VkShaderModule vertexShader,
     VkShaderModule fragmentShader,
-    VkPolygonMode polygonMode) : _device(device), _renderPass(renderPass), _pipelineLayout(pipelineLayout)
+    VkPolygonMode polygonMode) : _device(device), _swapchain(swapchain), _renderPass(renderPass), _pipelineLayout(pipelineLayout)
 {
-    _vertexShaderStageInfo = {};
-    _vertexShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    _vertexShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    _vertexShaderStageInfo.module = vertexShader;
-    _vertexShaderStageInfo.pName = "main";
-    _vertexShaderStageInfo.pSpecializationInfo = nullptr;
-    _shaderStages.push_back(_vertexShaderStageInfo);
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertexShader;
+    vertShaderStageInfo.pName = "main";
+    vertShaderStageInfo.pSpecializationInfo = nullptr;
+    _shaderStages.push_back(vertShaderStageInfo);
 
-    _fragmentShaderStageInfo = {};
-    _fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    _fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    _fragmentShaderStageInfo.module = fragmentShader;
-    _fragmentShaderStageInfo.pName = "main";
-    _fragmentShaderStageInfo.pSpecializationInfo = nullptr;
-    _shaderStages.push_back(_fragmentShaderStageInfo);
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragmentShader;
+    fragShaderStageInfo.pName = "main";
+    fragShaderStageInfo.pSpecializationInfo = nullptr;
+    _shaderStages.push_back(fragShaderStageInfo);
 
-    _bindingDescription = vk::Vertex::getBindingDescription();
-    _attributeDescriptions = vk::Vertex::getAttributeDescriptions();
+    auto bindingDescription = vk::Vertex::getBindingDescription();
+    auto attributeDescriptions = vk::Vertex::getAttributeDescriptions();
     _vertexInputInfo = {};
     _vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     _vertexInputInfo.vertexBindingDescriptionCount = 1;
-    _vertexInputInfo.pVertexBindingDescriptions = &_bindingDescription;
-    _vertexInputInfo.vertexAttributeDescriptionCount = (u32)_attributeDescriptions.size();
-    _vertexInputInfo.pVertexAttributeDescriptions = _attributeDescriptions.data();
+    _vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    _vertexInputInfo.vertexAttributeDescriptionCount = (u32)attributeDescriptions.size();
+    _vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     _inputAssembly = {};
     _inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -48,31 +47,31 @@ Pipeline::Pipeline(
     _viewport = {};
     _viewport.x = 0.0f;
     _viewport.y = 0.0f;
-    _viewport.width = (f32)swapchain->extent().width;
-    _viewport.height = (f32)swapchain->extent().height;
+    _viewport.width = (f32)_swapchain->extent().width;
+    _viewport.height = (f32)_swapchain->extent().height;
     _viewport.minDepth = 0.0f;
     _viewport.maxDepth = 1.0f;
 
     _scissor = {};
     _scissor.offset = {0, 0};
-    _scissor.extent = swapchain->extent();
+    _scissor.extent = _swapchain->extent();
 
-    _dynamicStates = {
+    std::vector<VkDynamicState> dynamicStates = {
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR
     };
 
-    _dynamicState = {};
-    _dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    _dynamicState.dynamicStateCount = static_cast<u32>(_dynamicStates.size());
-    _dynamicState.pDynamicStates = _dynamicStates.data();
+    VkPipelineDynamicStateCreateInfo dynamicState{};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = static_cast<u32>(dynamicStates.size());
+    dynamicState.pDynamicStates = dynamicStates.data();
 
-    _viewportState = {};
-    _viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    _viewportState.viewportCount = 1;
-    _viewportState.pViewports = &_viewport;
-    _viewportState.scissorCount = 1;
-    _viewportState.pScissors = &_scissor;
+    VkPipelineViewportStateCreateInfo viewportState{};
+    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.viewportCount = 1;
+    viewportState.pViewports = &_viewport;
+    viewportState.scissorCount = 1;
+    viewportState.pScissors = &_scissor;
 
     _rasterizer = {};
     _rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -107,16 +106,16 @@ Pipeline::Pipeline(
     _colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     _colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-    _colorBlending = {};
-    _colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    _colorBlending.logicOpEnable = VK_FALSE;
-    _colorBlending.logicOp = VK_LOGIC_OP_COPY;
-    _colorBlending.attachmentCount = 1;
-    _colorBlending.pAttachments = &_colorBlendAttachment;
-    _colorBlending.blendConstants[0] = 0.0f;
-    _colorBlending.blendConstants[1] = 0.0f;
-    _colorBlending.blendConstants[2] = 0.0f;
-    _colorBlending.blendConstants[3] = 0.0f;
+    VkPipelineColorBlendStateCreateInfo colorBlending{};
+    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlending.logicOpEnable = VK_FALSE;
+    colorBlending.logicOp = VK_LOGIC_OP_COPY;
+    colorBlending.attachmentCount = 1;
+    colorBlending.pAttachments = &_colorBlendAttachment;
+    colorBlending.blendConstants[0] = 0.0f;
+    colorBlending.blendConstants[1] = 0.0f;
+    colorBlending.blendConstants[2] = 0.0f;
+    colorBlending.blendConstants[3] = 0.0f;
 
     _pipelineInfo = {};
     _pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -124,13 +123,13 @@ Pipeline::Pipeline(
     _pipelineInfo.pStages = _shaderStages.data();
     _pipelineInfo.pVertexInputState = &_vertexInputInfo;
     _pipelineInfo.pInputAssemblyState = &_inputAssembly;
-    _pipelineInfo.pViewportState = &_viewportState;
+    _pipelineInfo.pViewportState = &viewportState;
     _pipelineInfo.pRasterizationState = &_rasterizer;
     _pipelineInfo.pMultisampleState = &_multisampling;
     _pipelineInfo.pDepthStencilState = nullptr;
-    _pipelineInfo.pColorBlendState = &_colorBlending;
-    _pipelineInfo.pDynamicState = &_dynamicState;
-    _pipelineInfo.layout = _pipelineLayout;
+    _pipelineInfo.pColorBlendState = &colorBlending;
+    _pipelineInfo.pDynamicState = &dynamicState;
+    _pipelineInfo.layout = pipelineLayout;
     _pipelineInfo.renderPass = _renderPass;
     _pipelineInfo.subpass = 0;
     _pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -145,14 +144,14 @@ Pipeline::~Pipeline()
     vkDestroyPipeline(_device, _pipeline, nullptr);
 }
 
-void ddls::Pipeline::recreate(const Swapchain *swapchain)
+void ddls::Pipeline::recreate()
 {
     vkDestroyPipeline(_device, _pipeline, nullptr);
-    _viewport.width = (f32)swapchain->extent().width;
-    _viewport.height = (f32)swapchain->extent().height;
-    _scissor.extent = swapchain->extent();
+    _viewport.width = _swapchain->extent().width;
+    _viewport.height = _swapchain->extent().height;
+    _scissor.extent = _swapchain->extent();
 
-    Assert(vkCreateGraphicsPipelines(_device, nullptr, 1, &_pipelineInfo, nullptr, &_pipeline) == VK_SUCCESS,
+    Assert(vkCreateGraphicsPipelines(_device, nullptr, 1, &_pipelineInfo, nullptr, &_pipeline),
         "Failed to recreate pipeline!");
 }
 

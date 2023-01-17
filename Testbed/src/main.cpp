@@ -395,7 +395,7 @@ int main()
         renderer->swapchain()->extent(),
         renderer->swapchain()->imageViews().data()
     );
-    renderer->swapchain()->addFramebuffersRecreateCallback(framebuffers.data(), renderPass);
+    renderer->swapchain()->addFramebuffers(std::make_pair(framebuffers.data(), renderPass));
 
     // Graphics pipeline
     VkShaderModule vertexShader = vk::loadShader(renderer->device(), "shader.vert.spv");
@@ -411,7 +411,6 @@ int main()
         fragmentShader,
         VK_POLYGON_MODE_FILL
     );
-    renderer->swapchain()->addPipelineRecreateCallback(pipeline);
     //pipelineWireframe = new Pipeline(
         //renderer->device(),
         //renderer->swapchain(), renderPass,
@@ -421,6 +420,8 @@ int main()
         //fragmentShader,
         //VK_POLYGON_MODE_LINE
     //);
+    vkDestroyShaderModule(renderer->device(), vertexShader, nullptr);
+    vkDestroyShaderModule(renderer->device(), fragmentShader, nullptr);
 
     // Buffers and commands
     initializeCommands();
@@ -455,9 +456,6 @@ int main()
     }
 
     vkDeviceWaitIdle(renderer->device());
-
-    vkDestroyShaderModule(renderer->device(), vertexShader, nullptr);
-    vkDestroyShaderModule(renderer->device(), fragmentShader, nullptr);
 
     vkDestroyBuffer(renderer->device(), _vertexBuffer, nullptr);
     vkFreeMemory(renderer->device(), _vertexBufferMemory, nullptr);
