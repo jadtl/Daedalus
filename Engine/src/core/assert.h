@@ -29,20 +29,12 @@ namespace ddls {
         debugBreak(); \
     }
 
-#define ASSERT_TRACE(expr, file, line) \
-    if (expr) {} \
-    else \
-    { \
-        reportAssertionFailure(#expr, file, line); \
-        debugBreak(); \
-    }
-
 #else
 
 // Evaluates to nothing
 #define ASSERT(expr)
 
-#define ASSERT_TRACE(expr)
+#define Assert(expr, args)
 
 #endif
 }
