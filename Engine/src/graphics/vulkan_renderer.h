@@ -18,11 +18,11 @@ namespace ddls {
  * @brief The Vulkan renderer
  * 
  */
-class DDLS_API Renderer
+class DDLS_API VulkanRenderer
 {
 public:
-    Renderer(GLFWwindow *window, const char* appName, const char* engineName);
-    ~Renderer();
+    VulkanRenderer(GLFWwindow *window, const char* appName, const char* engineName);
+    ~VulkanRenderer();
     void render(ImDrawData *drawData = nullptr);
     VkInstance instance() const { return _instance; }
     VkPhysicalDevice physicalDevice() const { return _physicalDevice; }

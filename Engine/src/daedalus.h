@@ -8,6 +8,6 @@
 #include "core/error.h"
 #include "core/log.h"
 
-#include "graphics/renderer.h"
+#include "graphics/vulkan_renderer.h"
 
 #include "utils/endian.h"

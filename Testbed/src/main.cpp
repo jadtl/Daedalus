@@ -43,7 +43,7 @@ int main()
 
     ImGui_ImplGlfw_InitForVulkan(window, true);
 
-    std::unique_ptr<ddls::Renderer> renderer = std::make_unique<ddls::Renderer>(window, appName, engineName);
+    std::unique_ptr<ddls::VulkanRenderer> renderer = std::make_unique<ddls::VulkanRenderer>(window, appName, engineName);
 
     ImGui_ImplVulkan_InitInfo initInfo{};
     initInfo.Instance = renderer->instance();
