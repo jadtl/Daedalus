@@ -18,6 +18,7 @@ set_target_properties(Engine
 target_link_libraries(Engine
     fmt::fmt
     Vulkan::Vulkan
+	glad
     glfw
     glm
     imgui)

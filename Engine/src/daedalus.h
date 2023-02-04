@@ -9,5 +9,6 @@
 #include "core/log.h"
 
 #include "graphics/vulkan_renderer.h"
+#include "graphics/opengl/renderer.h"
 
 #include "utils/endian.h"

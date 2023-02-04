@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(External/fmt)
+add_subdirectory(External/glad)
 add_subdirectory(External/glfw)
 add_subdirectory(External/glm)
 add_subdirectory(External/imgui)
