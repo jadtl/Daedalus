@@ -14,6 +14,10 @@ public:
 	void resizeCallback(u16 width, u16 height);
 	void setViewport(vec4 rect);
 	void resetViewport();
+private:
+	u32 _shaderProgram;
+	u32 _VAO;
+	u32 _VBO;
 };
 }
 }
