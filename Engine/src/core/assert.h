@@ -24,7 +24,7 @@ namespace ddls {
     if (expr) {} \
     else \
     { \
-        Log::Out(Log::Colours::Magenta, Log::Level::Assert, args); \
+        Log::Out(Log::Styles::Bold, Log::Colours::Magenta, Log::Level::Assert, args); \
         reportAssertionFailure(#expr, __FILE__, __LINE__); \
         debugBreak(); \
     }
