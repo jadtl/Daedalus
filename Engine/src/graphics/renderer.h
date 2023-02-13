@@ -30,9 +30,6 @@ public:
 	virtual ~Renderer() {};
 	virtual void newFrame() = 0;
 	virtual void draw() = 0;
-	virtual void resizeCallback(u16 width, u16 height) = 0;
-	virtual void setViewport(vec4 rect) = 0;
-	virtual void resetViewport() = 0;
 	GLFWwindow *window() { return _window; }
 protected:
 	RendererConfig _config;
