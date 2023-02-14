@@ -15,6 +15,7 @@
 #include <fstream>
 
 namespace ddls {
+
 /**
  * @brief A logger that can write to std out and a file
  * 
@@ -22,7 +23,8 @@ namespace ddls {
 class DDLS_API Log
 {
 public:
-    class Styles {
+    class Styles
+    {
     public:
         static constexpr std::string_view Default = "\033[0m";
         static constexpr std::string_view Bold = "\033[1m";
@@ -33,7 +35,8 @@ public:
         static constexpr std::string_view Hidden = "\033[8m";
     };
 
-    class Colours {
+    class Colours
+    {
     public:
         static constexpr std::string_view Default = "\033[39m";
         static constexpr std::string_view Black = "\033[30m";
@@ -54,7 +57,8 @@ public:
         static constexpr std::string_view White = "\033[97m";
     };
 
-    class Level {
+    class Level
+    {
     public:
         static constexpr std::string_view Debug = "DEBUG";
         static constexpr std::string_view Info = "INFO";
@@ -63,7 +67,11 @@ public:
         static constexpr std::string_view Assert = "ASSERT";
     };
 
-    static constexpr auto TimestampFormat = "%H:%M:%S";
+    /**
+     * @brief Using 12-hour clock time
+     * @url https://en.cppreference.com/w/cpp/io/manip/put_time
+     */
+    static constexpr auto TimestampFormat = "%D - %r";
 
     /**
      * Outputs a message into the console.
@@ -73,8 +81,11 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Out(const std::string_view &style, const std::string_view &colour, const std::string_view &level, Args ... args) {
-        Write(style, colour, fmt::format("[{} - {}]: ", Time::GetDateTime(TimestampFormat), level), args..., '\n', Styles::Default);
+    static void
+    Out(const std::string_view &style, const std::string_view &colour, const std::string_view &level, Args ... args)
+    {
+        Write(style, colour, fmt::format("[{} - {}]: ", Time::GetDateTime(TimestampFormat), level), args..., '\n',
+              Styles::Default);
     }
 
     /**
@@ -83,12 +94,13 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Debug(Args ... args) {
-    #ifdef DDLS_DEBUG
+    static void Debug(Args ... args)
+    {
+#ifdef DDLS_DEBUG
         Out(Styles::Default, Colours::LightBlue, Level::Debug, args...);
-    #else
+#else
         ignore(args...);
-    #endif
+#endif
     }
 
     /**
@@ -97,7 +109,8 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Info(Args ... args) {
+    static void Info(Args ... args)
+    {
         Out(Styles::Default, Colours::Green, Level::Info, args...);
     }
 
@@ -107,7 +120,8 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Warning(Args ... args) {
+    static void Warning(Args ... args)
+    {
         Out(Styles::Default, Colours::Yellow, Level::Warning, args...);
     }
 
@@ -117,11 +131,13 @@ public:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Error(Args ... args) {
+    static void Error(Args ... args)
+    {
         Out(Styles::Bold, Colours::Red, Level::Error, args...);
     }
 
     static void OpenLog(const std::filesystem::path &filepath);
+
     static void CloseLog();
 
 private:
@@ -134,13 +150,15 @@ private:
      * @param args The values to write.
      */
     template<typename ... Args>
-    static void Write(Args ... args) {
+    static void Write(Args ... args)
+    {
         std::unique_lock<std::mutex> lock(WriteMutex);
-        
+
         ((std::cout << std::forward<Args>(args)), ...);
         if (FileStream.is_open()) {
             ((FileStream << std::forward<Args>(args)), ...);
         }
     }
 };
-}
+
+} // namespace ddls

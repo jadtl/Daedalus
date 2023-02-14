@@ -2,11 +2,11 @@
 
 #include "graphics/renderer.h"
 
-namespace ddls {
-namespace vk {
+namespace ddls::vk {
+
 class Renderer : public ddls::Renderer
 {
     
 };
-} // namespace vk
-} // namespace ddls
+
+} // namespace ddls::vk

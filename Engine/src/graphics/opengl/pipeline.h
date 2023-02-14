@@ -5,8 +5,7 @@
 
 #include <string>
 
-namespace ddls {
-namespace gl {
+namespace ddls::gl {
 
 class DDLS_API Pipeline
 {
@@ -24,7 +23,7 @@ public:
 	 * @brief Binds the pipeline to the running program
 	 *
 	 */
-	void bind();
+	void bind() const;
 
 	/**
 	 * @brief Uniform utility functions
@@ -38,5 +37,4 @@ private:
 	u32 _handle;
 };
 
-} // namespace gl
-} // namespace ddls
+} // namespace ddls::gl

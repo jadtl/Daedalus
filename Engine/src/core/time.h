@@ -11,6 +11,7 @@
 #endif
 
 namespace ddls {
+
 using namespace std::chrono_literals;
 
 /**
@@ -116,7 +117,7 @@ public:
 	}
 
 	template<typename Rep, typename Period>
-	constexpr operator std::chrono::duration<Rep, Period>() const {
+	constexpr explicit operator std::chrono::duration<Rep, Period>() const {
 		return std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(value);
 	}
 
@@ -149,6 +150,7 @@ public:
 private:
 	std::chrono::microseconds value{};
 };
+
 }
 
 #include "time.inl"

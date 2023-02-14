@@ -2,8 +2,9 @@
 
 namespace ddls {
 
-/** @brief Aknowledges that the given values are unused inside a function */
-template<class T> void ignore(const T&...) {}
+/** @brief Acknowledges that the given values are unused inside a function */
+template<class T>
+void ignore(const T &...) {}
 
 #ifdef DDLS_EXPORT
 // Exports

@@ -3,10 +3,10 @@
 #include <core/log.h>
 
 #include <glad/glad.h>
+#include <stb_image.h>
+#include <lua.hpp>
 
-
-namespace ddls {
-namespace gl {
+namespace ddls::gl {
 
 static void resizeCallback(GLFWwindow *window, i32 width, i32 height);
 static f32 Vertices[] = {
@@ -19,7 +19,7 @@ static u32 Indices[] = {
     0, 1, 2,
 };  
 
-Renderer::Renderer(RendererConfig config): ddls::Renderer(config)
+Renderer::Renderer(const RendererConfig& config): ddls::Renderer(config)
 {
 	glfwInit();
 
@@ -62,7 +62,7 @@ Renderer::Renderer(RendererConfig config): ddls::Renderer(config)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -106,5 +106,4 @@ static void resizeCallback(GLFWwindow *window, i32 width, i32 height)
 	glViewport(0, 0, width, height);
 }
 
-} // namespace gl
-} // namespace ddls
+} // namespace ddls::gl

@@ -4,21 +4,19 @@
 
 #include "graphics/opengl/pipeline.h"
 
-namespace ddls {
-namespace gl {
+namespace ddls::gl {
 class DDLS_API Renderer : public ddls::Renderer
 {
 public:
-	Renderer(RendererConfig config);
-	~Renderer();
-	void newFrame();
-	void draw();
+	explicit Renderer(const RendererConfig& config);
+	~Renderer() override;
+	void newFrame() override;
+	void draw() override;
 private:
 	//u32 _shaderProgram;
 	Pipeline *_pipeline;
-	u32 _VAO;
-	u32 _VBO;
-	u32 _EBO;
+	u32 _VAO{};
+	u32 _VBO{};
+	u32 _EBO{};
 };
-}
-}
+} // namespace ddls::gl

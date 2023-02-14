@@ -6,6 +6,7 @@
 #include <iostream>
 
 namespace ddls {
+
 #if DDLS_ASSERT
 
 #define reportAssertionFailure(expr, file, line) \
@@ -37,4 +38,5 @@ namespace ddls {
 #define Assert(expr, args)
 
 #endif
-}
+
+} // namespace ddls

@@ -8,9 +8,9 @@ namespace ddls {
 
 Resources::~Resources()
 {
-	for (auto it = allocations.begin(); it != allocations.end(); it++)
+	for (auto & allocation : allocations)
 	{
-		::free(&(it->second));
+		::free(&(allocation.second));
 	}
 }
 
@@ -66,6 +66,7 @@ std::filesystem::path Resources::cwd()
 	_NSGetExecutablePath(buffer, &size);
 	
 	std::string currentDirectory(buffer);
+	// Supposes that the executable is bundled
 	return ((std::filesystem::path)currentDirectory).parent_path().parent_path().append("Resources");
 }
 

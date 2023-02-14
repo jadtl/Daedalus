@@ -1,5 +1,7 @@
 #pragma once
 
+namespace ddls {
+
 #if DDLS_DEBUG
 
 // Define some architecture-specific inline assembly that causes a break
@@ -20,3 +22,5 @@
 #define debugBreak() {}
 
 #endif
+
+} // namespace ddls

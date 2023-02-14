@@ -4,8 +4,8 @@
 #include "core/memory.h"
 #include "core/error.h"
 
-namespace ddls
-{
+namespace ddls {
+
 class DDLS_API StackAllocator
 {
 public:
@@ -46,4 +46,5 @@ private:
     Ptr _spMin;
     Ptr _spMax;
 };
-}
+
+} // namespace ddls

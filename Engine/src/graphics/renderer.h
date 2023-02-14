@@ -8,10 +8,12 @@
 #include <glm/glm.hpp>
 
 #include <string>
+#include <utility>
 
 using namespace glm;
 
 namespace ddls {
+
 struct DDLS_API RendererConfig
 {
 	std::string applicationName;
@@ -26,8 +28,8 @@ struct DDLS_API RendererConfig
 class DDLS_API Renderer
 {
 public:
-	Renderer(RendererConfig config) : _config(config) {};
-	virtual ~Renderer() {};
+	explicit Renderer(RendererConfig config) : _config(std::move(config)), _window(nullptr) {};
+	virtual ~Renderer() = default;
 	virtual void newFrame() = 0;
 	virtual void draw() = 0;
 	GLFWwindow *window() { return _window; }
@@ -35,4 +37,5 @@ protected:
 	RendererConfig _config;
 	GLFWwindow *_window;
 };
+
 }

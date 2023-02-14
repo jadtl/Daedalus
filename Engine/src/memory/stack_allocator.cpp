@@ -3,11 +3,11 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace ddls
+namespace ddls {
+
+StackAllocator::StackAllocator(MemSize size)
 {
-StackAllocator::StackAllocator(MemSize size) 
-{
-    _spInit = (Ptr)malloc(size);
+    _spInit = (Ptr) malloc(size);
     _sp = _spInit;
     _spMin = _sp;
     _spMax = _sp + size;
@@ -32,4 +32,5 @@ void StackAllocator::free(Ptr ptr)
     if (!(_spMin <= ptr && ptr <= _sp)) throw OutOfBoundsException("The requested free location isn't on the stack!");
     _sp = ptr;
 }
-}
+
+} // namespace ddls

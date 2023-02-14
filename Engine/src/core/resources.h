@@ -43,9 +43,9 @@ public:
     void free(const char* filePath);
 
 private:
-    Resources() {};
+    Resources() = default;
     std::map<const char*, char*> allocations;
-    std::filesystem::path cwd();
+    static std::filesystem::path cwd();
 };
 
 } // namespace ddls
