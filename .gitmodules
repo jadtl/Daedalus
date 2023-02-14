@@ -12,4 +12,4 @@
 	url = https://github.com/jadtl/imgui
 [submodule "External/stb"]
 	path = External/stb
-	url = https://github.com/nothings/stb.git
+	url = https://github.com/jadtl/stb.git
