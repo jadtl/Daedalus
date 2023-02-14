@@ -8,7 +8,9 @@ add_library(Daedalus::Engine ALIAS Engine)
 
 target_include_directories(Engine 
     PUBLIC 
-    src/)
+    src/
+    PRIVATE
+    ${LUA_INCLUDE_DIR})
 
 set_target_properties(Engine 
     PROPERTIES 
@@ -18,10 +20,12 @@ set_target_properties(Engine
 target_link_libraries(Engine
     fmt::fmt
     Vulkan::Vulkan
-	glad
+    glad
     glfw
     glm
-    imgui)
+    imgui
+    stb
+    ${LUA_LIBRARIES})
 
 target_compile_definitions(Engine 
     PRIVATE
