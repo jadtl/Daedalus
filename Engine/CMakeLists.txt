@@ -8,9 +8,7 @@ add_library(Daedalus::Engine ALIAS Engine)
 
 target_include_directories(Engine 
     PUBLIC 
-    src/
-    PRIVATE
-    ${LUA_INCLUDE_DIR})
+    src/)
 
 set_target_properties(Engine 
     PROPERTIES 
@@ -25,7 +23,7 @@ target_link_libraries(Engine
     glm
     imgui
     stb
-    ${LUA_LIBRARIES})
+    lua::lib)
 
 target_compile_definitions(Engine 
     PRIVATE

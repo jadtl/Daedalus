@@ -4,7 +4,9 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include <lua.hpp>
+extern "C" {
+#include "lua.h"
+}
 
 namespace ddls::gl {
 

@@ -13,3 +13,6 @@
 [submodule "External/stb"]
 	path = External/stb
 	url = https://github.com/jadtl/stb.git
+[submodule "External/lua"]
+	path = External/lua
+	url = https://github.com/lubgr/lua-cmake.git

@@ -12,10 +12,10 @@ add_subdirectory(External/glad)
 add_subdirectory(External/glfw)
 add_subdirectory(External/glm)
 add_subdirectory(External/imgui)
+add_subdirectory(External/lua)
 add_subdirectory(External/stb)
 
 find_package(Vulkan REQUIRED)
-find_package(Lua REQUIRED)
 
 if (LINUX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
