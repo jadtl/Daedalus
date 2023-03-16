@@ -9,6 +9,18 @@
 namespace ddls {
 
 /**
+ * @brief The engine's representation of a texture
+ * 
+ */
+struct DDLS_API Texture
+{
+    u16 width;
+    u16 height;
+    u16 channels;
+    unsigned char* data;
+};
+
+/**
  * @brief A resource management class
  *
  */
@@ -30,11 +42,19 @@ public:
     Resources(Resources const&)       = delete;
     void operator=(Resources const&)  = delete;
 
+    std::filesystem::path getPath(const char* filePath);
+
     /**
-     * @brief Gets the requested resource, allocating its contents if needed
+     * @brief Gets the requested file, allocating its contents if needed
      *
      */
-    const char* get(const char* filePath);
+    const char* getFile(const char* filePath);
+
+    /**
+     * @brief Gets the requested texture, allocating its contents if needed
+     *
+     */
+    const Texture getTexture(const char* texturePath);
 
     /**
      * @brief Frees the given resource
@@ -44,7 +64,8 @@ public:
 
 private:
     Resources() = default;
-    std::map<const char*, char*> allocations;
+    std::map<const char*, char*> _files;
+    std::map<const char*, Texture> _textures;
     static std::filesystem::path cwd();
 };
 

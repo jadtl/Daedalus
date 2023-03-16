@@ -1,23 +1,29 @@
 #include "core/resources.h"
 
 #include "core/log.h"
-
 #include "core/assert.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace ddls {
 
 Resources::~Resources()
 {
-	for (auto & allocation : allocations)
+	for (auto & allocation : _files)
 	{
 		::free(&(allocation.second));
 	}
 }
 
-const char* Resources::get(const char* filePath)
+std::filesystem::path Resources::getPath(const char* filePath)
 {
-	if (allocations.count(filePath)) return allocations[filePath];
-	Log::Debug(cwd().string());
+    return cwd().append(filePath);
+}
+
+const char* Resources::getFile(const char* filePath)
+{
+	if (_files.count(filePath)) return _files[filePath];
 	std::ifstream file(cwd().append(filePath), std::ios::ate | std::ios::binary);
 
 	Assert(file.is_open(), 
@@ -30,15 +36,41 @@ const char* Resources::get(const char* filePath)
 	file.read(buffer, fileSize);
 
 	file.close();
+
+	_files[filePath] = buffer;
 	return buffer;
+}
+
+const Texture Resources::getTexture(const char* texturePath)
+{
+	if (_textures.count(texturePath)) return _textures[texturePath];
+
+	Texture tex{};
+	int width, height, channels;
+	stbi_set_flip_vertically_on_load(true);
+	tex.data = stbi_load(texturePath, &width, &height, &channels, 0);
+	Assert(tex.data != nullptr,
+		fmt::format("Failed to get texture \"{}\"!", texturePath));
+	tex.width = (u16)width;
+	tex.height = (u16)height;
+	tex.channels = (u16)channels;
+
+	_textures[texturePath] = tex;
+	return tex;
 }
 
 void Resources::free(const char* filePath)
 {
-	if (allocations.count(filePath))
+	if (_files.count(filePath))
 	{
-		::free(allocations[filePath]);
-		allocations.erase(filePath);
+		::free(_files[filePath]);
+		_files.erase(filePath);
+	}
+
+	if (_textures.count(filePath))
+	{
+		::free(_textures[filePath].data);
+		_textures.erase(filePath);
 	}
 }
 

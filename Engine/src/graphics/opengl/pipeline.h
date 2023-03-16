@@ -3,8 +3,11 @@
 #include "core/defines.h"
 #include "core/types.h"
 
+#include <glm/glm.hpp>
+
 #include <string>
 
+using namespace glm;
 namespace ddls::gl {
 
 class DDLS_API Pipeline
@@ -14,7 +17,7 @@ public:
 	~Pipeline();
 
 	/**
-	 * @brief The handle to the API-specific object that uses the shaders
+	 * @brief The handle to the shader program
 	 *
 	 */
 	u32 handle() const { return _handle; };
@@ -29,9 +32,18 @@ public:
 	 * @brief Uniform utility functions
 	 *
 	 */
-	void setBoolean(const std::string &uniform, b8  value) const;
-	void setInteger(const std::string &uniform, i32 value) const;
-	void setFloat  (const std::string &uniform, f32 value) const;
+	void setBool (const std::string &uniform, b8  value) const;
+	void setInt  (const std::string &uniform, i32 value) const;
+	void setFloat(const std::string &uniform, f32 value) const;
+    void setVec2 (const std::string &uniform, const vec2 &value) const;
+    void setVec2 (const std::string &uniform, float x, float y) const;
+    void setVec3 (const std::string &uniform, const vec3 &value) const;
+    void setVec3 (const std::string &uniform, float x, float y, float z) const;
+    void setVec4 (const std::string &uniform, const vec4 &value) const;
+    void setVec4 (const std::string &uniform, float x, float y, float z, float w) const;
+    void setMat2 (const std::string &uniform, const mat2 &mat) const;
+    void setMat3 (const std::string &uniform, const mat3 &mat) const;
+    void setMat4 (const std::string &uniform, const mat4 &mat) const;
 
 private:
 	u32 _handle;

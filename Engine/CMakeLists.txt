@@ -23,7 +23,8 @@ target_link_libraries(Engine
     glm
     imgui
     stb
-    lua::lib)
+    lua::lib
+    freetype)
 
 target_compile_definitions(Engine 
     PRIVATE
@@ -44,13 +45,13 @@ target_compile_definitions(Engine
 	$<$<PLATFORM_ID:Darwin>:DDLS_PLATFORM_MACOS>
 )
 
-set(SHADER_DIR "shaders")
+set(SHADER_DIR "shaders/vulkan")
 
-file(GLOB_RECURSE GLSL_FRAG
+file(GLOB GLSL_FRAG
     "${SHADER_DIR}/*.frag.glsl"
 )
 
-file(GLOB_RECURSE GLSL_VERT
+file(GLOB GLSL_VERT
     "${SHADER_DIR}/*.vert.glsl"
 )
 
@@ -84,3 +85,8 @@ add_custom_target(
 )
 
 add_dependencies(Engine Shaders)
+
+add_custom_command(TARGET Engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+        "${PROJECT_BINARY_DIR}")
