@@ -16,3 +16,6 @@
 [submodule "External/lua"]
 	path = External/lua
 	url = https://github.com/lubgr/lua-cmake.git
+[submodule "External/harfbuzz-icu-freetype"]
+	path = External/harfbuzz-icu-freetype
+	url = https://github.com/tangrams/harfbuzz-icu-freetype.git
